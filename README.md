@@ -39,8 +39,8 @@ By accessing **datalibweb** you agree to the following Conditions:
 used solely by users who have valid labour contracts consistent with the mandate and official 
 activities of the World Bank, and shall not be redistributed to other individuals, institutions or organizations without prior 
 written consent from focal points of each collection/region. Access to the data may not be shared. The Global-TSD requests that all requests for access 
-to and use of {browse "mailto: datalibweb@worldbank.org":**datalibweb**} be directed to us through the email address 
-{browse "mailto: datalibweb@worldbank.org, ?subject=**datalibweb** helpdesk: <<<please describe your question and/or comment here>>>" :Global-TSD helpdesk}. 
+to and use of <datalibweb@worldbank.org> be directed to us through the email address 
+<datalibweb@worldbank.org> with the subject=**datalibweb** helpdesk: <<<please describe your question and/or comment here>>>". 
 Users will need separate access request per type/collection (if any) from the collection/regional focal points. 
 
 2.	The data will be used for World Bank related business only. They will be used solely for generating and reporting 
@@ -48,7 +48,7 @@ aggregated information.
 
 3.	All users agree to respect the privacy of survey respondents. No attempt will be made to identify respondents, and 
 no use will be made of the identity of any person, facility or establishment discovered inadvertently. Any such discovery must 
-immediately be reported to the Global-TSD unit by emailing {browse "mailto: datalibweb@worldbank.org, ?subject=**datalibweb** helpdesk: <<<please describe your question and/or comment here>>>&cc=jazevedo@worldbank.org" :Global-TSD helpdesk}  
+immediately be reported to the Global-TSD unit by emailing <datalibweb@worldbank.org>, ?subject=**datalibweb** helpdesk: <<<please describe your question and/or comment here>>>   
 
 4.	Any output, published or otherwise, including presentations employing data obtained from **datalibweb**, will cite 
 the source as "Source: [Collection] ([Region]TSD/World Bank)" or "Source: [Collection] Harmonization or Raw data ([Region]TSD)". 
@@ -81,7 +81,7 @@ This program was developed by the Global-TSD unit in the Global Poverty Practice
 
 We would like to thank many colleagues in various teams involving in the discussion, suggestion and testing, implemetation: ECA TSD, LAC TSD, EAP TSD, ECA IT, QuickStrike ITS, Microdata Library, all members of GPWG, regional focal points in all regions (EAP, ECA, LAC, MNA, SAR, and SSA).  
 
-All errors and ommissions are of exclusive responsability of the authors. Comments and suggestions are most welcome. Please send an email to: datalibweb@worldbank.org . 
+All errors and ommissions are of exclusive responsability of the authors. Comments and suggestions are most welcome. Please send an email to: <datalibweb@worldbank.org> .
 	
 ## Authors - **datalibweb** team
 Contributing authors:  
