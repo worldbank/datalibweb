@@ -1,4 +1,5 @@
-# datalibweb
+# datalibweb - Datalibweb is an API data platform specifically designed to enable users to access the most up-to-date data and documentation available in different regional catalogs at the World Bank.
+
 
 ## Description 
 
@@ -52,9 +53,9 @@ immediately be reported to the Global-TSD unit by emailing {browse "mailto: data
 4.	Any output, published or otherwise, including presentations employing data obtained from {cmd:datalibweb}, will cite 
 the source as "Source: [Collection] ([Region]TSD/World Bank)" or "Source: [Collection] Harmonization or Raw data ([Region]TSD)". 
 
-{p 4 12 }And include in the reference list: 
+And include in the reference list: 
 
-{p 8 12 }[Region]TSD ([year of access (YYYY)]). [Collection] Ex-post Harmonization or Raw data. Countries/Survey IDs: [country names/years 
+[Region]TSD ([year of access (YYYY)]). [Collection] Ex-post Harmonization or Raw data. Countries/Survey IDs: [country names/years 
 (separated by semi-colon)]. As of [date of access (dd/mm/yyyy)] via Datalibweb Stata Package.
 
 5.	Furthermore, copies of all publications and working papers using {cmd:datalibweb} data will be sent to Global-TSD, to 
@@ -74,7 +75,6 @@ Moreover, results from these data may change as a consequence of possible
 updates. Note that these updates will be processed directly through {cmd:datalibweb} without any user notifications. 
 We advise making reference to the date when the database was consulted, as statistics may change.
 
-
 ## Acknowledgements
 
 This program was developed by the Global-TSD unit in the Global Poverty Practice of the World Bank. The program was benifited significantly from the earlier developments of {cmd:datalib} in LAC TSD (by João Pedro Azevedo and Raul Andres Castaneda Aguilar), and {cmd:datalib2} in ECA TSD (by João Pedro Azevedo and Cesar Cancho).	
@@ -83,7 +83,7 @@ We would like to thank many colleagues in various teams involving in the discuss
 
 All errors and ommissions are of exclusive responsability of the authors. Comments and suggestions are most welcome. Please send an email to: {browse "mailto: datalibweb@worldbank.org":datalibweb@worldbank.org}. 
 	
-## Authors - {cmd:datalibweb} team}
+## Authors - datalibweb team
 Contributing authors:  
 - Stata front-end application: Minh Cong Nguyen, Raul Andres Castaneda Aguilar, Jose Montes, and João Pedro Azevedo, with support from Paul Andres Corral Rodas. 
 - Plugin, IT coordinator/support: Paul Ricci, Louis Wahsieh Elliott, Antonio Ramos-Izquierdo. 
