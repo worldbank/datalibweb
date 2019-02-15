@@ -1,0 +1,23 @@
+	WHAT'S NEW
+	BETA: 1.1.6 <19feb2018>
+		1. Include CPI vintage option
+		
+	BETA: 1.1.5 <04feb2018>
+		1. Include Repository option
+		2. Include local server option 
+
+	BETA: 1.0 <04may2017>
+		1. Include new and faster APIs 
+		2. Include functionality in user interactivity 
+		3. Include Graphical User Interface 
+
+	History of the file:
+
+	ALPHA: 0.0  <02jun2015> 
+		1. First version 
+
+	BETA: 0.1 <29oct2015> 
+		1. Include user interactivity 
+
+	BETA: 0.2 <30dec2015> 
+		1. Include new collections 

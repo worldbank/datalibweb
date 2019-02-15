@@ -1,0 +1,82 @@
+{smcl}
+{hline}
+help for {cmd:varlocal}
+{hline}
+
+{title:Title}
+
+{p 8 17}
+{cmdab:varlocal}
+{it:varlist}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:exp}]
+[,
+{cmd:separate}{cmd:(}{it:string}{cmd:)}
+{cmd:replacespace}
+{cmd:nomissing}
+]{p_end}
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:varlocal} transform values of a variable in local. The order is the same as the sort of the variable in the dataset and repeated value of the variable is kept. {p_end}
+
+
+{title:Options}
+
+{p 4 4 2}{cmd:{opt se:parate(string)}} separator to serve as punctuation for the values of returned list; default is a space.{p_end}
+
+{p 4 4 2}{cmd:{opt replaces:pace}} it is useful for string variable that has two or more words as value. It replaces the space between word by underscore character, _. {p_end}
+
+{p 4 4 2}{cmd:{opt nomiss:ing}} does not include missing values of {it:varlist} in calculation. {p_end}
+
+
+{title:Saved Results}
+
+{cmd:varlocal} returns results in {hi:r()} format. 
+By typing {helpb return list}, the following results are reported:
+
+{synoptset 20 tabbed}{...}
+{p2col 5 20 24 2: Macros}{p_end}
+{synopt:{cmd:r(varname)}} list of values of one variable listed in {it:varlist}.{p_end}
+
+{pstd}{cmd:Obs:} The reported local has the correspondent name of the variables in {it:varlist} {p_end}
+
+
+{title:Examples}
+
+{p 8 12}. sysuse auto, clear
+
+{p 8 12}{inp:. varlocal mpg}{p_end}
+
+{p 8 12}{inp:. varlocal mpg in 10} {p_end}
+
+{p 8 12}{inp:. varlocal mpg in 1/10, separate(;)} {p_end}
+
+{p 8 12}{inp:. varlocal make if mpg<15, replacespace}{p_end}
+
+{p 8 12}{inp:. varlocal make rep78, nomissing}{p_end}
+{p 8 12}. return list
+
+
+{p 8 12} Consider the folling variable {p_end}
+{p 8 12} var = 1,1,2,1,3,4,7,11,... {p_end}
+{p 8 12} {cmd:varlocal} can be used to return the variable value in a determined {p_end}
+{p 8 12}position {p_end}
+	
+{p 8 12}{inp:. varlocal var in 5}{p_end}
+{p 8 12}. local a `r(var)'
+
+{p 8 12} the local {it: a} would be equal to 3 {p_end}
+
+
+{title:Author}
+
+{p 4 4 2}Viviane Sanfelice, World Bank, sanfelicev@gmail.com{p_end}
+
+
+{title:Also see}
+
+Online:  help for {help levelsof}
+
+

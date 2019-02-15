@@ -1,0 +1,1 @@
+This is version 1.1.6 released 19 Feb 2018.
