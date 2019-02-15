@@ -10,7 +10,7 @@
  **datalibweb** is developed to facilitate the access of the ex-post
 harmonization and not-harmonized (original or raw) data produced and gathered by the regional teams in the Poverty Global Practice.
 Please use with {cmd: CAUTION} and please remember to follow the
-{help **datalibweb**##termsofuse:TERMS OF USE}!! 
+[**datalibweb** TERMS OF USE]((#title_8_1))!! 
 
 Access to the harmonized or original dataset is not given to users automatically unless the dataset is marked with Public access. 
 Users need to contact regional/collection focal points and ask for the permission. Each user will have different sets of subscription to the survey. 
@@ -23,7 +23,7 @@ documentation, please visit the [Microdata Library intranet site](http://microda
 For information on how to upload or download data from the Microdata library, click [here](\\Ecafile\eca-special\ECA_Databank\datalib\_doc\ECADATAPORTAL_Guidelines_1page.pdf).
 
  Users are expected to check summary statistics and published critical indicators computed with this microdata such as: poverty, inequality, and/or 
-shared prosperity numbers in the regional data lab sites in {browse [Poverty Global Practice intranet site](http://globalpractices.worldbank.org/poverty/Pages/en/GPGHome.aspx)
+shared prosperity numbers in the regional data lab sites in [Poverty Global Practice intranet site](http://globalpractices.worldbank.org/poverty/Pages/en/GPGHome.aspx)
 before conducting any analysis. 
 
  Users are encouraged to take note of the vintage of the harmonization that is being used in order to assure future 
@@ -31,7 +31,7 @@ replicability of results. Please notice that this application will also retrieve
 and this might change over time. For more information please read the help file, including on how to retrieve previous 
 vintages. 
 
-## Terms of use for collections/databases
+## Terms of use for collections/databases <a name="terms_use"></a>
 
 By accessing **datalibweb** you agree to the following Conditions:
 
