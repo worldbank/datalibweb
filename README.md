@@ -76,14 +76,16 @@ We advise making reference to the date when the database was consulted, as stati
 
 
 ## Acknowledgements
-    This program was developed by the Global-TSD unit in the Global Poverty Practice of the World Bank. The program was benifited significantly from the earlier 
-	developments of {cmd:datalib} in LAC TSD (by Jo?Pedro Azevedo and Raul Andres Casta?? Aguilar), and {cmd:datalib2} in ECA TSD (by Jo?Pedro Azevedo and Cesar Cancho).	
-	We would like to thank many colleagues in various teams involving in the discussion, suggestion and testing, implemetation: ECA TSD, LAC TSD, EAP TSD, ECA IT, QuickStrike ITS, Microdata Library, all members of GPWG, regional focal points in all regions (EAP, ECA, LAC, MNA, SAR, and SSA).  
-	All errors and ommissions are of exclusive responsability of the authors. Comments and suggestions are most welcome. Please send an email to: {browse "mailto: datalibweb@worldbank.org":datalibweb@worldbank.org}. 
+
+This program was developed by the Global-TSD unit in the Global Poverty Practice of the World Bank. The program was benifited significantly from the earlier developments of {cmd:datalib} in LAC TSD (by João Pedro Azevedo and Raul Andres Casta?? Aguilar), and {cmd:datalib2} in ECA TSD (by João Pedro Azevedo and Cesar Cancho).	
+
+We would like to thank many colleagues in various teams involving in the discussion, suggestion and testing, implemetation: ECA TSD, LAC TSD, EAP TSD, ECA IT, QuickStrike ITS, Microdata Library, all members of GPWG, regional focal points in all regions (EAP, ECA, LAC, MNA, SAR, and SSA).  
+
+All errors and ommissions are of exclusive responsability of the authors. Comments and suggestions are most welcome. Please send an email to: {browse "mailto: datalibweb@worldbank.org":datalibweb@worldbank.org}. 
 	
 ## Authors - {cmd:datalibweb} team}
 Contributing authors:  
-	- Stata front-end application: Minh Cong Nguyen, Raul Andres Casta?? Aguilar, Jos?ontes, and Jo?Pedro Azevedo, with support from Paul Andres Corral Rodas. 
+	- Stata front-end application: Minh Cong Nguyen, Raul Andres Casta?? Aguilar, Jos?ontes, and João Pedro Azevedo, with support from Paul Andres Corral Rodas. 
 	- Plugin, IT coordinator/support: Paul Ricci, Louis Wahsieh Elliott, Antonio Ramos-Izquierdo. 
 	- SharePoint web application: Soumalya De; Ravikumar Murugaiah Samy; Intekhab Alam Sheikh, Monisha Menon, Nishant Nitin Trivedi. 
-	- Overall {cmd:datalibweb} project supervision: Jo?Pedro Azevedo and Minh Cong Nguyen. 
+	- Overall {cmd:datalibweb} project supervision: João Pedro Azevedo and Minh Cong Nguyen. 
