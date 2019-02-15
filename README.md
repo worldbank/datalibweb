@@ -10,7 +10,7 @@
  **datalibweb** is developed to facilitate the access of the ex-post
 harmonization and not-harmonized (original or raw) data produced and gathered by the regional teams in the Poverty Global Practice.
 Please use with {cmd: CAUTION} and please remember to follow the
-**datalibweb** [TERMS OF USE]((#terms_use))!! 
+**datalibweb** [TERMS OF USE](#terms_use)!! 
 
 Access to the harmonized or original dataset is not given to users automatically unless the dataset is marked with Public access. 
 Users need to contact regional/collection focal points and ask for the permission. Each user will have different sets of subscription to the survey. 
