@@ -85,7 +85,7 @@ All errors and ommissions are of exclusive responsability of the authors. Commen
 	
 ## Authors - {cmd:datalibweb} team}
 Contributing authors:  
-	- Stata front-end application: Minh Cong Nguyen, Raul Andres Casta?? Aguilar, Jos?ontes, and João Pedro Azevedo, with support from Paul Andres Corral Rodas. 
-	- Plugin, IT coordinator/support: Paul Ricci, Louis Wahsieh Elliott, Antonio Ramos-Izquierdo. 
-	- SharePoint web application: Soumalya De; Ravikumar Murugaiah Samy; Intekhab Alam Sheikh, Monisha Menon, Nishant Nitin Trivedi. 
-	- Overall {cmd:datalibweb} project supervision: João Pedro Azevedo and Minh Cong Nguyen. 
+- Stata front-end application: Minh Cong Nguyen, Raul Andres Casta?? Aguilar, Jos?ontes, and João Pedro Azevedo, with support from Paul Andres Corral Rodas. 
+- Plugin, IT coordinator/support: Paul Ricci, Louis Wahsieh Elliott, Antonio Ramos-Izquierdo. 
+- SharePoint web application: Soumalya De; Ravikumar Murugaiah Samy; Intekhab Alam Sheikh, Monisha Menon, Nishant Nitin Trivedi. 
+- Overall {cmd:datalibweb} project supervision: João Pedro Azevedo and Minh Cong Nguyen. 
