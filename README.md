@@ -1,5 +1,4 @@
-# **datalibweb** - **datalibweb** is an API data platform specifically designed to enable users to access the most up-to-date data and documentation available in different regional catalogs at the World Bank.
-
+# **datalibweb** - **datalibweb** is the Stata frontend for the microdata API created by Poverty Global Practice in collaboration with ITS and DECDG to enable users to access data and documentation available in different global, regional and country microdata catalogs at the World Bank.
 
 ## Description 
 
@@ -77,7 +76,7 @@ We advise making reference to the date when the database was consulted, as stati
 
 ## Acknowledgements
 
-This program was developed by the Global-TSD unit in the Global Poverty Practice of the World Bank. The program was benifited significantly from the earlier developments of **datalib** in LAC TSD (by Jo„o Pedro Azevedo and Raul Andres Castaneda Aguilar), and **datalib2** in ECA TSD (by Jo„o Pedro Azevedo and Cesar Cancho).	
+This program was developed by the Global-TSD unit in the Global Poverty Practice of the World Bank. The program was benifited significantly from the earlier developments of **datalib** in LAC TSD (by Jo√£o Pedro Azevedo and Raul Andres Castaneda Aguilar), and **datalib2** in ECA TSD (by Jo√£o Pedro Azevedo and Cesar Cancho).	
 
 We would like to thank many colleagues in various teams involving in the discussion, suggestion and testing, implemetation: ECA TSD, LAC TSD, EAP TSD, ECA IT, QuickStrike ITS, Microdata Library, all members of GPWG, regional focal points in all regions (EAP, ECA, LAC, MNA, SAR, and SSA).  
 
@@ -85,7 +84,7 @@ All errors and ommissions are of exclusive responsability of the authors. Commen
 	
 ## Authors - **datalibweb** team
 Contributing authors:  
-- Stata front-end application: Minh Cong Nguyen, Raul Andres Castaneda Aguilar, Jose Montes, and Jo„o Pedro Azevedo, with support from Paul Andres Corral Rodas. 
+- Stata front-end application: Minh Cong Nguyen, Raul Andres Castaneda Aguilar, Jose Montes, and Jo√£o Pedro Azevedo, with support from Paul Andres Corral Rodas. 
 - Plugin, IT coordinator/support: Paul Ricci, Louis Wahsieh Elliott, Antonio Ramos-Izquierdo. 
 - SharePoint web application: Soumalya De; Ravikumar Murugaiah Samy; Intekhab Alam Sheikh, Monisha Menon, Nishant Nitin Trivedi. 
-- Overall ****datalibweb**** project supervision: Jo„o Pedro Azevedo and Minh Cong Nguyen. 
+- Overall ****datalibweb**** project supervision: Jo√£o Pedro Azevedo and Minh Cong Nguyen. 
