@@ -1,8 +1,8 @@
-# **datalibweb** - frontend for a Stata API for the Poverty Global Practice's microdata
+# **datalibweb** - frontend for a Stata API for World Bank microdata
 
 ## Description
 
-**datalibweb** is the Stata frontend for the microdata API created by Poverty Global Practice in collaboration with ITS and DECDG to enable users to access data and documentation available in different global, regional and country microdata catalogs at the World Bank.
+**datalibweb** is the Stata frontend for the microdata API created by Poverty Global Practice in collaboration with ITS and DECDG to enable users to access data and documentation available in different global, regional and country microdata catalogs at the World Bank. Currently there is data from the _Poverty GP_, _Health GP_ and the _Social Protection Labor GP_.
 
 **datalibweb** is an API data platform specifically designed to enable users to access the most up-to-date data and documentation available in different regions catalogs at the World Bank. It allows users to access the latest and historical versions of non-harmonized (original/raw) data as well as different harmonized collections across across Global Practices. It is integrated with Stata through the **datalibweb** Stata package.
 
