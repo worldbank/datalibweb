@@ -47,7 +47,7 @@ aggregated information.
 
 3.	All users agree to respect the privacy of survey respondents. No attempt will be made to identify respondents, and 
 no use will be made of the identity of any person, facility or establishment discovered inadvertently. Any such discovery must 
-immediately be reported to the Global-TSD unit by emailing [datalibweb@worldbank.org](mailto:datalibweb@worldbank.org?subject=datalibweb%20helpdesk:%20reporting%20resondent%20privacy%20breach) with a description of the case.
+immediately be reported to the Global-TSD unit by emailing [datalibweb@worldbank.org](mailto:datalibweb@worldbank.org?subject=datalibweb%20helpdesk:%20reporting%20resondent%20privacy%20breach) with a description of the case. Please include **datalib helpdesk:** *reporting resondent privacy breach* in the subject line.
 
 4.	Any output, published or otherwise, including presentations employing data obtained from **datalibweb**, will cite 
 the source as "Source: [Collection] ([Region]TSD/World Bank)" or "Source: [Collection] Harmonization or Raw data ([Region]TSD)". 
