@@ -1,15 +1,20 @@
-# **datalibweb** - **datalibweb** is the Stata frontend for the microdata API created by Poverty Global Practice in collaboration with ITS and DECDG to enable users to access data and documentation available in different global, regional and country microdata catalogs at the World Bank.
+# **datalibweb** - frontend for a Stata API for World Bank microdata
 
-## Description 
+## Description
 
-**datalibweb** is an API data platform specifically designed to enable users to access the most up-to-date data and documentation available in different regiona catalogs at the World Bank. It allows users to access the latest and historical versions of non-harmonized (original/raw) data as well as different harmonized collections across across Global Practices. It is integrated with Stata through the **datalibweb** Stata package.
+**datalibweb** is the Stata frontend for the microdata API created by Poverty Global Practice in collaboration with ITS and DECDG to enable users to access data and documentation available in different global, regional and country microdata catalogs at the World Bank. Currently there is data from the _Poverty GP_, _Health GP_ and the _Social Protection and Jobs GP_.
+
+**datalibweb** is an API data platform specifically designed to enable users to access the most up-to-date data and documentation available in different regions catalogs at the World Bank. It allows users to access the latest and historical versions of non-harmonized (original/raw) data as well as different harmonized collections across across Global Practices. It is integrated with Stata through the **datalibweb** Stata package.
+
+## Installation
+**datalibweb** is currently only availible on World Bank computers, and there is no installation needed as **datalibweb** is already installed on all World Bank computers that have Stata installed. Run `datalibweb` in your installation of Stata to test that it is really installed.
 
 ## Disclaimer
 
  **datalibweb** is developed to facilitate the access of the ex-post
 harmonization and not-harmonized (original or raw) data produced and gathered by the regional teams in the Poverty Global Practice.
-Please use with {cmd: CAUTION} and please remember to follow the
-**datalibweb** [TERMS OF USE](#terms_use)!! 
+Please use with **CAUTION** and please remember to follow the
+**datalibweb**'s [TERMS OF USE](#terms_use)!!
 
 Access to the harmonized or original dataset is not given to users automatically unless the dataset is marked with Public access. 
 Users need to contact regional/collection focal points and ask for the permission. Each user will have different sets of subscription to the survey. 
@@ -34,20 +39,20 @@ vintages.
 
 By accessing **datalibweb** you agree to the following Conditions:
 
-1.	Data and other material provided by the Poverty GP Team for Statistical Development provided by this tool will be 
-used solely by users who have valid labour contracts consistent with the mandate and official 
-activities of the World Bank, and shall not be redistributed to other individuals, institutions or organizations without prior 
-written consent from focal points of each collection/region. Access to the data may not be shared. The Global-TSD requests that all requests for access 
-to and use of <datalibweb@worldbank.org> be directed to us through the email address 
-<datalibweb@worldbank.org> with the subject=**datalibweb** helpdesk: <<<please describe your question and/or comment here>>>". 
-Users will need separate access request per type/collection (if any) from the collection/regional focal points. 
+1.	Data and other material provided by the Poverty GP Team for Statistical Development provided by this tool will be
+used solely by users who have valid labour contracts consistent with the mandate and official
+activities of the World Bank, and shall not be redistributed to other individuals, institutions or organizations without prior
+written consent from focal points of each collection/region. Access to the data may not be shared. The Global-TSD requests that all requests for access
+to and use of **datalibweb** are directed to us through the email address
+[datalibweb@worldbank.org](mailto:datalibweb@worldbank.org?subject=datalibweb%20helpdesk:%20please%20describe%20your%20question%20and%2For%20comment%20here) with the subject `datalibweb helpdesk: <<<please describe your question and/or comment here>>>`.
+Users will need separate access request per type/collection (if any) from the collection/regional focal points.
 
 2.	The data will be used for World Bank related business only. They will be used solely for generating and reporting 
 aggregated information. 
 
-3.	All users agree to respect the privacy of survey respondents. No attempt will be made to identify respondents, and 
-no use will be made of the identity of any person, facility or establishment discovered inadvertently. Any such discovery must 
-immediately be reported to the Global-TSD unit by emailing <datalibweb@worldbank.org>, ?subject=**datalibweb** helpdesk: <<<please describe your question and/or comment here>>>   
+3.	All users agree to respect the privacy of survey respondents. No attempt will be made to identify respondents, and
+no use will be made of the identity of any person, facility or establishment discovered inadvertently. Any such discovery must
+immediately be reported to the Global-TSD unit by emailing [datalibweb@worldbank.org](mailto:datalibweb@worldbank.org?subject=datalibweb%20helpdesk:%20reporting%20resondent%20privacy%20breach) with a description of the case. Please include `datalibweb helpdesk: reporting resondent privacy breach` in the subject line.
 
 4.	Any output, published or otherwise, including presentations employing data obtained from **datalibweb**, will cite 
 the source as "Source: [Collection] ([Region]TSD/World Bank)" or "Source: [Collection] Harmonization or Raw data ([Region]TSD)". 
