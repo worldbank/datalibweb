@@ -1,0 +1,62 @@
+﻿<settings>
+  <keys>
+    <key name="hhid">hhid</key>
+    <key name="pid">pid</key>
+  </keys>
+  <defmod modname="3"></defmod>
+  <token count="5"/>
+  <modules>
+    <hhmlist>
+      <module name="3"/>
+      <module name="4"/>
+    </hhmlist>
+    <indmlist>
+      <module name="2"/>
+      <module name="6"/>
+      <module name="7"/>
+      <module name="9"/>
+      <module name="hoi"/>
+    </indmlist>
+  </modules>
+  <collections>
+    <collection name="hhmlist" default="true">
+      <modules>
+        <id default="true">3</id>
+        <id>4</id>
+      </modules>
+      <joinkeys>
+        <key>hhid</key>
+      </joinkeys>
+    </collection>
+    <collection name="indmlist">
+      <modules>
+        <id>2</id>
+        <id>6</id>
+        <id>7</id>
+        <id>9</id>
+        <id>hoi</id>
+      </modules>
+      <joinkeys>
+        <key>hhid</key>
+        <key>pid</key>
+      </joinkeys>
+    </collection>
+    <cpi>
+      <fields>
+        {'Server':'ECA','Country':'SUPPORT','Year':'2005','filename':'ANNUAL_ICP_CPI.dta','para1':'Data\\Stata'}
+      </fields>
+      <joinkeys>
+        <key>code</key>
+        <key>year</key>
+      </joinkeys>
+    </cpi>
+    <joins>
+      <hhmlist>
+        <field>hhid</field>
+      </hhmlist>
+      <indmlist>
+        <field>hhid</field>
+      </indmlist>
+    </joins>
+  </collections>
+</settings>

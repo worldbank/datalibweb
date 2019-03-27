@@ -1,0 +1,6 @@
+install.packages('httr')
+install.packages('foreign')
+install.packages("readstata13")
+install.packages("config")
+install.packages("reldist")
+install.packages("ineq")

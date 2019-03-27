@@ -1,0 +1,9 @@
+default:
+  Server: "GMD" # Edit the Server name before running
+  Year: '2016'  # Provide the Year name before running
+  Country: "GEO" # Provide the Country name before running
+  Collection: "GMD" # Provide the collection details
+  FileName: "GEO_2016_HIS_V01_M_V02_A_GMD_ALL.dta"
+  Download_path: "C:/Users/wb449356/Desktop/Poverty/" #Provide the path where the files will be saved.
+  WD: "C:/Users/wb449356/Desktop/Poverty/RCode/" # location of the R code in local system.
+  cpidata: "Server=GMD&Country=SUPPORT&Year=2005&filename=Final CPI PPP to be used.dta&folder=Data\\Stata&para1=Support_2005_CPI_v02_M"
