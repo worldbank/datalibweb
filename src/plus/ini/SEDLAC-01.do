@@ -1,30 +1,29 @@
 //Datalibweb system file - do not delete or change
-//LABLAC.do
+//SEDLAC-01.do
 
-global hhid id 
-global pid com 	
-global defmod Q04
-global hhmlist
+global hhid id
+global pid com	
+global defmod all
+global hhmlist 
 global indmlist
-global period Q04
 global root 
-global rootname LABLAC
-global subfolders Data\Harmonized
+global rootname SEDLAC 
+global subfolders Data\Harmonized 
 global data `" "Data\Harmonized" "'
-global doc `" "Doc\Questionnaire" "Doc\technical" "'
+global doc `" "Doc\Questionnaires" "Doc\Technical" "'
 global prog `" "Programs" "'
 global token 8
 global updateday 1
-global type LABLAC-01
-global base 
+global type SEDLAC-01
+global base CEDLAS-01
 global basedeffile
 global cpi 
-global cpifile ipc_lablac_wb.dta
+global cpifile ipc_sedlac_wb.dta
 global cpic SUPPORT
 global cpiy 2005
 global cpif Data\Stata
-global rootcpi LABLAC
+global rootcpi SEDLAC
 global cpiw "Server=$rootcpi&Country=$cpic&Year=$cpiy&filename=$cpifile&folder=$cpif"
-global cpivarw ipc_lablac ipc05_lablac ppp05
-global distxt LAC TSD/LABLAC
+global cpivarw *_sedlac ppp* conversion
+global distxt LAC TSD/SEDLAC
 global email datalibweb@worldbank.org; acastanedaa@worldbank.org; cdiazbonilla@worldbank.org
