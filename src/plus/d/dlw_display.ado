@@ -100,7 +100,7 @@ qui {
 				forv i=1(1)`all' {
 					local todisp `"`=`con'_str[`i']'"'
 					//Modify the cmd line here
-					local cmd `"stata datalibweb, country(`country') year(`=`row'_str[`i']') type(`type') mod(`=`col'_str[`i']') vermast(`=vermast[`i']') veralt(`=veralt[`i']') surveyid(`subsur')"'
+					local cmd `"stata dlw, coun(`country') y(`=`row'_str[`i']') t(`type') mod(`=`col'_str[`i']') verm(`=vermast[`i']') vera(`=veralt[`i']') sur(`subsur')"'
 					local txt `"`txt' _col(`=`firstcol' + `=varpos[`i']-1'*`byw_cell' + `byw_cell'-length("`=`con'_str[`i']'")') `"{`cmd': `todisp'}"'"'
 				}
 				noi dis as text `txt'

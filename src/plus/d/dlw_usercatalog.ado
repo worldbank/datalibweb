@@ -1,5 +1,7 @@
-*! version 0.1 16feb017
+*! version 0.2 14apr2019
 *! Minh Cong Nguyen
+* version 0.1 16feb2017 - original
+* version 0.2 15apr2019 - add new collection category in type2
 
 capture program define _datalibweb, plugin using("dlib2_`=cond(strpos(`"`=c(machine_type)'"',"64"),64,32)'.dll")
 capture program define dlwgui, plugin using("dlib2g_`=cond(strpos(`"`=c(machine_type)'"',"64"),64,32)'.dll")		
@@ -54,7 +56,7 @@ program define dlw_usercatalog, rclass
 						duplicates drop _all, force
 						bys serveralias requesttype token: gen seq = _n
 						bys serveralias requesttype token: gen all = _N
-						reshape wide foldername folderlevel ext, i( serveralias requesttype token all) j(seq)
+						reshape wide foldername folderlevel extn, i( serveralias requesttype token all) j(seq)
 						save `sub2', replace
 					}
 				}
@@ -78,9 +80,12 @@ program define dlw_usercatalog, rclass
 					if _N==1 noi dis as text in white "No data in the catalog for this country `code'."
 					else {
 						global ftmpcatalog = 1
-						ren survey acronym
+						*ren survey acronym //added May 14 2019 
 						split filepath, p("\")
 						ren filepath3 surveyid
+						split surveyid, p("_") //added May 14 2019 
+						ren surveyid3 acronym //added May 14 2019 
+						drop surveyid? //added May 14 2019 
 						gen token = 1 + strlen(surveyid) - strlen(subinstr(surveyid,"_","",.))
 						gen type = "RAW" if token==5
 						replace type = "Harmonized" if token==8
@@ -275,7 +280,10 @@ program define dlw_usercatalog, rclass
 		gen collection = surveyid8 if token==8
 		gen type2 = 0
 		replace type2 = 1 if token==8
-		replace type2 = 2 if inlist(collection, "GMD", "GPWG", "ASPIRE", "I2D2", "I2D2-Labor")  // add as many global collections as available
+		replace type2 = 2 if inlist(collection, "GMD", "GLD", "GPWG", "ASPIRE", "I2D2", "I2D2-Labor", "GLAD")  // add as many global collections as available
+		replace type2 = 3 if inlist(collection, "GMI", "HLO", "CLO")  // add as many thematic indicators as available
+		//drop OLD stuff
+		drop if collection=="GPWG"
 		
 		clonevar vermast = surveyid4  //always there
 		gen str veralt = ""
@@ -308,7 +316,7 @@ program define dlw_usercatalog, rclass
 		la def subscribed -1 "No" 0 "Expired" 1 "Yes"
 		//la def subscribed 0 "No" 1 "Yes" 2 "Expired" 
 		la val subscribed subscribed
-		label define type2 0 "Raw data" 1 "Regional harmonized data" 2 "Global harmonized data"
+		label define type2 0 "Raw data" 1 "Regional harmonized data" 2 "Global harmonized data" 3 "Thematic indicators"
 		la val type2 type2
 		label define isdownload 1 "YES" 0 "NO"
 		label values isdownload isdownload

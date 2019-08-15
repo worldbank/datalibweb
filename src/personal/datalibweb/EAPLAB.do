@@ -23,7 +23,7 @@ global cpic SUPPORT
 global cpiy 2005
 global cpif Data\Stata
 global rootcpi EAP
-global cpiw "Server=$rootcpi&Country=$cpic&Year=$cpiy&filename=$cpifile&folder=$cpif"
+*global cpiw "Server=$rootcpi&Country=$cpic&Year=$cpiy&filename=$cpifile&folder=$cpif"
 global cpivarw icp* cpi*
 global distxt EAP TSD/EAPLAB
 global email datalibweb@worldbank.org; eaptsd@worldbank.org;

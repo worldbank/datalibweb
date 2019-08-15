@@ -1,30 +1,29 @@
 //Datalibweb system file - do not delete or change
-//GMD.do
-
+//ECAPOV.do
 global hhid hhid
 global pid pid	
-global defmod "GPWG"
+global defmod "3"	
 global idmod 
-global hhmlist	
-global indmlist `""GPWG", "L", "ALL""'
+global hhmlist `""3", "4""'
+global indmlist `""2", "6", "7", "9", "hoi""'
 global root 
-global rootname GMD
-global subfolders 
+global rootname ECA
+global subfolders Data\Harmonized
 global data `" "Data\Harmonized" "'
 global doc `" "Doc\Questionnaire" "Doc\Technical" "'
 global prog `" "Programs" "'
 global token 8
 global updateday 1
-global type GMD
-global base 
-global basedeffile
+global type ECAPOV
+global base ECABASE
+global basedeffile 3
 global cpi 
-global cpifile Final_CPI_PPP_to_be_used.dta
+global cpifile ANNUAL_ICP_CPI.dta
 global cpic SUPPORT
 global cpiy 2005
 global cpif Data\Stata
-global rootcpi GMD
+global rootcpi ECA
 global cpiw "Server=$rootcpi&Country=$cpic&Year=$cpiy&filename=$cpifile&folder=$cpif"
 global cpivarw icp* cpi*
-global distxt GLOBAL TSD/GMD
-global email gmd@worldbank.org; datalibweb@worldbank.org
+global distxt ECA TSD/ECAPOV
+global email datalibweb@worldbank.org; jmontes@worldbank.org; pcorralrodas@worldbank.org; mnguyen3@worldbank.org

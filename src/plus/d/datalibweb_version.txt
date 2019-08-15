@@ -1,4 +1,18 @@
 	WHAT'S NEW
+	BETA: 1.1.9 <15aug2019>
+		1. Add a new repo function - repo(usefile) - to load the repository directly
+		2. Add a new collection CONLAC (Consumption surveys in LAC)
+
+	History of the file:
+	BETA: 1.1.8 <15apr2019>
+		1. Add EDU server and its collections
+		2. Change countrycode: KSV to XKX (user and backend systems)
+		3. Add new groups (i.e. ECA, SSA, LAC, WLD and etc.)
+		4. Add new thematic indicators to the user view
+	
+	BETA: 1.1.7 <21nov2018>
+		1. Update CPI to v03
+
 	BETA: 1.1.6 <19feb2018>
 		1. Include CPI vintage option
 		
@@ -11,13 +25,11 @@
 		2. Include functionality in user interactivity 
 		3. Include Graphical User Interface 
 
-	History of the file:
-
-	ALPHA: 0.0  <02jun2015> 
-		1. First version 
-
 	BETA: 0.1 <29oct2015> 
 		1. Include user interactivity 
 
 	BETA: 0.2 <30dec2015> 
 		1. Include new collections 
+
+	ALPHA: 0.0  <02jun2015> 
+		1. First version 
