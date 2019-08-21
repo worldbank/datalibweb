@@ -3,9 +3,10 @@
 
 global hhid id
 global pid com	
-global defmod all
-global hhmlist 
-global indmlist
+global defmod pov
+global hhmlist `""HHD", "REG""'
+global indmlist `""ALL", "EDU", "DMR", "GMD", "IND", "LAB", "POV""'
+global period 
 global root 
 global rootname SEDLAC 
 global subfolders Data\Harmonized 
@@ -26,4 +27,4 @@ global rootcpi SEDLAC
 global cpiw "Server=$rootcpi&Country=$cpic&Year=$cpiy&filename=$cpifile&folder=$cpif"
 global cpivarw *_sedlac ppp* conversion 
 global distxt LAC TSD/SEDLAC
-global email datalibweb@worldbank.org; acastanedaa@worldbank.org; cdiazbonilla@worldbank.org
+global email datalibweb@worldbank.org; lmorenoherrera@worldbank.org; cdiazbonilla@worldbank.org

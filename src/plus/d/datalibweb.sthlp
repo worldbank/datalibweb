@@ -28,6 +28,7 @@ Sections are presented under the following headings:
 
 		{it:{help datalibweb##desc:Command description}}
 		{it:{help datalibweb##param:Parameters description}}
+		{it:{help datalibweb##module:Modules by collection}}
 		{it:{help datalibweb##Examples:Examples}}
 		{it:{help datalibweb##PPP:PPP Conversion}}
 		{it:{help datalibweb##disclaimer:Disclaimer}}
@@ -101,13 +102,17 @@ collection to see all available harmonized and raw survey dataset. Users can use
 {synopt:{opt mod:ule(string)}}lists of modules to be merged and loaded. It is ONLY AVAILABLE for some collections such as ({it:eappov}, ({it:ecapov} and {it:eusilc}). It identifies the modules to be merged and loaded.
 Enter a number list with the modules desired. If none is entered, {cmd:datalibweb} will load the default module defined by each type/collection, for example 3 (Household Consumption) for {it:ecapov} collection, and module D (Household Register) for {it:eusilc}.
 The variables m{it:xyz} are created and contain the results from merging modules {it:x}, {it:y} and {it:z}. Below are some examples of modules across collections. {p_end}
-					The following modules are available for the {it:eusilc} collection:
+					The following modules (for now) are available for the {it:GMD} collection:
+						- GPWG
+						- ALL
+						
+					The following modules are available for the {it:EUSILC} or {it:UDB-C} or {it:UDB-L} collection:
 						- D Household Register
 						- H Household
 						- R Personal Register
 						- P Personal
 
-					For {it:ecapov}, the following modules are available:
+					For {it:ECAPOV}, the following modules are available:
 						- 2 Individual Characteristics
 						- 3 Household Consumption
 						- 4 Utilities Expenses
@@ -115,12 +120,37 @@ The variables m{it:xyz} are created and contain the results from merging modules
 						- 7 Income
 						- 9 Access to basic service and assets
 						
-					For {it:eappov}, the following modules are available:
+					For {it:EAPPOV}, the following modules are available:
 						- B Basic data
 						- H Household 
 						- I Individual
 						- POV Poverty
 
+					For {it:SEDLAC-03} collection, the following modules are available:
+						- POV: Poverty
+						- HHD: Household 
+						- IND: Individual
+						- EDU: Education
+						- DMR: Demographic
+						- LAB: Labor
+						- REG: Geography regions
+						- GMD
+						- ALL
+
+{synopt:{opt period:(string)}} It is ONLY AVAILABLE for some collections such as ({it:SEDLAC} and {it:LABLAC})
+Enter the period desired. If none is entered, {cmd:datalibweb} will load the default period defined by each type/collection, for example q04 (quarter IV) for {it:LABLAC} collection, and s2 (semester II) for Argentina in {it:SEDLAC}.{p_end}
+
+					For the {it:LABLAC} collection, the following modules are available:
+						- q01: Quarter I
+						- q02: Quarter II
+						- q03: Quarter III
+						- q04: Quarter IV
+
+					For {it:SEDLAC} collection, the following modules are available for Argentina only:
+						- s1: Semester I
+						- s2: Semester II
+
+			
 {dlgtab:Versions}
 
 {synopt:{opt verm:aster(#)}}specifies the master version to be used. By default, the latest version is selected if it is omitted.{p_end}
@@ -221,9 +251,55 @@ By typing {helpb return list}, the following results are reported:
 
 {dlgtab: basic syntax}
 
+{pstd} {it:GMD}:{p_end}
+
+{p 8 12}{stata "datalibweb, country(col) years(2017) type(GMD) mod(all) clear" :.datalibweb, country(col) years(2017) type(GMD) mod(all) clear}{p_end}
+
+{pstd} It opens all variables in GMD - Global Monitoring Database for Colombia 2017 from GMD public collection.{p_end}
+
+{p 8 12}{stata "datalibweb, country(col) years(2017) type(GMD) mod(GPWG) clear" :.datalibweb, country(col) years(2017) type(GMD) mod(GPWG) clear}{p_end}
+
+{pstd} It opens the core variables in GMD - Global Monitoring Database for Colombia 2017 from GMD public collection.{p_end}
+
+{pstd} {it:ECAPOV}:{p_end}
+
 {p 8 12}{stata "datalibweb, country(alb) years(2005) type(ecapov) clear" :.datalibweb, country(alb) years(2005) type(ecapov) clear}{p_end}
 
 {pstd} It opens the  default module (module 3 - Household Consumption) for Albania 2005 from ECAPOV collection. The default module is different for collections.{p_end}
+
+{pstd} {it:SEDLAC}:{p_end}
+
+{p 8 12}{stata "datalibweb, country(ecu) years(2017) type(SEDLAC-03) mod(pov) clear" :.datalibweb, country(ecu) years(2017) type(SEDLAC-03) mod(pov) clear}{p_end}
+
+{pstd} It opens the POVerty module for Ecuador 2017 from SEDLAC project 03 collection. See {it:{help datalibweb##module:Modules by collection}}.{p_end}
+
+{p 8 12}{stata "datalibweb, country(ecu) years(2015) type(SEDLAC-02) mod(pov ind) clear" :.datalibweb, country(ecu) years(2015) type(SEDLAC-02) mod(pov ind) clear}{p_end}
+
+{pstd} It opens the POVerty and INDividual modules for Ecuador 2015 from SEDLAC project 02 collection. See {it:{help datalibweb##module:Modules by collection}}. You may merge different modules when provide the list of them in mod(). {p_end}
+
+{pstd} For more information about availability and comparability of SEDLAC collection visit LACequityLAB.{p_end}
+
+{p 8 12}{stata "datalibweb, country(arg) years(2017) type(SEDLAC-03) mod(pov) period(s1) clear" :.datalibweb, country(ecu) years(2017) type(SEDLAC-03) mod(pov) period(s1) clear}{p_end}
+
+{pstd} It opens the POVerty module for Argentina 2017 Semester I from SEDLAC project 03 collection. See {it:{help datalibweb##module:Modules by collection}}.{p_end}
+
+{pstd} {it:LABLAC}:{p_end}
+
+{p 8 12}{stata "datalibweb, country(ecu) years(2017) type(LABLAC-01) clear" :.datalibweb, country(ecu) years(2017) type(LABLAC-01) clear}{p_end}
+
+{pstd} It opens harmonized labor survey for Ecuador 2017-IV from LABLAC project 01 collection. Quarter IV is the default period.{p_end}
+
+{p 8 12}{stata "datalibweb, country(ecu) years(2017) type(LABLAC-01) period(q02) clear" :.datalibweb, country(ecu) years(2017) type(LABLAC-01) period(q02) clear}{p_end}
+
+{pstd} It opens harmonized labor survey for Ecuador 2017-II from LABLAC project 01 collection.{p_end}
+
+{dlgtab: LCU poverty lines equivalent to international poverty lines: plppp}
+
+{p 8 12}{stata "datalibweb, country(rus) years(2009) type(ecapov) ppp(2011) plppp(1.9 3.2) clear":.datalibweb, country(rus) years(2009) type(ecapov) ppp(2011) plppp(1.9 3.2) clear}{p_end}
+
+{pstd} It opens the module 3 (Household Consumption) for Russian Federation 2009 and estimates poverty lines in current LCU equivalent to US$1.9 and US$3.2 at 2011 PPP.{p_end}
+
+{dlgtab: welfare variables into PPP values: incppp}
 
 {dlgtab: plppp}
 
@@ -285,7 +361,7 @@ By typing {helpb return list}, the following results are reported:
 
 {pstd} It gets the list of LABLAC raw files. User needs to select one file as there is no default one.{p_end}
 
-{p 8 12}{stata "datalibweb, country(col) year(2012) type(lablac)"  }{p_end}
+{p 8 12}{stata "datalibweb, country(col) year(2012) type(lablac-01)"  }{p_end}
 
 {pstd} It gets the harmonized LABLAC file for LABLC, COL 2012. The default file is Q4 (quarter 4).{p_end}
 
@@ -297,7 +373,7 @@ By typing {helpb return list}, the following results are reported:
 
 {pstd} It gets raw file for sedlac.{p_end}
 
-{p 8 12}{stata "datalibweb, country(col) year(2012) type(sedlac)"  }{p_end}
+{p 8 12}{stata "datalibweb, country(ecu) year(2012) type(sedlac-03)"  }{p_end}
 
 {pstd} It gets the sedlac file with the default one.{p_end}
 
