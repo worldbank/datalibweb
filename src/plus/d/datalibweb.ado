@@ -356,7 +356,7 @@ program define datalibweb, rclass
 			else global r${rootcpi}cpivin `cpivin'
 		}
 		else global r${rootcpi}cpivin ${l${rootcpi}cpivin} //use latest
-		global cpiw ${cpiw}&para1=${r${rootcpi}cpivin}   
+		if `"${cpiw}"'~="" global cpiw ${cpiw}&para1=${r${rootcpi}cpivin}   
 		*noi dis "$cpiw"
 	} //only for harmonized data
 	
