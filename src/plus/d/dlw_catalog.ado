@@ -75,7 +75,7 @@ program define dlw_catalog, rclass
 						}
 						
 						//Server without data folder
-						if "`server'"=="GMD" | "`server'"=="ECA" | "`server'"=="EAP" | "`server'"=="I2D2" | "`server'"=="LABLAC" | "`server'"=="MNA" | "`server'"=="SAR" | "`server'"=="SEDLAC" | "`server'"=="SSA" | "`server'"=="ECA_Eurostat" {	
+						if "`server'"=="GMD" | "`server'"=="ECA" | "`server'"=="EAP" | "`server'"=="I2D2" | "`server'"=="LABLAC" | "`server'"=="MNA" | "`server'"=="SAR" | "`server'"=="SEDLAC" | "`server'"=="SSA" | "`server'"=="ECA_Eurostat" | "`server'"=="EDU" {	
 							if "`server'"=="GMD" { //temp fix Jan292018
 								//GMD for now is 3 dir layer - in the future should be 5 dir layer system
 								//temporary fix to move 3-dirs to 5-dirs system so both raw and harmonized can be together

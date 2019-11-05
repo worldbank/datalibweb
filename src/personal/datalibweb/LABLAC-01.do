@@ -7,6 +7,7 @@ global defmod all
 global hhmlist
 global indmlist `""ALL""'
 global period Q04
+global periodyn 1 
 global root 
 global rootname LABLAC
 global subfolders Data\Harmonized

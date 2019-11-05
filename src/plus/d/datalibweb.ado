@@ -211,7 +211,7 @@ program define datalibweb, rclass
 		tempfile zpfile
 		local cdir `c(pwd)'		
 		qui set checksum off
-		qui copy "http://eca/povdata/datalibweb/_ado/d/datalibweb_ini.zip" "`zpfile'", replace 
+		qui copy "http://ecaweb/povdata/datalibweb/_ado/d/datalibweb_ini.zip" "`zpfile'", replace 
 		//qui cd "`other'"
 		qui cap mkdir "`persdir'datalibweb"
 		qui cd "`persdir'datalibweb"		
