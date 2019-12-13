@@ -1,7 +1,8 @@
-*! version 1.02 15apr2019
+*! version 1.03 12dec2019
 *! Minh Cong Nguyen, Raul Andres Castaneda Aguilar
 * version 1.01  26jan2018 - original
 * version 1.02  15apr2019 - add new category/conditions for type2
+* version 1.03  12dec2019 - add manual refresh link
 
 cap program drop datalibweb_inventory
 program define datalibweb_inventory, rclass
@@ -23,7 +24,7 @@ syntax [anything(name=lookup)] , [ ///
 
 qui {
 	global yesno 0
-	if "$updateday"=="" global updateday 5
+	if "$updateday"=="" global updateday 1
 	*-----------------------------------
 	* 0. Program set up
 	*-----------------------------------
@@ -54,7 +55,9 @@ qui {
 		return local region = region[1]
 		return local N = r(N)
 	}
-
+	
+	*noi disp _col(2) `"{stata dlw_usercatalog, code(`code') update : Click here to refresh this country catalog if needed}"'
+	
 	* 2.2 In case region is selected
 	else {
 		* 2.2.1 To find country based on Region

@@ -1,4 +1,4 @@
-*! version 1.03  15apr2019
+*! version 1.04  12dec2019
 *! Minh Cong Nguyen, Raul Andres Castaneda Aguilar, Jose Montes, Paul Andres Corral Rodas, Joao Pedro Azevedo, Paul Ricci
 * version 0.1  02jun2015
 * version 0.2  26oct2015 - collection dofiles
@@ -12,7 +12,7 @@
 * version 1.01 26Jan2017 - add repo option, improve eusilc files and cpi
 * version 1.02 19Feb2018 - add CPI vintages
 * version 1.03 15Apr2019 - add new collections, countrycodes,
-
+* version 1.04 12dec2019 - new CPI vintage with surveyname, enable some undocumented functions
 
 cap program drop datalibweb
 program define datalibweb, rclass	
@@ -69,8 +69,8 @@ program define datalibweb, rclass
 		exit
 	}
 	if "`=upper("`update'")'"=="ADO" dlw_adoupdate
-	//if "`=upper("`update'")'"=="DATA" dlw_dataupdate
-	//if "`=upper("`update'")'"=="CACHE" dlw_cacheupdate
+	if "`=upper("`update'")'"=="DATA" dlw_dataupdate
+	if "`=upper("`update'")'"=="CACHE" dlw_cacheupdate
 	
 	// gui	
 	capture program define dlwgui, plugin using("dlib2g_`=cond(strpos(`"`=c(machine_type)'"',"64"),64,32)'.dll")		
@@ -1542,12 +1542,24 @@ program define _datalibcall, rclass
 					qui if strpos("$surveyid)","EU-SILC")>0 replace year = year - 1				//EUSILC year
 					//qui if "`=upper("$type")'"=="UDB-C" | "`=upper("$type")'"=="UDB-L" replace year = year - 1				//EUSILC year
 					//datalevel  
-					local cpilevel
-					*cap if "`=upper("$type")'"=="GPWG" | "`=upper("$type")'"=="GMD" | "`=upper("$type")'"=="SEDLAC-02"  {	
+					local cpilevel				
 					cap if "`=upper("$type")'"=="GPWG" | "`=upper("$type")'"=="GMD" | "`=upper("$type")'"=="SSAPOV" | "`=upper("$type")'"=="PCN" {	
-						local cpilevel datalevel
+						local cpilevel datalevel survname
 						if "`=upper("`country'")'"=="IDN" | "`=upper("`country'")'"=="CHN" | "`=upper("`country'")'"=="IND" gen datalevel = urban
 						else gen datalevel = 2
+						//DEC2019: add survey acronym (survname) to the merge as CPIv04 now is unique at the level code year survname datalevel					
+						cap drop survname							
+						if strpos("$surveyid","_")>0 { //fullsurvey id							
+							qui tokenize "$surveyid", p("_")
+							cap gen survname = "`=upper("`5'")'"
+						}
+						else {
+							if strpos("$f1name","_")>0 { //filename								
+								qui tokenize "$f1name", p("_")
+								cap gen survname = "`=upper("`5'")'"
+							}
+							else cap gen survname = "$surveyid"							
+						}
 					}
 					cap if "`=upper("$type")'"=="SARMD" { //new Mar 15 17						
 						local cpilevel datalevel
