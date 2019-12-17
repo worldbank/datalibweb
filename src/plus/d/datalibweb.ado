@@ -1543,10 +1543,11 @@ program define _datalibcall, rclass
 					//qui if "`=upper("$type")'"=="UDB-C" | "`=upper("$type")'"=="UDB-L" replace year = year - 1				//EUSILC year
 					//datalevel  
 					local cpilevel				
-					cap if "`=upper("$type")'"=="GPWG" | "`=upper("$type")'"=="GMD" | "`=upper("$type")'"=="SSAPOV" | "`=upper("$type")'"=="PCN" {	
+					if "`=upper("$type")'"=="GPWG" | "`=upper("$type")'"=="GMD" | "`=upper("$type")'"=="SSAPOV" | "`=upper("$type")'"=="PCN" {	
+						cap drop datalevel
 						local cpilevel datalevel survname
-						if "`=upper("`country'")'"=="IDN" | "`=upper("`country'")'"=="CHN" | "`=upper("`country'")'"=="IND" gen datalevel = urban
-						else gen datalevel = 2
+						qui if "`=upper("`country'")'"=="IDN" | "`=upper("`country'")'"=="CHN" | "`=upper("`country'")'"=="IND" gen datalevel = urban						
+						else gen datalevel = 2						
 						//DEC2019: add survey acronym (survname) to the merge as CPIv04 now is unique at the level code year survname datalevel					
 						cap drop survname							
 						if strpos("$surveyid","_")>0 { //fullsurvey id							
@@ -1561,14 +1562,14 @@ program define _datalibcall, rclass
 							else cap gen survname = "$surveyid"							
 						}
 					}
-					cap if "`=upper("$type")'"=="SARMD" { //new Mar 15 17						
+					if "`=upper("$type")'"=="SARMD" { //new Mar 15 17						
 						local cpilevel datalevel
 						if "`=upper("`country'")'"=="IND" gen datalevel = urban
 						else gen datalevel = 2
 						*gen urb = urban
 						*local cpilevel urban						
 					}
-					cap if "`=upper("$type")'"=="EAPPOV" { //new June 6 18						
+					if "`=upper("$type")'"=="EAPPOV" { //new June 6 18						
 						local cpilevel datalevel
 						if "`=upper("`country'")'"=="IDN" gen datalevel = urban
 						else gen datalevel = 2						
