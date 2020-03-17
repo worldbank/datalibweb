@@ -217,6 +217,13 @@ The instructions {ul:use} and {ul:query} do not need any option.{p_end}
 
 {synopt:{opt cpivintage()}}gets the specified vintage of CPI data. If the option is not specified, the latest CPI vintage will be used.{p_end}
 				
+{dlgtab:Update()}
+
+{pstd} {cmd:dlw}, {opt update(text)} - Update the DLW code, cache or downloaded data; where text is: {p_end}
+{p 6 8 10}{cmd:ado} forces {cmd:datalibweb} to update to the latest version of datalibweb {p_end}
+{p 6 8 10}{cmd:cache} forces {cmd:datalibweb} to update the cache used in the catalog {p_end}
+{p 6 8 10}{cmd:data} forces {cmd:datalibweb} to update data files downloaded using getfile option by the users{p_end}
+
 {dlgtab:Other}
 
 {synopt:{opt base}}gets the base module or files for that Survey ID. The base option might be different for each collection. {p_end}

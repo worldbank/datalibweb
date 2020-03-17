@@ -1,29 +1,29 @@
 //Datalibweb system file - do not delete or change
-//GLAD.do
+//ECAPOV-03.do
 global hhid hhid
 global pid pid	
-global defmod "ALL"	
+global defmod "3"	
 global idmod 
-global hhmlist 
-global indmlist 
+global hhmlist `""1", "3", "4", "5""'
+global indmlist `""2", "6", "7", "9""'
 global root 
-global rootname EDU
+global rootname ECA
 global subfolders Data\Harmonized
 global data `" "Data\Harmonized" "'
 global doc `" "Doc\Questionnaire" "Doc\Technical" "'
 global prog `" "Programs" "'
 global token 8
 global updateday 1
-global type GLAD
-global base 
-global basedeffile 
+global type ECAPOV-03
+global base ECABASE-03
+global basedeffile 3
 global cpi 
-global cpifile lpv_thresholds.dta
+global cpifile ANNUAL_ICP_CPI.dta
 global cpic SUPPORT
-global cpiy 2015
+global cpiy 2005
 global cpif Data\Stata
-global rootcpi EDU
+global rootcpi ECA
 global cpiw "Server=$rootcpi&Country=$cpic&Year=$cpiy&filename=$cpifile&folder=$cpif"
-global cpivarw *
-global distxt Education GP
-global email datalibweb@worldbank.org; eduanalytics@worldbank.org
+global cpivarw icp* cpi*
+global distxt ECA TSD/ECAPOV
+global email datalibweb@worldbank.org; rmungai@worldbank.org; mmatytsin@worldbank.org; mnguyen3@worldbank.org
