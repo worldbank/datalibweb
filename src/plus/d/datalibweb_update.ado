@@ -39,7 +39,7 @@ program define datalibweb_update, rclass
 	}
 	
 	** Main FROM-directories 
-	local dirfrom "http://ecaweb/povdata/datalibweb/_ado/" 
+	local dirfrom "http://ecaweb.worldbank.org/povdata/datalibweb/_ado/" 
 	
 	** Create aux TO-directory
 	cap mkdir "`other'datalibweb"
