@@ -3,9 +3,11 @@
 
 global hhid id 
 global pid com 	
-global defmod Q04
+global defmod all
 global hhmlist
-global indmlist
+global indmlist `""ALL""'
+global period Q04
+global periodyn 1 
 global root 
 global rootname LABLAC
 global subfolders Data\Harmonized
@@ -24,6 +26,6 @@ global cpiy 2005
 global cpif Data\Stata
 global rootcpi LABLAC
 global cpiw "Server=$rootcpi&Country=$cpic&Year=$cpiy&filename=$cpifile&folder=$cpif"
-global cpivarw ipc_lablac ipc05_lablac ppp05
+global cpivarw ipc_lablac ipc11_lablac ppp11
 global distxt LAC TSD/LABLAC
-global email datalibweb@worldbank.org; acastanedaa@worldbank.org; cdiazbonilla@worldbank.org
+global email datalibweb@worldbank.org; lmorenoherrera@worldbank.org; cdiazbonilla@worldbank.org; segoviajuarez@worldbank.org;

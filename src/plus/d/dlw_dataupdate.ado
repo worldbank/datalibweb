@@ -1,3 +1,6 @@
+*! version 0.2 12dec2019
+*! Minh Cong Nguyen
+* version 0.1 15jul2017 - original
 cap program drop dlw_dataupdate
 program define dlw_dataupdate
 	set checksum off
@@ -68,7 +71,7 @@ program define dlw_dataupdate
 		}
 	}
 	else {
-		noi dis as error "Cant find the data (dlw_getfile). No file is updated."
+		noi dis as error "Cant find the data (dlw_getfile) or users did not use the getfile option in the past. No file is updated."
 		exit
 	}
 end

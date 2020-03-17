@@ -28,6 +28,7 @@ Sections are presented under the following headings:
 
 		{it:{help datalibweb##desc:Command description}}
 		{it:{help datalibweb##param:Parameters description}}
+		{it:{help datalibweb##module:Modules by collection}}
 		{it:{help datalibweb##Examples:Examples}}
 		{it:{help datalibweb##PPP:PPP Conversion}}
 		{it:{help datalibweb##disclaimer:Disclaimer}}
@@ -47,12 +48,12 @@ addition {cmd: datalibweb} generates time-deflated variables, poverty lines, (LC
 users must ask access to: {browse "mailto: datalibweb@worldbank.org":datalibweb@worldbank.org}
 
 {pstd}
-{cmd: datalibweb} is a data system developed by the Global Team for Statistical Development, Poverty and Equity GP, of the World Bank in collobration with the ECA IT and QuickStrike teams in the ITS group. {p_end}
+{cmd: datalibweb} or {cmd: dlw} is a data system developed by the Global Team for Statistical Development, Poverty and Equity GP, of the World Bank in collobration with the ECA IT and QuickStrike teams in the ITS group. {p_end}
 
 {pstd}
 Alternatively, -{cmd:datalibweb}- provides the user with another level of interactivity with Graphical User Interface and in Stata. It is possible type {cmd:datalibweb} on the Stata command window to see an interactive screen 
 that allows users to find available surveys in the datalib system. Users will have to follow a dynamic tree selecting first the desired region, then the country, and finally the 
-collection to see all available harmonized and raw survey dataset.
+collection to see all available harmonized and raw survey dataset. Users can use {cmd:datalibweb} or {cmd:dlw} interchangeably.
 
 {marker Options2}{...}
 {title:Parameters}
@@ -66,7 +67,7 @@ collection to see all available harmonized and raw survey dataset.
 
 {synopt:{opt y:ears(numlist)}}years for which the data is requested (one or many years: i.e. 2005 or 2005/2008 or 2005 2008).{p_end}
 
-{synopt:{opt t:ype(string)}}type of ONE collection requested. Currently the only COLLECTIONS available are: {it:eappov}, {it:ecapov}, {it:ecaraw}, {it:eu-lfs}, {it:udb-c} or {it:eusilc}, {it:udb-l} (panel eusilc), {it:mnapov}, {it:mnaraw}, {it:sarmd}, {it:ssapov}, and {it:gpwg}. Incoming collections: {it:gmd}, {it:sarraw}, {it:eapraw}, {it:ssaraw}, {it:sedlac} and {it:lablac}. {p_end} 
+{synopt:{opt t:ype(string)}}type of ONE collection requested. Currently the only COLLECTIONS available are: {it:eappov}, {it:ecapov}, {it:ecaraw}, {it:eu-lfs}, {it:udb-c} or {it:eusilc}, {it:udb-l} (panel eusilc), {it:mnapov}, {it:mnaraw}, {it:sarmd}, {it:ssapov}, {it:gmd}, {it:sarraw}, {it:eapraw}, {it:ssaraw}, {it:sedlac}, {it:lablac}, {it:conlac} and many more. {p_end} 
 				 Click {browse "http://eca/povdata/_57YTY987/ECATSD_EUSILC_UserGuidelines_141008.pdf":here} for more information on the {it:eusilc} collection. 
 
 {marker options}{...}
@@ -84,7 +85,7 @@ collection to see all available harmonized and raw survey dataset.
 		with the poverty lines (in 2005/2011 dollars). If the poverty line is a fractional number 
 		(i.e. 1.9 or 3.1), {cmd: datalibweb} will create a variable using the value entered as part of the variable name. For 
 		instance, if the user puts the 1.9 dollar a day poverty line, the variable name created will be 
-		ìlp_1_9usd_2005î or ìlp_1_9usd_2011î depending on the PPP year specified in the {cmd:ppp()} option because Stata does not allow to use ì.î as part of variable names. It is used in combination with the {cmd:ppp()} option.{p_end}
+		‚Äúlp_1_9usd_2005‚Äù or ‚Äúlp_1_9usd_2011‚Äù depending on the PPP year specified in the {cmd:ppp()} option because Stata does not allow to use ‚Äú.‚Äù as part of variable names. It is used in combination with the {cmd:ppp()} option.{p_end}
 
 {synopt:{opt inc:ppp(varlist)}}converts variables (in nominal LCU) in the {it:varlist} to PPP-based variables, expressed in 2005 and/or 2011 PPP US$ as defined in the {cmd:ppp()} option. It is useful to convert income/consumption aggregates for across years/countries comparisons and international poverty and shared prosperity indicators.
 		This option creates new variables with the same name as the original, plus the suffix either _2005 or _2011. {p_end}
@@ -100,14 +101,18 @@ collection to see all available harmonized and raw survey dataset.
 
 {synopt:{opt mod:ule(string)}}lists of modules to be merged and loaded. It is ONLY AVAILABLE for some collections such as ({it:eappov}, ({it:ecapov} and {it:eusilc}). It identifies the modules to be merged and loaded.
 Enter a number list with the modules desired. If none is entered, {cmd:datalibweb} will load the default module defined by each type/collection, for example 3 (Household Consumption) for {it:ecapov} collection, and module D (Household Register) for {it:eusilc}.
-The variables m{it:xyz} are created and contain the results from merging modules {it:x}, {it:y} and {it:z}. {p_end}
-					The following modules are available for the {it:eusilc} collection:
+The variables m{it:xyz} are created and contain the results from merging modules {it:x}, {it:y} and {it:z}. Below are some examples of modules across collections. {p_end}
+					The following modules (for now) are available for the {it:GMD} collection:
+						- GPWG
+						- ALL
+						
+					The following modules are available for the {it:EUSILC} or {it:UDB-C} or {it:UDB-L} collection:
 						- D Household Register
 						- H Household
 						- R Personal Register
 						- P Personal
 
-					For {it:ecapov}, the following modules are available:
+					For {it:ECAPOV}, the following modules are available:
 						- 2 Individual Characteristics
 						- 3 Household Consumption
 						- 4 Utilities Expenses
@@ -115,12 +120,37 @@ The variables m{it:xyz} are created and contain the results from merging modules
 						- 7 Income
 						- 9 Access to basic service and assets
 						
-					For {it:eappov}, the following modules are available:
+					For {it:EAPPOV}, the following modules are available:
 						- B Basic data
 						- H Household 
 						- I Individual
 						- POV Poverty
 
+					For {it:SEDLAC-03} collection, the following modules are available:
+						- POV: Poverty
+						- HHD: Household 
+						- IND: Individual
+						- EDU: Education
+						- DMR: Demographic
+						- LAB: Labor
+						- REG: Geography regions
+						- GMD
+						- ALL
+
+{synopt:{opt period:(string)}} It is ONLY AVAILABLE for some collections such as ({it:SEDLAC} and {it:LABLAC})
+Enter the period desired. If none is entered, {cmd:datalibweb} will load the default period defined by each type/collection, for example q04 (quarter IV) for {it:LABLAC} collection, and s2 (semester II) for Argentina in {it:SEDLAC}.{p_end}
+
+					For the {it:LABLAC} collection, the following modules are available:
+						- q01: Quarter I
+						- q02: Quarter II
+						- q03: Quarter III
+						- q04: Quarter IV
+
+					For {it:SEDLAC} collection, the following modules are available for Argentina only:
+						- s1: Semester I
+						- s2: Semester II
+
+			
 {dlgtab:Versions}
 
 {synopt:{opt verm:aster(#)}}specifies the master version to be used. By default, the latest version is selected if it is omitted.{p_end}
@@ -131,7 +161,7 @@ The variables m{it:xyz} are created and contain the results from merging modules
 
 {dlgtab:Availability of data}
 
-{pstd}There are several ways to get the catalog of availal surveys in the system with sub-routines such as {cmd: dlw_servercatalog} and {cmd: dlw_usercatalog}. {p_end}
+{pstd}There are several ways to get the catalog of available surveys in the system with sub-routines such as {cmd: dlw_servercatalog} and {cmd: dlw_usercatalog}. {p_end}
 
 {synopt:{opt dlw_usercatalog, code()}} where code() is three-letter country code. This option can get you all the surveys available for this country.{p_end}
 
@@ -151,6 +181,7 @@ This feature is useful for those who are on mission or not on Bank network to ac
 {dlgtab:Repository}
 {pstd}Saves a repository data file readable by {cmd:datalibweb} to call specific versions of databases used 
 in specific projects. {p_end}
+
 {pstd}This option allows the user to create, use, query, and erase do-files with specific vintage information 
 for particular projects. This option is composed of three main elements: {it: instruction, name, and option}, and its syntax might be look like the options below: 
 {p_end}
@@ -159,11 +190,13 @@ for particular projects. This option is composed of three main elements: {it: in
 
 {p 6 8 10}Except {opt repository()}, other options can take multiple values such as region(ECA LAC) or country(ALB ARM){p_end}
 
-{p 4 8 8} In detail, {cmd: instruction} must be {it:create}, {it:use}, {it:query}, or {it:erase}. {p_end}
+{p 4 8 8} In detail, {cmd: instruction} must be {it:create}, {it:use}, {it:usefile}, {it:query}, or {it:erase}. {p_end}
 
 {p 6 8 10}{cmd:create} creates or modifies and existing repository data file{p_end}
      
 {p 6 8 10}{cmd:use} forces {cmd:datalibweb} to use the version of the databases specified in {it:reponame} {p_end}
+
+{p 6 8 10}{cmd:usefile} forces {cmd:datalibweb} to use the version of the databases specified in {it:repofile} by the users{p_end}
      
 {p 6 8 10}{cmd:erase} creates or modifies an existing repository data file{p_end}
      
@@ -184,6 +217,13 @@ The instructions {ul:use} and {ul:query} do not need any option.{p_end}
 
 {synopt:{opt cpivintage()}}gets the specified vintage of CPI data. If the option is not specified, the latest CPI vintage will be used.{p_end}
 				
+{dlgtab:Update()}
+
+{pstd} {cmd:dlw}, {opt update(text)} - Update the DLW code, cache or downloaded data; where text is: {p_end}
+{p 6 8 10}{cmd:ado} forces {cmd:datalibweb} to update to the latest version of datalibweb {p_end}
+{p 6 8 10}{cmd:cache} forces {cmd:datalibweb} to update the cache used in the catalog {p_end}
+{p 6 8 10}{cmd:data} forces {cmd:datalibweb} to update data files downloaded using getfile option by the users{p_end}
+
 {dlgtab:Other}
 
 {synopt:{opt base}}gets the base module or files for that Survey ID. The base option might be different for each collection. {p_end}
@@ -198,11 +238,11 @@ The instructions {ul:use} and {ul:query} do not need any option.{p_end}
 
 {title:Saved Results}
 
-{cmd:datalibweb} returns results in {hi:r()} format. 
+{cmd:datalibweb} or {cmd:dlw} returns results in {hi:r()} format. 
 By typing {helpb return list}, the following results are reported:
 
 {synoptset 20 tabbed}{...}
-{p2col 5 20 24 2: Scalars}{p_end}
+{p2col 5 20 24 2: Scalars:}{p_end}
 {synopt:{cmd:r(cmdline)}}the command line you entered in Stata {p_end}
 {synopt:{cmd:r(surveyid)}}the unique Survey ID {p_end}
 {synopt:{cmd:r(vera)}}version of adaptation/harmonization {p_end}
@@ -216,11 +256,57 @@ By typing {helpb return list}, the following results are reported:
 {title:Examples}{p 50 20 2}{p_end}
 {pstd}
 
-{dlgtab: basic syntax (ecapov)}
+{dlgtab: basic syntax}
+
+{pstd} {it:GMD}:{p_end}
+
+{p 8 12}{stata "datalibweb, country(col) years(2017) type(GMD) mod(all) clear" :.datalibweb, country(col) years(2017) type(GMD) mod(all) clear}{p_end}
+
+{pstd} It opens all variables in GMD - Global Monitoring Database for Colombia 2017 from GMD public collection.{p_end}
+
+{p 8 12}{stata "datalibweb, country(col) years(2017) type(GMD) mod(GPWG) clear" :.datalibweb, country(col) years(2017) type(GMD) mod(GPWG) clear}{p_end}
+
+{pstd} It opens the core variables in GMD - Global Monitoring Database for Colombia 2017 from GMD public collection.{p_end}
+
+{pstd} {it:ECAPOV}:{p_end}
 
 {p 8 12}{stata "datalibweb, country(alb) years(2005) type(ecapov) clear" :.datalibweb, country(alb) years(2005) type(ecapov) clear}{p_end}
 
 {pstd} It opens the  default module (module 3 - Household Consumption) for Albania 2005 from ECAPOV collection. The default module is different for collections.{p_end}
+
+{pstd} {it:SEDLAC}:{p_end}
+
+{p 8 12}{stata "datalibweb, country(ecu) years(2017) type(SEDLAC-03) mod(pov) clear" :.datalibweb, country(ecu) years(2017) type(SEDLAC-03) mod(pov) clear}{p_end}
+
+{pstd} It opens the POVerty module for Ecuador 2017 from SEDLAC project 03 collection. See {it:{help datalibweb##module:Modules by collection}}.{p_end}
+
+{p 8 12}{stata "datalibweb, country(ecu) years(2015) type(SEDLAC-02) mod(pov ind) clear" :.datalibweb, country(ecu) years(2015) type(SEDLAC-02) mod(pov ind) clear}{p_end}
+
+{pstd} It opens the POVerty and INDividual modules for Ecuador 2015 from SEDLAC project 02 collection. See {it:{help datalibweb##module:Modules by collection}}. You may merge different modules when provide the list of them in mod(). {p_end}
+
+{pstd} For more information about availability and comparability of SEDLAC collection visit LACequityLAB.{p_end}
+
+{p 8 12}{stata "datalibweb, country(arg) years(2017) type(SEDLAC-03) mod(pov) period(s1) clear" :.datalibweb, country(ecu) years(2017) type(SEDLAC-03) mod(pov) period(s1) clear}{p_end}
+
+{pstd} It opens the POVerty module for Argentina 2017 Semester I from SEDLAC project 03 collection. See {it:{help datalibweb##module:Modules by collection}}.{p_end}
+
+{pstd} {it:LABLAC}:{p_end}
+
+{p 8 12}{stata "datalibweb, country(ecu) years(2017) type(LABLAC-01) clear" :.datalibweb, country(ecu) years(2017) type(LABLAC-01) clear}{p_end}
+
+{pstd} It opens harmonized labor survey for Ecuador 2017-IV from LABLAC project 01 collection. Quarter IV is the default period.{p_end}
+
+{p 8 12}{stata "datalibweb, country(ecu) years(2017) type(LABLAC-01) period(q02) clear" :.datalibweb, country(ecu) years(2017) type(LABLAC-01) period(q02) clear}{p_end}
+
+{pstd} It opens harmonized labor survey for Ecuador 2017-II from LABLAC project 01 collection.{p_end}
+
+{dlgtab: LCU poverty lines equivalent to international poverty lines: plppp}
+
+{p 8 12}{stata "datalibweb, country(rus) years(2009) type(ecapov) ppp(2011) plppp(1.9 3.2) clear":.datalibweb, country(rus) years(2009) type(ecapov) ppp(2011) plppp(1.9 3.2) clear}{p_end}
+
+{pstd} It opens the module 3 (Household Consumption) for Russian Federation 2009 and estimates poverty lines in current LCU equivalent to US$1.9 and US$3.2 at 2011 PPP.{p_end}
+
+{dlgtab: welfare variables into PPP values: incppp}
 
 {dlgtab: plppp}
 
@@ -252,7 +338,7 @@ By typing {helpb return list}, the following results are reported:
 
 {pstd} It will list all available files (both data, dofile and documentation) BLR for 2000 in the ECA catalog. {p_end}
 
-{dlgtab: call raw data ñ 1 file}
+{dlgtab: call one raw data file}
 
 {p 8 12}{stata "datalibweb, country(ALB) y(2012) t(ECARAW) surveyid(ALB_2012_LSMS_v01_M) filen(Modul_4A_labor.dta) clear":.datalibweb, country(ALB) year(2012) type(ECARAW) surveyid(ALB_2012_LSMS_v01_M) filen(Modul_4A_labor.dta) clear}{p_end}
 
@@ -282,7 +368,7 @@ By typing {helpb return list}, the following results are reported:
 
 {pstd} It gets the list of LABLAC raw files. User needs to select one file as there is no default one.{p_end}
 
-{p 8 12}{stata "datalibweb, country(col) year(2012) type(lablac)"  }{p_end}
+{p 8 12}{stata "datalibweb, country(col) year(2012) type(lablac-01)"  }{p_end}
 
 {pstd} It gets the harmonized LABLAC file for LABLC, COL 2012. The default file is Q4 (quarter 4).{p_end}
 
@@ -294,7 +380,7 @@ By typing {helpb return list}, the following results are reported:
 
 {pstd} It gets raw file for sedlac.{p_end}
 
-{p 8 12}{stata "datalibweb, country(col) year(2012) type(sedlac)"  }{p_end}
+{p 8 12}{stata "datalibweb, country(ecu) year(2012) type(sedlac-03)"  }{p_end}
 
 {pstd} It gets the sedlac file with the default one.{p_end}
 
@@ -371,6 +457,9 @@ By typing {helpb return list}, the following results are reported:
 {p 8 12}{stata "datalibweb, country(alb) year(2012) type(gmd) repo(use test1)" :.datalibweb, country(alb) year(2012) type(gmd) repo(use test1)}{p_end}
 {pstd} It uses the specified repository named "test1" to load the file listed in the repo data.{p_end}
 
+{p 8 12}{stata "datalibweb, country(alb) year(2012) type(gmd) repo(usefile) repofile(myrepo.dta)" :.datalibweb, country(alb) year(2012) type(gmd) repo(usefile) repofile(myrepo.dta)}{p_end}
+{pstd} It uses the specific repository file "myrepo.dta" specified in repofile() option to load the vintage of data listed in the repo data.{p_end}
+
 {p 8 12}{stata "datalibweb, type(gmd) repo(query) " :.datalibweb, type(gmd) repo(query) }{p_end}
 {pstd} It lists the available repositories available in the system for GMD collection.{p_end}
 
@@ -385,33 +474,76 @@ By typing {helpb return list}, the following results are reported:
 {p 8 12}{stata "datalibweb, country(alb) year(2012) type(gmd) cpivin(v02)" :.datalibweb, country(alb) year(2012) type(gmd) cpivin(v02)}{p_end}
 {pstd} It uses the specified CPI vintage from the system.{p_end}
 
+{dlgtab: Supporting data}
+
+{p 8 12}{stata "dlw, country(support) year(2005) type(gmdraw)" :. dlw, country(support) year(2005) type(gmdraw)}{p_end}
+{pstd} It provides supporting database for Global Poverty Monitoring such as yearly, quarterly and monthly CPIs, weighted CPI to use with surveys. 
+Users should explore the database here to facilite their works.
+Some examples here use the v03 vintage of database. The vintage will be updated yearly around Nov/Dec.{p_end}
+
+	{p 8 12}{stata "dlw, country(Support) year(2005) type(GMDRAW) surveyid(Support_2005_CPI_v03_M) filename(Final_CPI_PPP_to_be_used.dta)" :.dlw, country(Support) year(2005) type(GMDRAW) surveyid(Support_2005_CPI_v03_M) filename(Final_CPI_PPP_to_be_used.dta)}{p_end}
+	{p 8 12}{stata "dlw, country(Support) year(2005) type(GMDRAW) surveyid(Support_2005_CPI_v03_M) filename(Yearly_CPI_Final.dta)" :.dlw, country(Support) year(2005) type(GMDRAW) surveyid(Support_2005_CPI_v03_M) filename(Yearly_CPI_Final.dta)}{p_end}
+	{p 8 12}{stata "dlw, country(Support) year(2005) type(GMDRAW) surveyid(Support_2005_CPI_v03_M) filename(repo_SM19MPO.dta)" :.dlw, country(Support) year(2005) type(GMDRAW) surveyid(Support_2005_CPI_v03_M) filename(repo_SM19MPO.dta)}{p_end}
+	{p 8 12}{stata "dlw, country(Support) year(2005) type(GMDRAW) surveyid(Support_2005_CPI_v03_M) filename(Monthly_CPI.dta)" :.dlw, country(Support) year(2005) type(GMDRAW) surveyid(Support_2005_CPI_v03_M) filename(Monthly_CPI.dta)}{p_end}
+	{p 8 12}{stata "dlw, country(Support) year(2005) type(GMDRAW) surveyid(Support_2005_CPI_v03_M) filename(Survey_price_framework.dta)" :.dlw, country(Support) year(2005) type(GMDRAW) surveyid(Support_2005_CPI_v03_M) filename(Survey_price_framework.dta)}{p_end}
+	
 {dlgtab: interactive interface}
 
 {p 8 12}{stata "datalibweb" :.datalibweb}{p_end}
+{pstd} or {p_end}
+{p 8 12}{stata "dlw" :.dlw}{p_end}
 
-{pstd} It shows a table with all regions available in {cmd: datalibweb} system, as shown below. The users will have to select the desired region and then country and collection 
+{pstd} It shows a table with all regions and groupings available in {cmd: datalibweb} system, as shown below. The users will have to select the desired region and then country and collection 
 to see the available surveys.{p_end}
 
 {pstd}
-	Select the region of your country of analysis:
+	Select the region or grouping of your country of analysis:
+	
+	--------------------------------------------------
+	 Region/group|
+	 Code        |          Region/group name
+	-------------+------------------------------------
+		EAP      |           East Asia and Pacific
+		ECA      |         Europe and Central Asia
+		LAC      | Latin America and the Caribbean
+		MNA      |    Middle East and North Africa
+		SAR      |                      South Asia
+		SSA      |              Sub-Saharan Africa
+		NAC      |                   North America
+		Others   |                    Other groups
+	--------------------------------------------------
 
-	-----------------------------------------------
-	 Region |
-	 Code	|             Region Name
-	--------+--------------------------------------
-	  EAP 	|              East Asia and Pacific
-	  ECA	|            Europe and Central Asia
-	  LAC	|    Latin America and the Caribbean
-	  MNA	|       Middle East and North Africa
-	  SAR	|                         South Asia
-	  SSA	|                 Sub-Saharan Africa
-	-----------------------------------------------
+	. datalibweb_inventory, region(Others) 
+
+	 Select country/group of analysis
+
+	------------------------------------------------------------------
+	 Country  |
+	 Code     |             Country/group name
+	----------+-------------------------------------------------------
+	  SUPPORT |                                               Support
+	  WLD     |                                                 World
+	  EAP     |           East Asia & Pacific (excluding high income)
+	  ECA     |         Europe & Central Asia (excluding high income)
+	  LAC     |     Latin America & Caribbean (excluding high income)
+	  MNA     |    Middle East & North Africa (excluding high income)
+	  NAC     |                                         North America
+	  SAR     |                                            South Asia
+	  SSA     |            Sub-Saharan Africa (excluding high income)
+	  ARB     |                                            Arab World
+	  ...
+	  SST     |                                          Small states
+	  TSA     |                               South Asia (IDA & IBRD)
+	  SSF     |                                    Sub-Saharan Africa
+	  TSS     |                       Sub-Saharan Africa (IDA & IBRD)
+	  UMC     |                                   Upper middle income
+	------------------------------------------------------------------
 
 {dlgtab: Graphical User interface}
 
 {pstd} This feature can bring the Explore-view for all the data in the system. User can access it by clicking to the Datalibweb menu on the top-left corner in the Stata application. 
 There are two views: by country and by server. Country views list all the raw and harmonzied data for that country across the different servers. Server views list all harmonized data 
-under that collection. View can also be filtered by "Latest version" and/or "Subscribed to".
+under that collection. View can also be filtered by "Latest version" and/or "Subscribed to". This feature works for Stata 14 and earier versions, it might not work as expected in Stata 15 and 16.
 
 {marker disclaimer}{...}
 {title:Disclaimer}
@@ -500,16 +632,16 @@ We advise making reference to the date when the database was consulted, as stati
  
 {title:Acknowledgements}
     {p 4 4}This program was developed by the Global-TSD unit in the Global Poverty Practice of the World Bank. The program was benifited significantly from the earlier 
-	developments of {cmd:datalib} in LAC TSD (by Jo„o Pedro Azevedo and Raul Andres CastaÒeda Aguilar), and {cmd:datalib2} in ECA TSD (by Jo„o Pedro Azevedo and Cesar Cancho).{p_end}	
+	developments of {cmd:datalib} in LAC TSD (by Jo√£o Pedro Azevedo and Raul Andres Casta√±eda Aguilar), and {cmd:datalib2} in ECA TSD (by Jo√£o Pedro Azevedo and Cesar Cancho).{p_end}	
 	{p 4 4}We would like to thank many colleagues in various teams involving in the discussion, suggestion and testing, implemetation: ECA TSD, LAC TSD, EAP TSD, ECA IT, QuickStrike ITS, Microdata Library, all members of GPWG, regional focal points in all regions (EAP, ECA, LAC, MNA, SAR, and SSA). {p_end} 
 	{p 4 4}All errors and ommissions are of exclusive responsability of the authors. Comments and suggestions are most welcome. Please send an email to: {browse "mailto: datalibweb@worldbank.org":datalibweb@worldbank.org}.{p_end} 
 	
 {title:Authors - {cmd:datalibweb} team}
 {p 4 4}Contributing authors: {p_end} 
-{p 4 4}	- Stata front-end application: Minh Cong Nguyen, Raul Andres CastaÒeda Aguilar, JosÈ Montes, and Jo„o Pedro Azevedo, with support from Paul Andres Corral Rodas.{p_end} 
+{p 4 4}	- Stata front-end application: Minh Cong Nguyen, Raul Andres Casta√±eda Aguilar, Jos√© Montes, and Jo√£o Pedro Azevedo, with support from Paul Andres Corral Rodas.{p_end} 
 {p 4 4}	- Plugin, IT coordinator/support: Paul Ricci, Louis Wahsieh Elliott, Antonio Ramos-Izquierdo.{p_end} 
 {p 4 4}	- SharePoint web application: Soumalya De; Ravikumar Murugaiah Samy; Intekhab Alam Sheikh, Monisha Menon, Nishant Nitin Trivedi.{p_end} 
-{p 4 4}	- Overall {cmd:datalibweb} project supervision: Jo„o Pedro Azevedo and Minh Cong Nguyen.{p_end} 
+{p 4 4}	- Overall {cmd:datalibweb} project supervision: Jo√£o Pedro Azevedo and Minh Cong Nguyen.{p_end} 
 
 {title:Also see}
 

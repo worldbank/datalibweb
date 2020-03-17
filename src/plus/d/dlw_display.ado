@@ -96,11 +96,22 @@ qui {
 				local all = _N		
 				//local todisp `"`year' - `: word `s' of `surveys''"'
 				//noi disp _col(4) `"{stata datalibweb, country(`code') year(`year') type(`type')  `clear': `todisp'}"' 
-
+				
+				local theperiod
+				local subsurvey = "`subsur'"								
+				if "`=upper("`type'")'"=="SEDLAC-03" | "`=upper("`type'")'"=="SEDLAC-02" | "`=upper("`type'")'"=="SEDLAC-01" |  "`=upper("`type'")'"=="LABLAC-01" {
+					if  `=strpos("`subsur'", "-")' > 0 {
+						local period = substr("`subsur'", strpos("`subsur'", "-") + 1, .)
+						local subsurvey = substr("`subsur'", 1, strpos("`subsur'", "-")-1)
+						local theperiod "per(`period')"	
+					}					
+				}
+				
 				forv i=1(1)`all' {
 					local todisp `"`=`con'_str[`i']'"'
 					//Modify the cmd line here
-					local cmd `"stata datalibweb, country(`country') year(`=`row'_str[`i']') type(`type') mod(`=`col'_str[`i']') vermast(`=vermast[`i']') veralt(`=veralt[`i']') surveyid(`subsur')"'
+					//local cmd `"stata dlw, coun(`country') y(`=`row'_str[`i']') t(`type') mod(`=`col'_str[`i']') verm(`=vermast[`i']') vera(`=veralt[`i']') sur(`subsur')"'					
+					local cmd `"stata dlw, coun(`country') y(`=`row'_str[`i']') t(`type') mod(`=`col'_str[`i']') verm(`=vermast[`i']') vera(`=veralt[`i']') sur(`subsurvey') `theperiod'"'
 					local txt `"`txt' _col(`=`firstcol' + `=varpos[`i']-1'*`byw_cell' + `byw_cell'-length("`=`con'_str[`i']'")') `"{`cmd': `todisp'}"'"'
 				}
 				noi dis as text `txt'

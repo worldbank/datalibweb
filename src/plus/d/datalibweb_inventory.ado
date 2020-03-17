@@ -1,5 +1,8 @@
-*! version 1.01  26jan2018
-*! Minh Cong Nguyen, Raul Andres Casta񥤡 Aguilar
+*! version 1.03 12dec2019
+*! Minh Cong Nguyen, Raul Andres Castaneda Aguilar
+* version 1.01  26jan2018 - original
+* version 1.02  15apr2019 - add new category/conditions for type2
+* version 1.03  12dec2019 - add manual refresh link
 
 cap program drop datalibweb_inventory
 program define datalibweb_inventory, rclass
@@ -21,7 +24,7 @@ syntax [anything(name=lookup)] , [ ///
 
 qui {
 	global yesno 0
-	if "$updateday"=="" global updateday 5
+	if "$updateday"=="" global updateday 1
 	*-----------------------------------
 	* 0. Program set up
 	*-----------------------------------
@@ -52,7 +55,9 @@ qui {
 		return local region = region[1]
 		return local N = r(N)
 	}
-
+	
+	*noi disp _col(2) `"{stata dlw_usercatalog, code(`code') update : Click here to refresh this country catalog if needed}"'
+	
 	* 2.2 In case region is selected
 	else {
 		* 2.2.1 To find country based on Region
@@ -62,21 +67,21 @@ qui {
 			local codes = r(countrycode)
 			local names = r(countryname)
 			return local countrylist = "`codes'"
-			noi disp in y _n(2) "{ul: Select Country of analysis}" _n
-			noi disp in g "{hline 10}{c TT}{hline 27}"
+			noi disp in y _n(2) "{ul: Select country/group of analysis}" _n
+			noi disp in g "{hline 10}{c TT}{hline 55}"
 			noi disp in g _col(2) "Country" _col(11) "{c |}"
-			noi disp in g _col(2) "Code" _col(11) "{c |}" _col(25) "Country Name"
-			noi di as text "{hline 10}{c +}{hline 27}"
+			noi disp in g _col(2) "Code" _col(11) "{c |}" _col(25) "Country/group name"
+			noi di as text "{hline 10}{c +}{hline 55}"
 
 			local i = 0
 			foreach c of local codes {
 				local ++i
 				local n: word `i' of `names'
 				local n: subinstr local n "_" " ", all
-				noi disp _col(6) `"{stata datalibweb_inventory, code(`c') region(`region') : `c'}"'  ///
-					in g _col(11) "{c |}" in y _col(`=37-length("`n'")') "`n'" 				
+				noi disp _col(2) `"{stata datalibweb_inventory, code(`c') region(`region') : `c'}"'  ///
+					in g _col(11) "{c |}" in y _col(`=66-length("`n'")') "`n'" 				
 			}	// end of codes loop	
-			noi di as text "{hline 10}{c BT}{hline 27}"
+			noi di as text "{hline 10}{c BT}{hline 55}"
 			clear
 		}	// end of region conditional
 		
@@ -87,9 +92,10 @@ qui {
 		if ("`region'" != "" & "`code'" != "" &  "`type'" == "") {	
 			 _catalog `code' `region' $yesno		 
 			local rline 37
-			local lline 15
-			 
+			local lline 15 
 			noi disp in y _n(2) "{ul: Select collection of analysis}" _n
+			
+			//RAW collection			
 			noi disp _col(4) in g "{it:Raw collection:}"
 			noi disp _col(4) in g "{hline `lline'}{c TT}{hline `rline'}" 
 			levelsof datanature if (finaltype == "Data" & type2 == 0), local(colraws)
@@ -100,33 +106,57 @@ qui {
 			}
 			noi disp _col(4) in g "{hline `lline'}{c BT}{hline `rline'}" 
 			
-			noi disp _n _col(4) in g "{it:Regional harmonized collection:}" 
-			noi disp _col(4) in g "{hline `lline'}{c TT}{hline `rline'}" 
-			levelsof collection if type2 == 1, local(collections)
-			foreach collection of local collections {
-				local codeline "datalibweb_inventory, region(`region') code(`code') type(`collection') vintage regional"
-				local codemodule "datalibweb_inventory, region(`region') code(`code') type(`collection') module regional"
-				local codedoc "datalibweb_inventory, region(`region') code(`code') type(`collection') doc regional"
-				noi disp _col(6) in y "`collection'"  in g _col(19) "{c |}" ///
-					_col(21) `"{stata `codeline': Vintages }"'    ///
-					_col(31) `"{stata `codemodule': Modules }"' ///
-					_col(41) `"{stata `codedoc': Documentation }"'
+			// Regional harmonization
+			cap count if type2 == 1
+			if r(N)>0 {
+				noi disp _n _col(4) in g "{it:Regional harmonized collection:}" 
+				noi disp _col(4) in g "{hline `lline'}{c TT}{hline `rline'}" 
+				levelsof collection if type2 == 1, local(collections)
+				foreach collection of local collections {
+					local codeline "datalibweb_inventory, region(`region') code(`code') type(`collection') vintage regional"
+					local codemodule "datalibweb_inventory, region(`region') code(`code') type(`collection') module regional"
+					local codedoc "datalibweb_inventory, region(`region') code(`code') type(`collection') doc regional"
+					noi disp _col(6) in y "`collection'"  in g _col(19) "{c |}" ///
+						_col(21) `"{stata `codeline': Vintages }"'    ///
+						_col(31) `"{stata `codemodule': Modules }"' ///
+						_col(41) `"{stata `codedoc': Documentation }"'
+				}
+				noi disp _col(4) in g "{hline `lline'}{c BT}{hline `rline'}" 
 			}
-			noi disp _col(4) in g "{hline `lline'}{c BT}{hline `rline'}" 
-			
-			noi disp _n _col(4) in g "{it:Global harmonized collection:}" 
-			noi disp _col(4) in g "{hline `lline'}{c TT}{hline `rline'}" 
-			levelsof collection if type2 == 2, local(collections)
-			foreach collection of local collections {
-				local codeline "datalibweb_inventory, region(`region') code(`code') type(`collection') vintage global"
-				local codemodule "datalibweb_inventory, region(`region') code(`code') type(`collection') module global"
-				local codedoc "datalibweb_inventory, region(`region') code(`code') type(`collection') doc global"
-				noi disp _col(6) in y "`collection'"  in g _col(19) "{c |}"    ///
-					_col(21) `"{stata `codeline': Vintages }"'  ///
-					_col(31) `"{stata `codemodule': Modules }"' ///
-					_col(41) `"{stata `codedoc': Documentation }"' 
+			//Global harmonization
+			cap count if type2 == 2
+			if r(N)>0 {
+				noi disp _n _col(4) in g "{it:Global harmonized collection:}" 
+				noi disp _col(4) in g "{hline `lline'}{c TT}{hline `rline'}" 
+				levelsof collection if type2 == 2, local(collections)
+				foreach collection of local collections {
+					local codeline "datalibweb_inventory, region(`region') code(`code') type(`collection') vintage global"
+					local codemodule "datalibweb_inventory, region(`region') code(`code') type(`collection') module global"
+					local codedoc "datalibweb_inventory, region(`region') code(`code') type(`collection') doc global"
+					noi disp _col(6) in y "`collection'"  in g _col(19) "{c |}"    ///
+						_col(21) `"{stata `codeline': Vintages }"'  ///
+						_col(31) `"{stata `codemodule': Modules }"' ///
+						_col(41) `"{stata `codedoc': Documentation }"' 
+				}
+				noi disp _col(4) in g "{hline `lline'}{c BT}{hline `rline'}" 
 			}
-			noi disp _col(4) in g "{hline `lline'}{c BT}{hline `rline'}" 
+			//Global indicators
+			cap count if type2 == 3
+			if r(N)>0 {
+				noi disp _n _col(4) in g "{it:Thematic indicators:}" 
+				noi disp _col(4) in g "{hline `lline'}{c TT}{hline `rline'}" 
+				levelsof collection if type2 == 3, local(collections)
+				foreach collection of local collections {
+					local codeline "datalibweb_inventory, region(`region') code(`code') type(`collection') vintage global"
+					local codemodule "datalibweb_inventory, region(`region') code(`code') type(`collection') module global"
+					local codedoc "datalibweb_inventory, region(`region') code(`code') type(`collection') doc global"
+					noi disp _col(6) in y "`collection'"  in g _col(19) "{c |}"    ///
+						_col(21) `"{stata `codeline': Vintages }"'  ///
+						_col(31) `"{stata `codemodule': Modules }"' ///
+						_col(41) `"{stata `codedoc': Documentation }"' 
+				}
+				noi disp _col(4) in g "{hline `lline'}{c BT}{hline `rline'}" 
+			}
 			drop type2
 			clear
 		} // end of condition if ("`region'" != "" & "`type'" == "")
@@ -305,6 +335,8 @@ qui {
 				compress
 				tempfile serfile
 				save `serfile', replace
+				*save "c:\Temp\test.dta", replace
+				
 				levelsof serveralias, local(serverlist)
 				foreach ser of local serverlist {
 					use `serfile', clear

@@ -3,6 +3,7 @@ cap program drop dlw_message
 program define dlw_message
 	syntax, error(numlist max=1)
 	//subscription error
+	if `error'==404 noi dis "{err}Data is not yet available in DLW catalog"
 	if `error'==408 noi dis "{err}People Search Feed API call respond with timeout"
 	if `error'==672 noi dis "{err}Please contact IT and activate UPI"
 	if `error'==673 noi dis "{err}Please register with the datalibweb system"

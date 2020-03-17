@@ -1,5 +1,7 @@
-*! version 0.1 19jan2017
+*! version 0.2 15apr2019
 *! Minh Cong Nguyen
+* version 0.1 19jan2017 - new
+* version 0.2 15apr2019 - enable Support for testing
 
 capture program define _datalibweb, plugin using("dlib2_`=cond(strpos(`"`=c(machine_type)'"',"64"),64,32)'.dll")
 *capture program define _datalibweb, plugin using("DataLib`=cond(strpos(`"`=c(machine_type)'"',"64"),64,32)'.dll")
@@ -73,7 +75,7 @@ program define dlw_catalog, rclass
 						}
 						
 						//Server without data folder
-						if "`server'"=="GMD" | "`server'"=="ECA" | "`server'"=="EAP" | "`server'"=="I2D2" | "`server'"=="LABLAC" | "`server'"=="MNA" | "`server'"=="SAR" | "`server'"=="SEDLAC" | "`server'"=="SSA" | "`server'"=="ECA_Eurostat" {	
+						if "`server'"=="GMD" | "`server'"=="ECA" | "`server'"=="EAP" | "`server'"=="I2D2" | "`server'"=="LABLAC" | "`server'"=="MNA" | "`server'"=="SAR" | "`server'"=="SEDLAC" | "`server'"=="SSA" | "`server'"=="ECA_Eurostat" | "`server'"=="EDU" {	
 							if "`server'"=="GMD" { //temp fix Jan292018
 								//GMD for now is 3 dir layer - in the future should be 5 dir layer system
 								//temporary fix to move 3-dirs to 5-dirs system so both raw and harmonized can be together
@@ -147,7 +149,7 @@ program define dlw_catalog, rclass
 		qui plugin call _datalibweb , "`opt'" "`tmpcatalog'" "`code'"
 		if `dlibrc'==0 {
 			if ("`dlibType'"=="csv" | "`dlibType'"=="bin") {
-				cap insheet using "`tmpcatalog'", clear	
+				cap insheet using "`tmpcatalog'", clear	names
 				if _rc==0 {
 					if _N==1 noi dis as text in white "No data in the catalog for this country `code'."
 					else {

@@ -1,0 +1,49 @@
+﻿<settings>
+  <keys>
+    <key name="hhid">hhid</key>
+    <key name="pid">pid</key>
+  </keys>
+  <defmod modname="GPWG"></defmod>
+  <modules>
+    <hhmlist>
+    </hhmlist>
+    <indmlist>
+      <module name="GPWG"/>
+      <module name="L"/>
+      <module name="ALL"/>
+    </indmlist>
+  </modules>
+  <collections>
+    <collection name="indmlist">
+      
+    </collection>
+    <collection name="indmlist"  default="true">
+      <modules>
+        <id default="true">GPWG</id>
+        <id>L</id>
+        <id>ALL</id>
+      </modules>
+      <joinkeys>
+        <key>hhid</key>
+        <key>pid</key>
+      </joinkeys>
+    </collection>
+    <cpi>
+      <fields>
+        {'Server':'GMD','Country':'SUPPORT','Year':'2005','filename':'Final CPI PPP to be used.dta','para1':'Data\\Stata'}
+      </fields>
+      <joinkeys>
+        <key>countrycode</key>
+        <key>year</key>
+      </joinkeys>
+    </cpi>
+    <joins>
+      <hhmlist>
+        <field>hhid</field>
+      </hhmlist>
+      <indmlist>
+        <field>hhid</field>
+      </indmlist>
+    </joins>
+  </collections>
+</settings>
