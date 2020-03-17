@@ -18,12 +18,12 @@ global type GLAD
 global base 
 global basedeffile 
 global cpi 
-global cpifile 
-global cpic 
-global cpiy 
-global cpif 
-global rootcpi 
-global cpiw 
-global cpivarw 
+global cpifile lpv_thresholds.dta
+global cpic SUPPORT
+global cpiy 2015
+global cpif Data\Stata
+global rootcpi EDU
+global cpiw "Server=$rootcpi&Country=$cpic&Year=$cpiy&filename=$cpifile&folder=$cpif"
+global cpivarw *
 global distxt Education GP
-global email datalibweb@worldbank.org; edugp@worldbank.org
+global email datalibweb@worldbank.org; eduanalytics@worldbank.org
