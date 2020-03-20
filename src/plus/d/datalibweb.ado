@@ -1562,20 +1562,20 @@ program define _datalibcall, rclass
 							else cap gen survname = "$surveyid"							
 						}
 					}
-					if "`=upper("$type")'"=="SARMD" { //new Mar 15 17						
+					else if "`=upper("$type")'"=="SARMD" { //new Mar 15 17						
 						local cpilevel datalevel
 						if "`=upper("`country'")'"=="IND" gen datalevel = urban
 						else gen datalevel = 2
 						*gen urb = urban
 						*local cpilevel urban						
 					}
-					if "`=upper("$type")'"=="EAPPOV" { //new June 6 18						
+					else if "`=upper("$type")'"=="EAPPOV" { //new June 6 18						
 						local cpilevel datalevel
 						if "`=upper("`country'")'"=="IDN" gen datalevel = urban
 						else gen datalevel = 2						
 					}
 					//merge CPI   
-					if "`=upper("$type")'"=="SEDLAC-03" | "`=upper("$type")'"=="SEDLAC-02" | "`=upper("$type")'"=="SEDLAC-01" {
+					else if "`=upper("$type")'"=="SEDLAC-03" | "`=upper("$type")'"=="SEDLAC-02" | "`=upper("$type")'"=="SEDLAC-01" {
 						cap drop pais
 						cap drop ano
 						cap gen pais = "`=lower("`country'")'"
@@ -1597,7 +1597,7 @@ program define _datalibcall, rclass
 						cap merge m:1 pais ano encuesta using `cpiuse', gen(_mcpi) keepus($cpivarw)	update replace	
 						if _rc~=0 noi dis as error "Can't merge with CPI data - please check with the regional team."
 					}
-					if "`=upper("$type")'"=="GLAD" { //GLAD March 17 2020
+					else if "`=upper("$type")'"=="GLAD" { //GLAD March 17 2020
 						
 						  * Brings thresholds triplets defined in dta which should sit in DLW (our version of CPI.dta)
 						  merge m:1 surveyid idgrade using `cpiuse', keep(master match) nogen
@@ -1740,8 +1740,8 @@ program define _datalibcall, rclass
 					else {
 						qui merge m:1 code year `cpilevel' using `cpiuse', gen(_mcpi) keepus($cpivarw) update replace
 					}
-					qui drop if _mcpi==2		
-					qui drop _mcpi
+					cap drop if _mcpi==2		
+					cap drop _mcpi
 					cap drop datalevel 
 					cap drop ppp_note
 					qui if strpos("$surveyid","EU-SILC")>0 replace year = year + 1				//EUSILC year
