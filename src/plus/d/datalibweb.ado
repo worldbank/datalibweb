@@ -1541,7 +1541,8 @@ program define _datalibcall, rclass
 					cap gen year = `year'                        //need to be removed later			
 					qui if strpos("$surveyid)","EU-SILC")>0 replace year = year - 1				//EUSILC year
 					//qui if "`=upper("$type")'"=="UDB-C" | "`=upper("$type")'"=="UDB-L" replace year = year - 1				//EUSILC year
-					//datalevel  
+					
+					//datalevel preperation
 					local cpilevel				
 					if "`=upper("$type")'"=="GPWG" | "`=upper("$type")'"=="GMD" | "`=upper("$type")'"=="SSAPOV" | "`=upper("$type")'"=="PCN" {	
 						cap drop datalevel
@@ -1561,21 +1562,24 @@ program define _datalibcall, rclass
 							}
 							else cap gen survname = "$surveyid"							
 						}
-					}
-					else if "`=upper("$type")'"=="SARMD" { //new Mar 15 17						
+					} //GMD SSAPOV PCN
+					
+					if "`=upper("$type")'"=="SARMD" { //new Mar 15 17						
 						local cpilevel datalevel
 						if "`=upper("`country'")'"=="IND" gen datalevel = urban
 						else gen datalevel = 2
 						*gen urb = urban
-						*local cpilevel urban						
-					}
-					else if "`=upper("$type")'"=="EAPPOV" { //new June 6 18						
+						*local cpilevel urban		
+					} //SARMD
+					
+					if "`=upper("$type")'"=="EAPPOV" { //new June 6 18						
 						local cpilevel datalevel
 						if "`=upper("`country'")'"=="IDN" gen datalevel = urban
-						else gen datalevel = 2						
-					}
-					//merge CPI   
-					else if "`=upper("$type")'"=="SEDLAC-03" | "`=upper("$type")'"=="SEDLAC-02" | "`=upper("$type")'"=="SEDLAC-01" {
+						else gen datalevel = 2		
+					} //EAPPOV
+					
+					//now is to merge CPI   
+					if "`=upper("$type")'"=="SEDLAC-03" | "`=upper("$type")'"=="SEDLAC-02" | "`=upper("$type")'"=="SEDLAC-01" {
 						cap drop pais
 						cap drop ano
 						cap gen pais = "`=lower("`country'")'"
@@ -1594,116 +1598,10 @@ program define _datalibcall, rclass
 							else cap gen encuesta = "$surveyid"
 							
 						}
-						cap merge m:1 pais ano encuesta using `cpiuse', gen(_mcpi) keepus($cpivarw)	update replace	
+						local cpilevel pais ano encuesta
+						cap merge m:1 `cpilevel' using `cpiuse', gen(_mcpi) keepus($cpivarw) update replace	
 						if _rc~=0 noi dis as error "Can't merge with CPI data - please check with the regional team."
-					}
-					else if "`=upper("$type")'"=="GLAD" { //GLAD March 17 2020
-						
-						  * Brings thresholds triplets defined in dta which should sit in DLW (our version of CPI.dta)
-						  merge m:1 surveyid idgrade using `cpiuse', keep(master match) nogen
-
-						  * Each prefix_threshold is a triplet: prefix_threshold_var, prefix_threshold_val, prefix_threshold_res
-
-						  * Loop through all threshold triplets (specifically, prefix_threshold_res but could be val or var)
-						  ds *_threshold_res
-						  foreach threshold_res of varlist `r(varlist)' {
-
-							local this_prefix = subinstr("`threshold_res'", "_threshold_res", "", 1)
-
-							* Check if this_prefix was used for this assessment-year, or has all missing obs
-							count if missing(`threshold_res')
-							if `r(N)'<_N {
-							  * Not all observations are missing
-
-							  * Concatenate list of prefixes used
-							  local prefixes = "`prefixes' `this_prefix'"
-
-							  * Concatenate list of results to be created, in two steps
-							  * 1. loop through all results used in a prefix
-							  levelsof `threshold_res', local(resultvars_in_prefix)
-							  foreach resultvar of local resultvars_in_prefix {
-								* 2. Update the list of results (unique entries only)
-								local resultvars : list resultvars | resultvar
-
-								* 3. Also store the full FGT family in another list
-								local all_this_resultvar "`resultvar' fgt1_`resultvar' fgt2_`resultvar'"
-								local all_resultvars : list all_resultvars | all_this_resultvar
-							  }
-							}
-
-							else {
-							  * All observations are missing
-							  * Drop the threshold triplet, for it was not used at all
-							  drop `this_prefix'_threshold_*
-							}
-						  }
-
-						  * Value labels for dummy variables of Harmonized Proficiency
-						  label define lb_hpro 0 "Non-proficient" 1 "Proficient" .a "Missing score/level" .b "Non-harmonized grade", replace
-
-						  * Loop creating the FGT0 (resultvar), FGT1 (fgt1_resultvar) and FGT2 (fgt2_resultvar)
-						  foreach resultvar of local resultvars {
-
-							* FGT0: Generate all result variables as dummies which start empty
-							* (labeled as if this grade was not being harmonized)
-							gen byte  `resultvar': lb_hpro = .b
-							label var `resultvar' "Harmonized proficiency (subject-specific FGT0)"
-							char `resultvar'[clo_marker] "dummy"
-
-							* FGT1: the gap
-							gen float fgt1_`resultvar' = .
-							label var fgt1_`resultvar' "Gap in harmonized proficiency (subject-specific FGT1)"
-							char fgt1_`resultvar'[clo_marker] "number"
-
-							* FGT2: the gap squared
-							gen float fgt2_`resultvar' = .
-							label var fgt2_`resultvar' "Gap squared in harmonized proficiency (subject-specific FGT2)"
-							char fgt2_`resultvar'[clo_marker] "number"
-						  }
-
-
-						  * Loop through all prefixes
-						  foreach prefix of local prefixes {
-
-							  * Retrieves list of variables used in the current prefix_threshold_var
-							  levelsof `prefix'_threshold_var, local(originalvars_used_in_prefix)
-
-							  * Loop through all variables used in the current prefix,
-							  * and performs the calculation based on it
-							  foreach originalvar of local originalvars_used_in_prefix {
-								foreach resultvar of local resultvars {
-
-								  *------
-								  * FGT0
-
-								  * Calculate the harmonized proficiency dummy, for example:
-								  * resultvar is hpro_read and originalvar is level_llece_read
-								  replace `resultvar' = (`originalvar'>=`prefix'_threshold_val) if `prefix'_threshold_res == "`resultvar'" & `prefix'_threshold_var=="`originalvar'" & !missing(`originalvar')
-
-								  * Case of missing test score or test level
-								  replace `resultvar' = .a if `prefix'_threshold_res == "`resultvar'" & `prefix'_threshold_var == "`originalvar'" & missing(`originalvar')
-
-								  *-----
-								  * FGT1 = dummy * gap (=> so it is equal to 0 if above proficiency threshold)
-								  replace fgt1_`resultvar' = (- `originalvar' + `prefix'_threshold_val)/`prefix'_threshold_val if `prefix'_threshold_res == "`resultvar'" & `prefix'_threshold_var=="`originalvar'" & `resultvar' == 0
-								  * FGT2 = gap squared
-								  replace fgt2_`resultvar' = fgt1_`resultvar' * fgt1_`resultvar' if `prefix'_threshold_res == "`resultvar'" & `prefix'_threshold_var=="`originalvar'" & `resultvar' == 0
-
-							  }
-							}
-						  }
-
-						  * When this ado is called, a GLAD.dta is open and it should already
-						  * have the metadata as standardized in the collection. This adds more:
-						  char _dta[onthefly_valuevars] "`all_resultvars'"
-						  * Unabbreviate wildcards* in the threshold triplets variables
-						  cap unab thresholdvars : *_threshold_var *_threshold_val *_threshold_res
-						  if _rc == 111 noi disp as err "No harmonized minimum proficiency thresholds defined for this learning assessment."
-						  else          char _dta[onthefly_traitvars] "`thresholdvars'"
-
-						
-						
-					}
+					} //SEDLAC
 					else if "`=upper("$type")'"=="LABLAC-01" {
 						cap drop pais
 						cap drop ano
@@ -1734,9 +1632,103 @@ program define _datalibcall, rclass
 							}
 							else noi dis as error "Can't merge with CPI data - no variables created in merging - please check with the regional team."
 						} //$surveyid check _ CPI	
-						cap merge m:1 pais ano encuesta trimestre `cpilevel' using `cpiuse', gen(_mcpi) keepus($cpivarw) update replace
+						local cpilevel pais ano encuesta trimestre
+						cap merge m:1 `cpilevel' using `cpiuse', gen(_mcpi) keepus($cpivarw) update replace
 						if _rc~=0 noi dis as error "Can't merge with CPI data - please check with the regional team."
-					}
+					} //LABLAC-01
+					else if "`=upper("$type")'"=="GLAD" { //GLAD March 17 2020				
+						* Brings thresholds triplets defined in dta which should sit in DLW (our version of CPI.dta)
+						cap merge m:1 surveyid idgrade using `cpiuse', keep(master match) nogen
+						if _rc~=0 noi dis as error "Can't merge with grade/score data - please check with the EDU team."
+						* Each prefix_threshold is a triplet: prefix_threshold_var, prefix_threshold_val, prefix_threshold_res
+						* Loop through all threshold triplets (specifically, prefix_threshold_res but could be val or var)
+						ds *_threshold_res
+						foreach threshold_res of varlist `r(varlist)' {
+							local this_prefix = subinstr("`threshold_res'", "_threshold_res", "", 1)
+							* Check if this_prefix was used for this assessment-year, or has all missing obs
+							count if missing(`threshold_res')
+							if `r(N)'<_N {
+								* Not all observations are missing
+
+								* Concatenate list of prefixes used
+								local prefixes = "`prefixes' `this_prefix'"
+
+								* Concatenate list of results to be created, in two steps
+								* 1. loop through all results used in a prefix
+								levelsof `threshold_res', local(resultvars_in_prefix)
+								foreach resultvar of local resultvars_in_prefix {
+									* 2. Update the list of results (unique entries only)
+									local resultvars : list resultvars | resultvar
+
+									* 3. Also store the full FGT family in another list
+									local all_this_resultvar "`resultvar' fgt1_`resultvar' fgt2_`resultvar'"
+									local all_resultvars : list all_resultvars | all_this_resultvar
+								} //resultvar
+							} //r(N)
+							else {
+								* All observations are missing
+								* Drop the threshold triplet, for it was not used at all
+								drop `this_prefix'_threshold_*
+							}
+						} //threshold_res
+
+						* Value labels for dummy variables of Harmonized Proficiency
+						label define lb_hpro 0 "Non-proficient" 1 "Proficient" .a "Missing score/level" .b "Non-harmonized grade", replace
+
+						* Loop creating the FGT0 (resultvar), FGT1 (fgt1_resultvar) and FGT2 (fgt2_resultvar)
+						foreach resultvar of local resultvars {
+							* FGT0: Generate all result variables as dummies which start empty
+							* (labeled as if this grade was not being harmonized)
+							gen byte  `resultvar': lb_hpro = .b
+							label var `resultvar' "Harmonized proficiency (subject-specific FGT0)"
+							char `resultvar'[clo_marker] "dummy"
+
+							* FGT1: the gap
+							gen float fgt1_`resultvar' = .
+							label var fgt1_`resultvar' "Gap in harmonized proficiency (subject-specific FGT1)"
+							char fgt1_`resultvar'[clo_marker] "number"
+
+							* FGT2: the gap squared
+							gen float fgt2_`resultvar' = .
+							label var fgt2_`resultvar' "Gap squared in harmonized proficiency (subject-specific FGT2)"
+							char fgt2_`resultvar'[clo_marker] "number"
+						} //resultvar
+
+						* Loop through all prefixes
+						foreach prefix of local prefixes {
+							* Retrieves list of variables used in the current prefix_threshold_var
+							levelsof `prefix'_threshold_var, local(originalvars_used_in_prefix)
+
+							* Loop through all variables used in the current prefix,
+							* and performs the calculation based on it
+							foreach originalvar of local originalvars_used_in_prefix {
+								foreach resultvar of local resultvars {
+									*------
+									* FGT0
+									* Calculate the harmonized proficiency dummy, for example:
+									* resultvar is hpro_read and originalvar is level_llece_read
+									replace `resultvar' = (`originalvar'>=`prefix'_threshold_val) if `prefix'_threshold_res == "`resultvar'" & `prefix'_threshold_var=="`originalvar'" & !missing(`originalvar')
+
+									* Case of missing test score or test level
+									replace `resultvar' = .a if `prefix'_threshold_res == "`resultvar'" & `prefix'_threshold_var == "`originalvar'" & missing(`originalvar')
+
+									*-----
+									* FGT1 = dummy * gap (=> so it is equal to 0 if above proficiency threshold)
+									replace fgt1_`resultvar' = (- `originalvar' + `prefix'_threshold_val)/`prefix'_threshold_val if `prefix'_threshold_res == "`resultvar'" & `prefix'_threshold_var=="`originalvar'" & `resultvar' == 0
+									* FGT2 = gap squared
+									replace fgt2_`resultvar' = fgt1_`resultvar' * fgt1_`resultvar' if `prefix'_threshold_res == "`resultvar'" & `prefix'_threshold_var=="`originalvar'" & `resultvar' == 0
+								} //resultvars
+							} //originalvars_used_in_prefix
+						} //prefixes
+
+						* When this ado is called, a GLAD.dta is open and it should already
+						* have the metadata as standardized in the collection. This adds more:
+						char _dta[onthefly_valuevars] "`all_resultvars'"
+						* Unabbreviate wildcards* in the threshold triplets variables
+						cap unab thresholdvars : *_threshold_var *_threshold_val *_threshold_res
+						if _rc == 111 noi disp as err "No harmonized minimum proficiency thresholds defined for this learning assessment."
+						else          char _dta[onthefly_traitvars] "`thresholdvars'"
+					}				
 					else {
 						qui merge m:1 code year `cpilevel' using `cpiuse', gen(_mcpi) keepus($cpivarw) update replace
 					}
@@ -1746,7 +1738,6 @@ program define _datalibcall, rclass
 					cap drop ppp_note
 					qui if strpos("$surveyid","EU-SILC")>0 replace year = year + 1				//EUSILC year
 					//qui if "`=upper("$type")'"=="UDB-C" | "`=upper("$type")'"=="UDB-L" replace year = year + 1				//EUSILC year
-					
 				}
 			} //_rc save
 		}
