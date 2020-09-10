@@ -1,1 +1,0 @@
-This is version 1.1.9 released 15 Aug 2019.
