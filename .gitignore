@@ -46,13 +46,13 @@
 # located unless you explicitly ignore that folder
 
 # Stata
-!/src/*.do
-!/src/*.ado
-!/src/*.sthlp
-!/src/*.dta
-!/src/*.txt
-!/*.pkg
-!/*.toc
+!/src/**/*.do
+!/src/**/*.ado
+!/src/**/*.sthlp
+!/src/**/*.dta
+!/src/**/*.txt
+!/src/**/*.dll
+
 
 !/archive/**/*.do
 
@@ -65,7 +65,6 @@
 # csv files in selected output folders
 !results/*.csv
 
-
 # csv files in selected input folders
 !qa/*.csv
 !qa/demo.do
@@ -73,7 +72,6 @@
 
 # txt files in selected input folders
 !qa/*.txt
-!qa/aziz*.do
 
 # Stata package
 !/*.pkg
