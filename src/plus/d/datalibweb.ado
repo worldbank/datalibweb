@@ -1637,6 +1637,7 @@ program define _datalibcall, rclass
 						if _rc~=0 noi dis as error "Can't merge with CPI data - please check with the regional team."
 					} //LABLAC-01
 					else if "`=upper("$type")'"=="GLAD" { //GLAD Sept 10 2020
+						cap drop code year
 						* Brings thresholds triplets defined in dta which should sit in DLW (our version of CPI.dta)
 						cap merge m:1 surveyid idgrade using `cpiuse', keep(master match) nogen
 						if _rc~=0 noi dis as error "Can't merge with grade/score data - please check with the EDU team."
