@@ -52,6 +52,7 @@
 !/src/**/*.dta
 !/src/**/*.txt
 !/src/**/*.dll
+!/src/plus/d/*.dll
 
 
 !/archive/**/*.do
