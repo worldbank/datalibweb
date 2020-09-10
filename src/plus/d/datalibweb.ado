@@ -15,9 +15,9 @@
 * version 1.04 12dec2019 - new CPI vintage with surveyname, enable some undocumented functions
 
 cap program drop datalibweb
-program define datalibweb, rclass	
+program define datalibweb, rclass
 	version 10, missing
-    local verstata : di "version " string(_caller()) ", missing:" 
+    local verstata : di "version " string(_caller()) ", missing:"
 	syntax [anything] [if] [in] [,                                    ///
 		COUNtry(string) Years(string) CIRca(string)                   ///
 		PERiod(string) Type(string)  MODule(string)                   ///
@@ -31,15 +31,15 @@ program define datalibweb, rclass
 		Working base latesty info                                     ///
 		region(string) CPIVINtage(string)                             ///
 		merge(string) update(string)                                  ///
-		REPOsitory(string) reporoot(string)	repofile(string) 		  /// 
+		REPOsitory(string) reporoot(string)	repofile(string) 		  ///
 		NET	NOUPDATE FILEServer GUI									  ///
 		getfile local localpath(string) cpilocal(string) sh(string) ALLmodules         ///
 		]
-	//SURvey(string) 
+	//SURvey(string)
 	qui set checksum off
 	qui set varabbrev on
 	local cmdline: copy local 0
-	
+
 	// add external program - MUST check and download locally from our incase it is failed for the SSC
 	/*
 	local extpro lstrfun varlocal
@@ -49,15 +49,15 @@ program define datalibweb, rclass
 		if _rc~=0 dis as error "You have to download the external program manually."
 	}
 	*/
-	
-	_dlogo		// display datlaibweb log 	
+
+	_dlogo		// display datlaibweb log
 	//user check
  	//datalibweb_usercheck
-	//local user = "`r(user)'"	
+	//local user = "`r(user)'"
 	global dlw_update = 0
 	local user = c(username)
-	//datalibweb_update 10may2017, user("`user'")	
-	datalibweb_update, user("`user'")	
+	//datalibweb_update 10may2017, user("`user'")
+	datalibweb_update, user("`user'")
 	if $dlw_update==1 {
 		//cap local exit `r(exit)'
 		//`exit'
@@ -71,13 +71,13 @@ program define datalibweb, rclass
 	if "`=upper("`update'")'"=="ADO" dlw_adoupdate
 	if "`=upper("`update'")'"=="DATA" dlw_dataupdate
 	if "`=upper("`update'")'"=="CACHE" dlw_cacheupdate
-	
-	// gui	
-	capture program define dlwgui, plugin using("dlib2g_`=cond(strpos(`"`=c(machine_type)'"',"64"),64,32)'.dll")		
+
+	// gui
+	capture program define dlwgui, plugin using("dlib2g_`=cond(strpos(`"`=c(machine_type)'"',"64"),64,32)'.dll")
 
 	// Global datalibweb error code
 	global errcode 0
-	
+
 	** Housekeeping check
 	if ("`cpivintage'"~="" &  strpos("`=lower("`cpivintage'")'","v")==0) local cpivintage v`cpivintage'
 	if ("`vermast'" != "" & "`=upper("`vermast'")'" != "WRK") if strpos("`=lower("`vermast'")'","v")==0 local vermast v`vermast'
@@ -111,7 +111,7 @@ program define datalibweb, rclass
 		global errcode 198
 		error 198
 	}
-	
+
 	if  ("`ppp'" == "" & "`incppp'" != "") | ("`ppp'" == "" & "`plppp'" != "") {
 		di as error "You must specify both ppp() with incppp() and/or plppp()"
 		global errcode 198
@@ -124,7 +124,7 @@ program define datalibweb, rclass
 		error 198
 	}
 	*/
-	**  info and fileserver	
+	**  info and fileserver
 	if ("`info'" == "info" & "`fileserver'" == "") {
 		disp in red "Info option not available"
 		error 198
@@ -132,15 +132,15 @@ program define datalibweb, rclass
 	//Do API later on the subscriptions
 	************************NEW***************************************
 	* Selection of country, region and type when nor provided by user
-	*******************************************************************		
-	if ( "`vintage'" == "" &  "`country'" == "" & "`region'" == ""  & "`type'" == "" & "`repository'" == "") {  /* NEW */				
+	*******************************************************************
+	if ( "`vintage'" == "" &  "`country'" == "" & "`region'" == ""  & "`type'" == "" & "`repository'" == "") {  /* NEW */
 		disp in y _n "{ul: Select the region/group of your country/countries of analysis:}" _n
 		noi di as text "{hline 13}{c TT}{hline 36}"
 		noi disp in g _col(2) "Region/group" _col(14) "{c |}"
 		noi disp in g _col(2) "Code" _col(14) "{c |}" _col(25) "Region/group name"
-		noi di as text "{hline 13}{c +}{hline 36}"		
+		noi di as text "{hline 13}{c +}{hline 36}"
 		foreach reg in EAP ECA LAC MNA SAR SSA NAC Others {
-			local inst "stata datalibweb_inventory, region(`reg') `info': `reg'" // instruction 				
+			local inst "stata datalibweb_inventory, region(`reg') `info': `reg'" // instruction
 			* Regions names
 			if ("`reg'" == "EAP") local regname "East Asia and Pacific"
 			if ("`reg'" == "ECA") local regname "Europe and Central Asia"
@@ -151,23 +151,23 @@ program define datalibweb, rclass
 			if ("`reg'" == "NAC") local regname "North America"
 			if ("`reg'" == "Others") local regname "Other groups"
 			* Display
-			noi disp _col(4) `"{`inst'}"' in g _col(14) "{c |}" in y _col(`=47-length("`regname'")') "`regname'" 
+			noi disp _col(4) `"{`inst'}"' in g _col(14) "{c |}" in y _col(`=47-length("`regname'")') "`regname'"
 		}	// end of display regions loop
 		noi di as text "{hline 13}{c BT}{hline 36}"
-		exit 
+		exit
 	}
-	
+
 	** If user specified region
 	if ( "`vintage'" == "" &  "`country'" == "" & "`region'" != "" & "`repository'" == "") {  /* NEW */
 		datalibweb_inventory, region(`region') `info'
-		exit 
+		exit
 	}
 	** If user specified type
 	if ( "`vintage'" == "" &  "`country'" == "" & "`type'" != "" & "`repository'" == "") {  /* NEW */
 		datalibweb_inventory, type(`type') `info'
-		exit 
-	}	
-	***********************************************************************	
+		exit
+	}
+	***********************************************************************
 	global ext
 	if "`filename'"=="" {
 		if "`ext'"=="" global ext .dta
@@ -179,7 +179,7 @@ program define datalibweb, rclass
 	foreach gl of local resetlist {
 		global `gl'
 	}
-		
+
 	tempfile tempcpi
 	global nocpi
 	global nometa
@@ -194,14 +194,14 @@ program define datalibweb, rclass
 	if ("`=upper("`type'")'" == "GPWG")  local type GMD
 	// EAP second portal
 	if ("`=upper("`type'")'" == "EAPPOV-W")  local type EAPPOV
-	
+
 	//Country fix to make sure past codes run
 	if "`=upper("`country'")'"=="KSV" local country XKX
-	
-	//check if .do is available	
+
+	//check if .do is available
 	local persdir : sysdir PERSONAL
     if "$S_OS"=="Windows" local persdir : subinstr local persdir "/" "\", all
-		
+
 	cap confirm file "`persdir'datalibweb/`=upper("`type'")'.do"
 	if _rc==0 { //available and load
 		qui do "`persdir'datalibweb/`=upper("`type'")'.do"
@@ -209,13 +209,13 @@ program define datalibweb, rclass
 	else { //not available
 		//check installation again
 		tempfile zpfile
-		local cdir `c(pwd)'		
+		local cdir `c(pwd)'
 		qui set checksum off
-		qui copy "http://ecaweb.worldbank.org/povdata/datalibweb/_ado/d/datalibweb_ini.zip" "`zpfile'", replace 
+		qui copy "http://ecaweb.worldbank.org/povdata/datalibweb/_ado/d/datalibweb_ini.zip" "`zpfile'", replace
 		//qui cd "`other'"
 		qui cap mkdir "`persdir'datalibweb"
-		qui cd "`persdir'datalibweb"		
-		qui cap unzipfile "`zpfile'", replace // name of zip file. 
+		qui cd "`persdir'datalibweb"
+		qui cap unzipfile "`zpfile'", replace // name of zip file.
 		if _rc==0 { //_rc unzip
 			cap confirm file "`persdir'datalibweb/`=upper("`type'")'.do"
 			if _rc==0 { //available and load
@@ -232,16 +232,16 @@ program define datalibweb, rclass
 			di in red "Unable to update the setup files. Please check with the system administrator." _new
 			global errcode 198
 			error 198
-		} //_rc unzip	
+		} //_rc unzip
 		qui cd "`cdir'"
 	}
-	
+
 	//reset the global for the base option
 	if "`base'"=="base" {
 		if "$base"~="" {
 			if (`=strpos("$base", "\")'>0 | `=strpos("$base", "/")'>0) {
 				global subfolders $base
-				global defmod 
+				global defmod
 				local para1 $basedeffile
 			}
 			else {
@@ -255,7 +255,7 @@ program define datalibweb, rclass
 			error 198
 		}
 	}
-		
+
 	//add period option May 15th 2019
 	if ("`period'"~="") {
 		local period = "`=upper("`period'")'"
@@ -263,8 +263,8 @@ program define datalibweb, rclass
 	else {
 		local period ${period}
 		if ("`country'"=="ARG" & inlist("`type'","SEDLAC-02","SEDLAC-03")) local period = "S2"
-	}	
-	
+	}
+
 	// load default or allmodules
 	if "`module'"~="" local module `=upper("`module'")'
 	if ("`repository'"=="") {
@@ -275,7 +275,7 @@ program define datalibweb, rclass
 	//	if "`module'"~="" local para1 ${type}_`module'
 	//}
 	//localpath for local or getfile options
-	if "`localpath'"~="" { 
+	if "`localpath'"~="" {
 		dircheck "`localpath'"
 		if r(confdir)~=0 {
 			di in red `"The path you provided (`localpath') is not correct. Please check it."' _new
@@ -287,20 +287,20 @@ program define datalibweb, rclass
 		cap mkdir "`persdir'datalibweb\\data\\$rootname"
 		local localpath "`persdir'datalibweb\\data\\$rootname"
 	}
-	
+
 	//old fileserver option still run
 	if "`fileserver'"~="" {
 		if "$root"=="" local fileserver
 		else           local fileserver fileserver
 	}
-	
+
 	//CPIVintage() - new Feb 17 2018
 	if ($token~=5 & "$nocpi"=="") { //RAW
 		local dl 0
-		local code `"cap mata: mata describe ${rootcpi}_cpidata"' //check data in memory			
+		local code `"cap mata: mata describe ${rootcpi}_cpidata"' //check data in memory
 		`code'
 		global nomatacpi = _rc
-		if $nomatacpi==0 {	
+		if $nomatacpi==0 {
 			if (date("$S_DATE", "DMY")-date("${${rootcpi}_cpivindate}", "DMY")) >0 local dl 1
 			/*
 			if (date("$S_DATE", "DMY")-date("${`type'_cpivindate}", "DMY"))==0 {
@@ -312,7 +312,7 @@ program define datalibweb, rclass
 			*/
 		}
 		else local dl 1
-			
+
 		qui if `dl'==1 {
 			tempfile cattmp
 			cap dlw_catalog, savepath("`cattmp'") server(${rootcpi}) fullonly
@@ -335,7 +335,7 @@ program define datalibweb, rclass
 					global nomatacpi 0
 				}
 				keep if l==1
-				global l${rootcpi}cpivin = surveyid[1]	
+				global l${rootcpi}cpivin = surveyid[1]
 				clear
 			}
 			else {
@@ -343,7 +343,7 @@ program define datalibweb, rclass
 				global l${rootcpi}cpivin ${cpic}_${cpiy}_CPI_v01_M
 			}
 		} //end of dl cpivintage
-		
+
 		if "`cpivintage'"~="" {
 			local code `"mata: _fselectdata(${rootcpi}_cpidata, "`=upper("${cpic}")'", "${cpiy}", "${rootcpi}", "`cpivintage'")"'
 			`code'
@@ -356,10 +356,10 @@ program define datalibweb, rclass
 			else global r${rootcpi}cpivin `cpivin'
 		}
 		else global r${rootcpi}cpivin ${l${rootcpi}cpivin} //use latest
-		if `"${cpiw}"'~="" global cpiw ${cpiw}&para1=${r${rootcpi}cpivin}   
+		if `"${cpiw}"'~="" global cpiw ${cpiw}&para1=${r${rootcpi}cpivin}
 		*noi dis "$cpiw"
 	} //only for harmonized data
-	
+
 	global localpath `localpath'
 	if "`local'"~="" {
 		global root "$localpath"
@@ -379,7 +379,7 @@ program define datalibweb, rclass
 		}
 		local fileserver fileserver
 	}
-	
+
 	// return
 	return local type `type'
 	return local module `module'
@@ -391,14 +391,14 @@ program define datalibweb, rclass
 	//if (strpos("`=upper("$type")'","RAW") > 0) | (strpos("`=upper("$type")'","BASE") > 0) {
 	if $token==5 { //RAW
 		global nocpi nocpi
-		if "`=lower("`fileserver'")'"~="fileserver" global type2 
+		if "`=lower("`fileserver'")'"~="fileserver" global type2
 	}
-	
+
 	// NEW info option - check this again, should be top
 	/*
 	if ("`info'" == "info") {
 		datalibweb_info, country(`country') year(`year') type(`type')
-		exit 
+		exit
 	}
 	*/
 
@@ -414,7 +414,7 @@ program define datalibweb, rclass
 	noi dis as text `"{p 6 4 0 80} For any comments and/or questions on the datalibweb system, please write to {browse "mailto:datalibweb@worldbank.org; ?subject=Datalibweb ado helpdesk: <<<please describe your question and/or comment here>>>&cc=mnguyen3@worldbank.org" :datalibweb ado helpdesk}  {p_end}"'
     noi dis as text `"{p 6 4 0 80} For any comments and/or questions on the micro data (raw and/or harmonized), please write to regional admins {browse "mailto:$email, ?subject=Datalibweb microdata helpdesk: <<<please describe your question and/or comment here>>>&cc=datalibweb@worldbank.org" :datalibweb microdata helpdesk}  {p_end}"'
 	dis as text "{hline}"
-	
+
 	// Repo options
 	if ("`repository'" != "") { //adopted from datalib
 		//check and confirm the reporoot
@@ -430,20 +430,20 @@ program define datalibweb, rclass
 			cap mkdir "`persdir'datalibweb\\data"
 			local reporoot "`persdir'datalibweb\\data"
 		}
-		
+
 		//repo options
 		local nword: word count `repository' 								            // number of words on repository local
 		lstrfun repoins, regexms(`"`repository'"', `"^([a-z]+)"', 1) 			        // instruction in repository (first word)
 		lstrfun reponame, regexms(`"`repository'"', `"^([a-z]+) ([a-zA-Z0-9_\-]+)"', 2) // name of repository file
 		if (`nword' == 3) lstrfun repopt, regexms(`"`repository'"', `"([a-z]+)$"', 1) 	// name of repository file
 		else local repopt ""
-		
+
 		//Check additional options to go with repository: country, year, region, vera(0X) or vera(wrk)
 		if "`veralt'"~="" | "`vermast'"~="" {
 			if "`=upper("`veralt'")'"=="WRK" local reopt1 wrkvintage
-			else local reopt1 allvintages			
+			else local reopt1 allvintages
 		}
-		
+
 		if (!inlist("`repoins'","create", "query", "use" ,"erase", "usefile")) {
 			noi disp in red "The first instruction in repository option must be: create, query, use, usefile, or erase."
 			global errcode 198
@@ -477,7 +477,7 @@ program define datalibweb, rclass
 				global errcode 198
 				error 198
 			}
-					
+
 			qui if "`repopt'"=="" { //newfile
 				cap confirm new file "`reporoot'/repo_`reponame'.dta"
 				if _rc==0 {
@@ -492,10 +492,10 @@ program define datalibweb, rclass
 								local inlist `"`inlist' ,"`=upper("`clx1'")'""'
 							}
 							keep if inlist(`clx0'`inlist')
-						}	
-					}					
+						}
+					}
 					if _N>0 {
-						save "`cattmp'", replace			
+						save "`cattmp'", replace
 						cap copy "`cattmp'" "`reporoot'/repo_`reponame'.dta"
 						if _rc==0 noi dis as text in yellow "Repository is created - `reporoot'/repo_`reponame'.dta"
 						else noi dis as error "Cannot create the repository (latest) file for $rootname."
@@ -510,10 +510,10 @@ program define datalibweb, rclass
 					error 198
 				}
 			} //newfile
-			
-			qui if "`repopt'"=="replace" { //replace 
+
+			qui if "`repopt'"=="replace" { //replace
 				cap confirm file "`reporoot'/repo_`reponame'.dta"
-				if _rc==0 {								
+				if _rc==0 {
 					foreach clx0 in region country years module vermast veralt /*surveyid*/ {
 						if "``clx0''"~="" {
 							local clx2
@@ -525,10 +525,10 @@ program define datalibweb, rclass
 								local inlist `"`inlist' ,"`=upper("`clx1'")'""'
 							}
 							keep if inlist(`clx0'`inlist')
-						}	
+						}
 					}
 					if _N>0 {
-						save "`cattmp'", replace	
+						save "`cattmp'", replace
 						cap copy "`cattmp'" "`reporoot'/repo_`reponame'.dta", replace
 						if _rc==0 noi dis as text in yellow "Repository is created - `reporoot'/repo_`reponame'.dta"
 						else noi dis as error "Cannot create the repository (latest) file for $rootname."
@@ -541,12 +541,12 @@ program define datalibweb, rclass
 					noi dis "{err}No filename exists or could not be opened"
 					global errcode 198
 					error 198
-				}		
+				}
 			} //replace
-			
+
 			qui if "`repopt'"=="append" {  //Other options: append, update repo
 				cap confirm file "`reporoot'/repo_`reponame'.dta"
-				if _rc==0 {	
+				if _rc==0 {
 					foreach clx0 in region country years module vermast veralt /*surveyid*/ {
 						if "``clx0''"~="" {
 							local clx2
@@ -558,11 +558,11 @@ program define datalibweb, rclass
 								local inlist `"`inlist' ,"`=upper("`clx1'")'""'
 							}
 							keep if inlist(`clx0'`inlist')
-						}	
+						}
 					}
 					if _N>0 {
 						save "`cattmp'", replace
-						use "`reporoot'/repo_`reponame'.dta", clear						
+						use "`reporoot'/repo_`reponame'.dta", clear
 						merge 1:1 country years survname col module using "`cattmp'", update replace nogen
 						cap saveold "`reporoot'/repo_`reponame'.dta", replace
 						if _rc==0 noi dis as text in yellow "Repository is updated - `reporoot'/repo_`reponame'.dta"
@@ -580,18 +580,18 @@ program define datalibweb, rclass
 			}
 			exit
 		} //create
-		
+
 		// Use repository
-		if ("`repoins'" == "use") {		
+		if ("`repoins'" == "use") {
 			local dl 0
-			local code `"cap mata: mata describe `reponame'_data"' //check data in memory			
+			local code `"cap mata: mata describe `reponame'_data"' //check data in memory
 			`code'
-			global nomata = _rc	
-			if $nomata==0 {			
+			global nomata = _rc
+			if $nomata==0 {
 				if (date("$S_DATE", "DMY")-date("${`reponame'_date}", "DMY")) > 0 local dl 1 //daily reload
 			}
 			else local dl 1
-			
+
 			if `dl'==1 {
 				cap use "`reporoot'/repo_`reponame'.dta", clear
 				if _rc==0 {
@@ -602,19 +602,19 @@ program define datalibweb, rclass
 						global `reponame'_date $S_DATE
 						global nomata 0
 					}
-				}	
+				}
 				else {
 					global nomata 1
 					noi dis "{err}No filename exists or could not be opened"
 					global errcode 198
 					error 198
 				}
-			} //load repo into mata			
+			} //load repo into mata
 		} //repo use
-		
+
 		// Usefile repository
 		if ("`repoins'" == "usefile") {
-			if ("`repofile'" ~= "") {		
+			if ("`repofile'" ~= "") {
 				cap use "`repofile'", clear
 				if _rc==0 {
 					cap tostring year, replace
@@ -631,15 +631,15 @@ program define datalibweb, rclass
 					global errcode 198
 					error 198
 				}
-			} //repofile() is available		
+			} //repofile() is available
 			else { //repofile() is empty
 				global nomata 1
 				noi dis "{err}repofile() option is not specified. It should be use together with repo(usefile)"
 				global errcode 198
 				error 198
-			}			
+			}
 		} //repo usefile
-		
+
 		// Query
 		if ( "`repoins'" == "query") {
 			local repos: dir "`reporoot'" files "repo_*.dta"
@@ -653,7 +653,7 @@ program define datalibweb, rclass
 			} // end of loop by repo files
 			exit 	// exit datalibweb ado
 		}
-		
+
 		// Delete repository
 		if ( "`repoins'" == "erase") {
 			if ("`repopt'" != "force") {
@@ -669,14 +669,14 @@ program define datalibweb, rclass
 			else {
 				noi disp in red "Repository file `reponame' does not exist" _cont
 				noi disp "{stata datalibweb, repository(query): Check here}"
-				exit 		// exit datalibweb ado. 
+				exit 		// exit datalibweb ado.
 			} // end of alternative when file does not exist
 			exit // exit datalibweb ado.
 		} //erase
-		
-	} // end of repository option. 
-	
-	//Request type: data, doc, prog	
+
+	} // end of repository option.
+
+	//Request type: data, doc, prog
 	if "`request'"~="" {
 		if ("`=upper("`request'")'"~="DATA") global nocpi nocpi
 		local request `=lower("`request'")'
@@ -691,7 +691,7 @@ program define datalibweb, rclass
 						cap noi _datalibcall, country(`ctryx') year(`yr') type($type) token($token) vermast(`vermast') veralt(`veralt') folder(`fld') surveyid(`surveyid') para1(`para1') para2(`para2') para3(`para3') para4(`para4') $nocpi `fileserver' $nometa `base' `net' period(`period')
 					}
 				}
-			}				
+			}
 		}
 		else {
 			dis as error "The request(`request') is not available for this collection. Please check the system or the help file."
@@ -703,7 +703,7 @@ program define datalibweb, rclass
 	else local request data
 	*if "`request'"=="" local request data
 	global request `request'
-	
+
 	/*
 	if "`request'"=="" local request data
 	global request `request'
@@ -712,7 +712,7 @@ program define datalibweb, rclass
 		local nocpi nocpi
 	}
 	*/
-	
+
 	//check data in memory
 	//if ("`noupdate'"=="" & "`=upper("`request'")'"=="DATA" & $token==8) {
 	if "`repository'"=="" {
@@ -720,16 +720,16 @@ program define datalibweb, rclass
 			local dl 0
 			local code `"cap mata: mata describe ${rootname}_data"'
 			`code'
-			global nomata = _rc	
+			global nomata = _rc
 			if $nomata==0 {
 				if (date("$S_DATE", "DMY")-date("${${rootname}_date}", "DMY")) > $updateday local dl 1
 			}
 			else { //not available in memory $nomata~=0
 				cap confirm file "`persdir'datalibweb/data/${rootname}_latest.dta"
 				if _rc==0 { //file available
-					cap use "`persdir'datalibweb/data/${rootname}_latest.dta", clear	
+					cap use "`persdir'datalibweb/data/${rootname}_latest.dta", clear
 					if _rc==0 {
-						local dtadate : char _dta[version]			
+						local dtadate : char _dta[version]
 						if (date("$S_DATE", "DMY")-date("`dtadate'", "DMY")) > $updateday local dl 1
 						else { //less than 5 days old, put to mata
 							cap tostring year, replace
@@ -747,7 +747,7 @@ program define datalibweb, rclass
 					qui cap mkdir "`persdir'datalibweb/data"
 					local dl 1
 				}
-				
+
 				if `dl'==1 { //download the catalog
 					tempfile cattmp
 					cap dlw_catalog, savepath("`cattmp'") server($rootname)
@@ -762,9 +762,9 @@ program define datalibweb, rclass
 							}
 							else global nomata _rc
 							qui copy "`cattmp'" "`persdir'datalibweb/data/${rootname}_latest.dta", replace
-						}	
+						}
 					}
-					else {  
+					else {
 						global nomata _rc
 						dis as error "Cannot update the inventory (latest) file for $rootname."
 					}
@@ -773,13 +773,13 @@ program define datalibweb, rclass
 		}
 		else global nomata 1 //noupdate
 	}
-	
+
 	if "`getfile'"=="" { //Get the data for ctry and year
 		tempfile alldata
 		clear
 		qui save `alldata', replace emptyok
-		
-		// Latesty option	
+
+		// Latesty option
 		if "`latesty'"~="" {
 			foreach ctryx of local country {
 				local wrong = 1
@@ -802,7 +802,7 @@ program define datalibweb, rclass
 						} //repo usefile
 					}
 					else { //no repo
-						if ($nomata==0 & "$type2"~="" & "`vermast'"=="" & "`veralt'"=="" & "`filename'"=="") {	//mata memory catalog					
+						if ($nomata==0 & "$type2"~="" & "`vermast'"=="" & "`veralt'"=="" & "`filename'"=="") {	//mata memory catalog
 							if "`module'"~="" local code `"mata: _fselectdata(${rootname}_data, "`=upper("`ctryx'")'", "`yr0'", "$type", "`module'")"'
 							else              local code `"mata: _fselectdata(${rootname}_data, "`=upper("`ctryx'")'", "`yr0'", "$type")"'
 							`code'
@@ -823,9 +823,9 @@ program define datalibweb, rclass
 						cap append using `alldata'
 						qui save `alldata', replace emptyok
 					}
-				}  
+				}
 			}
-		}		
+		}
 		else { //no latesty option
 			foreach ctryx of local country {
 				foreach yr of numlist `years' {
@@ -862,7 +862,7 @@ program define datalibweb, rclass
 						cap append using `alldata'
 						qui save `alldata', replace empty
 					}
-				}  
+				}
 			}
 		}
 		qui use `alldata', clear
@@ -876,7 +876,7 @@ program define datalibweb, rclass
 		return local filename `r(filename)'
 		return local filedate `r(filedate)'
 		return local idno `r(idno)'
-		
+
 		//convert to PPP - only for harmonized database
 		//ppp(integer) INCppp(varname) PLppp(numlist)
 		if (strpos("`=upper("$type")'","RAW") == 0) & "`ppp'"~="" & ("`incppp'"~=""|"`plppp'"~="") {
@@ -911,8 +911,8 @@ program define datalibweb, rclass
 						}
 					}
 				}
-			}		
-		}		
+			}
+		}
 		qui exit $errcode
 		//qui error $errcode
 	}
@@ -935,9 +935,9 @@ program define datalibweb, rclass
 						if $errcode~=0 dis in red "There is no files for the request of `request': `ctryx', `yr', $type, and `fld'."
 					} //fld
 				} //yr
-			} //ctryx			
+			} //ctryx
 		} //non-data
-		
+
 		if ($token==8 & "`=upper("`request'")'"=="DATA" ) { //get CPI for harmonized
 			if `"$cpiw"'~="" {
 				tempfile tempcpi
@@ -969,9 +969,9 @@ end
 *! Minh Cong Nguyen
 * version 0.1 2jun2015
 cap program drop _datalibcall
-program define _datalibcall, rclass	
+program define _datalibcall, rclass
 	version 10, missing
-    local verstata : di "version " string(_caller()) ", missing:" 
+    local verstata : di "version " string(_caller()) ", missing:"
 	syntax [anything] [if] [in] [,                                    ///
 		COUNtry(string) Year(string) CIRca(string)                   ///
 		SURvey(string) PERiod(string)                                 ///
@@ -989,7 +989,7 @@ program define _datalibcall, rclass
 		surveyid(string) ext(string)                                  ///
 		NOCPI NOMETA NET  fileserver base                             ///
 		]
-	
+
 	// Datalibweb error code
 	global errcode 0
 	* Get the version
@@ -1000,8 +1000,8 @@ program define _datalibcall, rclass
 	if "`vermast'" == "" & "`veralt'" =="" & strpos("`filename'","_WRK_")==0 local latest latest
 	if "`vermast'" ~= "" & "`veralt'" ~="" local version `vermast'_M_`veralt'_A
 	if "`vermast'" ~= "" & "`veralt'" =="" local version `vermast'_M
-	if "`vermast'" == "" & "`veralt'" ~="" local version `veralt'_A	
-	
+	if "`vermast'" == "" & "`veralt'" ~="" local version `veralt'_A
+
 	//Country fix to make sure past codes run
 	if "`=upper("`country'")'"=="KSV" local country XKX
 	if "`period'"~="" local surveyid "`surveyid'-`period'" //added May 15th 2019
@@ -1023,8 +1023,8 @@ program define _datalibcall, rclass
 			}
 		}
 	} //cond
-	
-	// CPI PPP 
+
+	// CPI PPP
 	//chekc base here, if 8 and base (whole),
 	//if not,
 	global type2 $type
@@ -1032,7 +1032,7 @@ program define _datalibcall, rclass
 		if "$base"~="" {
 			if (`=strpos("$base", "\")'>0 | `=strpos("$base", "/")'>0) {
 				local subfolders $base
-				global defmod 
+				global defmod
 				local para1 $basedeffile
 			}
 			else {
@@ -1051,18 +1051,18 @@ program define _datalibcall, rclass
 
 	if ($token==5) {
 		local nocpi nocpi
-		if "`=lower("`fileserver'")'"~="fileserver" global type2 
+		if "`=lower("`fileserver'")'"~="fileserver" global type2
 	}
-	
-	// search options	
+
+	// search options
 	*if "`=upper("`request'")'"=="DATA" {
 		* Get the requested module
 		if `=wordcount("`module'")' ==0 {
 			if "`=lower("`fileserver'")'"=="fileserver" cap noisily filesearch, col($type2) country(`country') year(`year') root($root) subfolders($subfolders) surveyid(`surveyid') combstring(`filename' `version') `latest' `nometa' /* save("`data2'")  */
-			else                                        cap noisily filesearchw2, token(`token') col($type2) country(`country') year(`year') server($rootname) surveyid(`surveyid') filename(`filename') folder(`folder') para1(`para1') para2(`para2') para3(`para3') para4(`para4') `latest' `nometa' `net' /* save("`data2'")  */			
-			*else                                        cap noisily filesearchw2, token(`token') col($type2) country(`country') year(`year') server($rootname) filename(`filename') folder($subfolders) para1(`para1') para2(`para2') para3(`para3') para4(`para4') `latest' `nometa' `net' /* save("`data2'")  */			
-			//else                                      cap noisily filesearchw2, token(`token') col($type2) country(`country') year(`year') server($rootname) surveyid(`surveyid') filename(`filename') para1(`version')  `latest' `nometa' `net' /* save("`data2'")  */			
-								
+			else                                        cap noisily filesearchw2, token(`token') col($type2) country(`country') year(`year') server($rootname) surveyid(`surveyid') filename(`filename') folder(`folder') para1(`para1') para2(`para2') para3(`para3') para4(`para4') `latest' `nometa' `net' /* save("`data2'")  */
+			*else                                        cap noisily filesearchw2, token(`token') col($type2) country(`country') year(`year') server($rootname) filename(`filename') folder($subfolders) para1(`para1') para2(`para2') para3(`para3') para4(`para4') `latest' `nometa' `net' /* save("`data2'")  */
+			//else                                      cap noisily filesearchw2, token(`token') col($type2) country(`country') year(`year') server($rootname) surveyid(`surveyid') filename(`filename') para1(`version')  `latest' `nometa' `net' /* save("`data2'")  */
+
 			local rc = _rc
 			return local type `r(type)'
 			return local module `r(module)'
@@ -1074,9 +1074,9 @@ program define _datalibcall, rclass
 			return local idno `r(idno)'
 			global surveyid  `r(surveyid)'
 			global f1name `r(filename)'
-			
+
 			//Add code to the database
-			qui if strpos("`r(surveyid)'","EU-SILC")>0 & (upper("`r(module)'")=="D" | upper("`r(module)'")=="H" | upper("`r(module)'")=="P" | upper("`r(module)'")=="R") { 	
+			qui if strpos("`r(surveyid)'","EU-SILC")>0 & (upper("`r(module)'")=="D" | upper("`r(module)'")=="H" | upper("`r(module)'")=="P" | upper("`r(module)'")=="R") {
 				cap clonevar `=lower("`r(module)'")'b020 = country0
 				cap drop code
 				gen str6 code=""
@@ -1111,14 +1111,14 @@ program define _datalibcall, rclass
 				replace code="SVK" if `=lower("`r(module)'")'b020=="SK"
 				replace code="GBR" if `=lower("`r(module)'")'b020=="UK"
 				replace code="HRV" if `=lower("`r(module)'")'b020=="HR"
-				replace code="CHE" if `=lower("`r(module)'")'b020=="CH"			
+				replace code="CHE" if `=lower("`r(module)'")'b020=="CH"
 			}
 		}
 		if `=wordcount("`module'")' ==1 {
 			global para1 `para1'
 			global para2 `para2'
 			global para3 `para3'
-			global para4 `para4'	
+			global para4 `para4'
 			if ("`para1'"=="") global para1 ${type2}_`module'
 			else {
 				if ("`para2'"=="") global para2 ${type2}_`module'
@@ -1133,11 +1133,11 @@ program define _datalibcall, rclass
 					}
 				}
 			}
-				
-			if "`=lower("`fileserver'")'"=="fileserver" cap noisily filesearch, col($type2) country(`country') year(`year') root($root) subfolders($subfolders) surveyid(`surveyid') combstring(${type}_`module'$ext `version' `filename') `latest' `nometa' /* save("`data2'")  */				
-			else	                                    cap noisily filesearchw2, token(`token') col($type2) country(`country') year(`year') server($rootname) surveyid(`surveyid') filename(`filename') folder($subfolders) para1($para1) para2($para2) para3($para3) para4($para4) `latest' `nometa' `net' /* save("`data2'")  */				
-			//else	                                    cap noisily filesearchw2, token(`token') col($type2) country(`country') year(`year') server($rootname) surveyid(`surveyid') para1(${type}_`module'$ext) para2(`version') para3(`filename') `latest' `nometa' `net' /* save("`data2'")  */				
-						
+
+			if "`=lower("`fileserver'")'"=="fileserver" cap noisily filesearch, col($type2) country(`country') year(`year') root($root) subfolders($subfolders) surveyid(`surveyid') combstring(${type}_`module'$ext `version' `filename') `latest' `nometa' /* save("`data2'")  */
+			else	                                    cap noisily filesearchw2, token(`token') col($type2) country(`country') year(`year') server($rootname) surveyid(`surveyid') filename(`filename') folder($subfolders) para1($para1) para2($para2) para3($para3) para4($para4) `latest' `nometa' `net' /* save("`data2'")  */
+			//else	                                    cap noisily filesearchw2, token(`token') col($type2) country(`country') year(`year') server($rootname) surveyid(`surveyid') para1(${type}_`module'$ext) para2(`version') para3(`filename') `latest' `nometa' `net' /* save("`data2'")  */
+
 			local rc = _rc
 			return local type `r(type)'
 			return local module `r(module)'
@@ -1149,9 +1149,9 @@ program define _datalibcall, rclass
 			return local idno `r(idno)'
 			global surveyid  `r(surveyid)'
 			global f1name `r(filename)'
-			
+
 			//Add code to the database
-			qui if strpos("`r(surveyid)'","EU-SILC")>0 & (upper("`r(module)'")=="D" | upper("`r(module)'")=="H" | upper("`r(module)'")=="P" | upper("`r(module)'")=="R") { 	
+			qui if strpos("`r(surveyid)'","EU-SILC")>0 & (upper("`r(module)'")=="D" | upper("`r(module)'")=="H" | upper("`r(module)'")=="P" | upper("`r(module)'")=="R") {
 				cap clonevar `=lower("`r(module)'")'b020 = country0
 				cap drop code
 				gen str6 code=""
@@ -1186,11 +1186,11 @@ program define _datalibcall, rclass
 				replace code="SVK" if `=lower("`r(module)'")'b020=="SK"
 				replace code="GBR" if `=lower("`r(module)'")'b020=="UK"
 				replace code="HRV" if `=lower("`r(module)'")'b020=="HR"
-				replace code="CHE" if `=lower("`r(module)'")'b020=="CH"			
+				replace code="CHE" if `=lower("`r(module)'")'b020=="CH"
 			}
 		}
-		
-		* Merge between modules	
+
+		* Merge between modules
 		if `=wordcount("`module'")'  >1 {
 			local filenames
 			local filedates
@@ -1207,7 +1207,7 @@ program define _datalibcall, rclass
 					global para1 `para1'
 					global para2 `para2'
 					global para3 `para3'
-					global para4 `para4'		
+					global para4 `para4'
 					if ("`para1'"=="") global para1 ${type2}_`m0'
 					else {
 						if ("`para2'"=="") global para2 ${type2}_`m0'
@@ -1222,7 +1222,7 @@ program define _datalibcall, rclass
 							}
 						}
 					}
-					tempfile d`m0'				
+					tempfile d`m0'
 					if "`=lower("`fileserver'")'"=="fileserver" cap noisily filesearch,  col($type2) country(`country') year(`year') root($root) subfolders($subfolders) surveyid(`surveyid') combstring(${type}_`m0'$ext `version' `filename') `latest' `nometa' /*save("`data2'")  */
 					else                                        cap noisily filesearchw2, token(`token') col($type2) country(`country') year(`year') server($rootname) surveyid(`surveyid') filename(`filename') folder(`folder') para1($para1) para2($para2) para3($para3) para4($para4) `latest' `nometa' `net' /*save("`data2'")  */
 					*else                                        cap noisily filesearchw2, token(`token') col($type2) country(`country') year(`year') server($rootname) folder($subfolders) para1($para1) para2($para2) para3($para3) para4($para4) `latest' `nometa' `net' /*save("`data2'")  */
@@ -1245,11 +1245,11 @@ program define _datalibcall, rclass
 						}
 						clonevar year_n = `=lower("`r(module)'")'b010
 						cap clonevar `=lower("`r(module)'")'b020 = country0
-						clonevar ctry_n = `=lower("`r(module)'")'b020					
+						clonevar ctry_n = `=lower("`r(module)'")'b020
 						order year_n ctry_n hhid_n pid_n
 						global hhid year_n ctry_n hhid_n
 						global pid pid_n
-						
+
 						//Add code to the database
 						qui {
 							cap drop code
@@ -1286,39 +1286,39 @@ program define _datalibcall, rclass
 							replace code="GBR" if `=lower("`r(module)'")'b020=="UK"
 							replace code="HRV" if `=lower("`r(module)'")'b020=="HR"
 							replace code="CHE" if `=lower("`r(module)'")'b020=="CH"
-						} 						
+						}
 					}
 					//cap destring $hhid $pid, force replace
 					cap destring year_n hhid_n $pid, force replace
 					cap destring year, force replace
 					qui save `d`m0'', replace
-					clear					
+					clear
 				}
-				
+
 				** Merge individual modules
-				tempfile inddata			
+				tempfile inddata
 				tokenize `indm'
-				qui if wordcount("`indm'") >1 {					
+				qui if wordcount("`indm'") >1 {
 					use `d`1'', clear
 					forv j=2(1)`=wordcount("`indm'")' {
 						merge 1:1 $hhid $pid using `d``j''', gen(_m`1'``j'')
 						// Check condition of merge
-						save `inddata', replace					
+						save `inddata', replace
 					}
 				}
-				qui else {					
+				qui else {
 					use `d`1'', clear
-					save `inddata', replace				
-				}			
+					save `inddata', replace
+				}
 			}
-			
+
 			** Get household modules
 			if wordcount("`hhm'") >0 {
 				foreach m0 of local hhm {
 					global para1 `para1'
 					global para2 `para2'
 					global para3 `para3'
-					global para4 `para4'	 	
+					global para4 `para4'
 					if ("`para1'"=="") global para1 ${type2}_`m0'
 					else {
 						if ("`para2'"=="") global para2 ${type2}_`m0'
@@ -1336,7 +1336,7 @@ program define _datalibcall, rclass
 					tempfile d`m0'
 					** get info
 					if "`=lower("`fileserver'")'"=="fileserver" cap noisily filesearch, col($type2) country(`country') year(`year') root($root) subfolders($subfolders) surveyid(`surveyid') combstring(${type}_`m0'$ext `version' `filename') `latest' `nometa' /*save("`data2'")  */
-					//OLD if "`=lower("`fileserver'")'"=="fileserver" cap noisily filesearch, col($type2) country(`country') year(`year') root($root) subfolders($subfolders) anystring(${type}_`m0'$ext `version') `latest' `nometa' /*save("`data2'")  */				
+					//OLD if "`=lower("`fileserver'")'"=="fileserver" cap noisily filesearch, col($type2) country(`country') year(`year') root($root) subfolders($subfolders) anystring(${type}_`m0'$ext `version') `latest' `nometa' /*save("`data2'")  */
 					else                                        cap noisily filesearchw2, token(`token') col($type2) country(`country') year(`year') server($rootname) surveyid(`surveyid') filename(`filename') folder(`folder') para1($para1) para2($para2) para3($para3) para4($para4) `latest' `nometa' `net' /*save("`data2'")  */
 					*else                                        cap noisily filesearchw2, token(`token') col($type2) country(`country') year(`year') server($rootname) folder($subfolders) para1($para1) para2($para2) para3($para3) para4($para4) `latest' `nometa' `net' /*save("`data2'")  */
 					//else                                      cap noisily filesearchw2, token(`token') col($type2) country(`country') year(`year') server($rootname) para1(${type}_`m0'$ext) para2(`version') `latest' `nometa' `net' /*save("`data2'")  */
@@ -1346,17 +1346,17 @@ program define _datalibcall, rclass
 					local modules "`modules' `r(module)'"
 					global surveyid  `r(surveyid)' //new sep 22 2016
 					if strpos("`r(surveyid)'","EU-SILC")>0 & (upper("`r(module)'")=="D" | upper("`r(module)'")=="H") { //EU-SILC UDB-C hhid
-						cap confirm variable hhid 
+						cap confirm variable hhid
 						if _rc==0 clonevar hhid_n = hhid
 						else      clonevar hhid_n = `=lower("`r(module)'")'b030
 						cap clonevar year_n = `=lower("`r(module)'")'b010
 						cap clonevar `=lower("`r(module)'")'b020 = country0
 						cap clonevar ctry_n = `=lower("`r(module)'")'b020
-						order year_n ctry_n hhid_n 
-						global hhid year_n ctry_n hhid_n 
-						
+						order year_n ctry_n hhid_n
+						global hhid year_n ctry_n hhid_n
+
 						//Add code to the database
-						qui {					
+						qui {
 							cap drop code
 							gen str6 code=""
 							replace code="AUT" if `=lower("`r(module)'")'b020=="AT"
@@ -1391,19 +1391,19 @@ program define _datalibcall, rclass
 							replace code="GBR" if `=lower("`r(module)'")'b020=="UK"
 							replace code="HRV" if `=lower("`r(module)'")'b020=="HR"
 							replace code="CHE" if `=lower("`r(module)'")'b020=="CH"
-						} 
-					}				
-					//cap destring $hhid, force replace 
-					cap destring year_n hhid_n , force replace 
+						}
+					}
+					//cap destring $hhid, force replace
+					cap destring year_n hhid_n , force replace
 					cap destring year, force replace
 					qui save `d`m0'', replace
 					clear
 				}
-				
+
 				** Merge HH modules
-				tempfile hhsdata			
+				tempfile hhsdata
 				tokenize `hhm'
-				qui if wordcount("`hhm'") >1 {					
+				qui if wordcount("`hhm'") >1 {
 					use `d`1'', clear
 					forv j=2(1)`=wordcount("`hhm'")' {
 						merge 1:1 $hhid using `d``j''', gen(_m`1'``j'')
@@ -1411,12 +1411,12 @@ program define _datalibcall, rclass
 						save `hhsdata', replace
 					}
 				}
-				qui else {					
+				qui else {
 					use `d`1'', clear
 					save `hhsdata', replace
 				}
 			}
-			
+
 			// Merge HH and individual
 			qui if `=wordcount("`indm'")' >0 & `=wordcount("`hhm'")'==0 use `inddata', clear
 			qui if `=wordcount("`indm'")'==0 & `=wordcount("`hhm'")' >0 use `hhsdata', clear
@@ -1426,7 +1426,7 @@ program define _datalibcall, rclass
 				//report merge
 			}
 			local rc = _rc
-			
+
 			return local type `r(type)'
 			return local module `modules'
 			return local verm `r(verm)'
@@ -1439,12 +1439,12 @@ program define _datalibcall, rclass
 			if "$surveyid"=="" global surveyid  `r(surveyid)'
 			global f1name `r(filename)'
 		} //merge between modules
-		
+
 		// merge CPI
 		qui if "`nocpi'"=="" /*& `rc'==0*/ { // _rc check
 			tempfile datafinal cpiuse
 			cap save `datafinal', replace
-			if _rc==0 { //there is some data to save so it can be merged later			
+			if _rc==0 { //there is some data to save so it can be merged later
 				tempfile tempcpi
 				local cpino = 0
 				if "`=lower("`fileserver'")'"=="fileserver" {
@@ -1454,29 +1454,29 @@ program define _datalibcall, rclass
 					}
 				}
 				else {
-					if `"$cpiw"'~="" { //check vintage of CPI data 
+					if `"$cpiw"'~="" { //check vintage of CPI data
 						local dl 0
 						local persdir : sysdir PERSONAL
-						if "$S_OS"=="Windows" local persdir : subinstr local persdir "/" "\", all										
-						
+						if "$S_OS"=="Windows" local persdir : subinstr local persdir "/" "\", all
+
 						if "${${rootname}CPI_date}"~="" {
 							if (date("$S_DATE", "DMY")-date("${${rootname}CPI_date}", "DMY")) <= $updateday {
-								*cap use "`persdir'datalibweb\data\\${rootname}\\${cpifile}", clear	
-								cap use "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data\Stata\\${cpifile}", clear	
+								*cap use "`persdir'datalibweb\data\\${rootname}\\${cpifile}", clear
+								cap use "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data\Stata\\${cpifile}", clear
 								if _rc==0 local cpino = 1
 								else local dl 1
 								*noi dis "use localfile"
 							}
-							else local dl 1						
+							else local dl 1
 						}
-						else { 
+						else {
 							*cap confirm file "`persdir'datalibweb\data\\${rootname}\\${cpifile}"
 							cap confirm file "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data\Stata\\${cpifile}"
 							if _rc==0 {
 								*cap use "`persdir'datalibweb\data\\${rootname}\\${cpifile}", clear
 								cap use "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data\Stata\\${cpifile}", clear
 								if _rc==0 {
-									local dtadate : char _dta[version]			
+									local dtadate : char _dta[version]
 									if (date("$S_DATE", "DMY")-date("`dtadate'", "DMY")) > $updateday local dl 1
 									else {
 										local cpino = 1
@@ -1491,27 +1491,27 @@ program define _datalibcall, rclass
 								cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI"
 								cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}"
 								cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data"
-								cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data\Stata"				
+								cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data\Stata"
 								local dl 1
 							}
 						}
-						
+
 						if `dl'==1 {
-							cap program define _datalibweb, plugin using("dlib2_`=cond(strpos(`"`=c(machine_type)'"',"64"),64,32)'.dll")					
-							plugin call _datalibweb, "0" "`tempcpi'" "$cpiw"	
+							cap program define _datalibweb, plugin using("dlib2_`=cond(strpos(`"`=c(machine_type)'"',"64"),64,32)'.dll")
+							plugin call _datalibweb, "0" "`tempcpi'" "$cpiw"
 							if `dlibrc'==0 {
-								if "`dlibFileName'"~="ECAFileinfo.csv" {			
+								if "`dlibFileName'"~="ECAFileinfo.csv" {
 									use `tempcpi', clear
-									char _dta[version] $S_DATE							
+									char _dta[version] $S_DATE
 									compress
 									cap mkdir "`persdir'datalibweb\data\\${rootname}"
 									cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}"
 									cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI"
 									cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}"
 									cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data"
-									cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data\Stata"	
-									saveold "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data\Stata\\${cpifile}", replace	
-									*saveold "`persdir'datalibweb\data\\${rootname}\\${cpifile}", replace	
+									cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data\Stata"
+									saveold "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data\Stata\\${cpifile}", replace
+									*saveold "`persdir'datalibweb\data\\${rootname}\\${cpifile}", replace
 									local cpino = 1
 									global ${rootname}CPI_date $S_DATE
 								}
@@ -1529,77 +1529,77 @@ program define _datalibcall, rclass
 					else local cpino = 0 //cpiw is empty and user requested CPI
 				}
 				//Check CPI data is available or not
-				if `cpino'==0 use `datafinal', clear	
+				if `cpino'==0 use `datafinal', clear
 				if `cpino'==1 {
 					//OLD 30Jan18: qui if strpos("$surveyid)","EU-SILC")==0 cap keep if code=="`=upper("`country'")'"
 					//qui if "`=upper("$type")'"=="UDB-C" | "`=upper("$type")'"=="UDB-L" cap keep if code=="`=upper("`country'")'"
 					save `cpiuse', replace
-					
-					use `datafinal', clear	
+
+					use `datafinal', clear
 					cap destring year, replace
 					cap gen str code = "`=upper("`country'")'"   //need to be removed later
-					cap gen year = `year'                        //need to be removed later			
+					cap gen year = `year'                        //need to be removed later
 					qui if strpos("$surveyid)","EU-SILC")>0 replace year = year - 1				//EUSILC year
 					//qui if "`=upper("$type")'"=="UDB-C" | "`=upper("$type")'"=="UDB-L" replace year = year - 1				//EUSILC year
-					
+
 					//datalevel preperation
-					local cpilevel				
-					if "`=upper("$type")'"=="GPWG" | "`=upper("$type")'"=="GMD" | "`=upper("$type")'"=="SSAPOV" | "`=upper("$type")'"=="PCN" {	
+					local cpilevel
+					if "`=upper("$type")'"=="GPWG" | "`=upper("$type")'"=="GMD" | "`=upper("$type")'"=="SSAPOV" | "`=upper("$type")'"=="PCN" {
 						cap drop datalevel
 						local cpilevel datalevel survname
-						qui if "`=upper("`country'")'"=="IDN" | "`=upper("`country'")'"=="CHN" | "`=upper("`country'")'"=="IND" gen datalevel = urban						
-						else gen datalevel = 2						
-						//DEC2019: add survey acronym (survname) to the merge as CPIv04 now is unique at the level code year survname datalevel					
-						cap drop survname							
-						if strpos("$surveyid","_")>0 { //fullsurvey id							
+						qui if "`=upper("`country'")'"=="IDN" | "`=upper("`country'")'"=="CHN" | "`=upper("`country'")'"=="IND" gen datalevel = urban
+						else gen datalevel = 2
+						//DEC2019: add survey acronym (survname) to the merge as CPIv04 now is unique at the level code year survname datalevel
+						cap drop survname
+						if strpos("$surveyid","_")>0 { //fullsurvey id
 							qui tokenize "$surveyid", p("_")
 							cap gen survname = "`=upper("`5'")'"
 						}
 						else {
-							if strpos("$f1name","_")>0 { //filename								
+							if strpos("$f1name","_")>0 { //filename
 								qui tokenize "$f1name", p("_")
 								cap gen survname = "`=upper("`5'")'"
 							}
-							else cap gen survname = "$surveyid"							
+							else cap gen survname = "$surveyid"
 						}
 					} //GMD SSAPOV PCN
-					
-					if "`=upper("$type")'"=="SARMD" { //new Mar 15 17						
+
+					if "`=upper("$type")'"=="SARMD" { //new Mar 15 17
 						local cpilevel datalevel
 						if "`=upper("`country'")'"=="IND" gen datalevel = urban
 						else gen datalevel = 2
 						*gen urb = urban
-						*local cpilevel urban		
+						*local cpilevel urban
 					} //SARMD
-					
-					if "`=upper("$type")'"=="EAPPOV" { //new June 6 18						
+
+					if "`=upper("$type")'"=="EAPPOV" { //new June 6 18
 						local cpilevel datalevel
 						if "`=upper("`country'")'"=="IDN" gen datalevel = urban
-						else gen datalevel = 2		
+						else gen datalevel = 2
 					} //EAPPOV
-					
-					//now is to merge CPI   
+
+					//now is to merge CPI
 					if "`=upper("$type")'"=="SEDLAC-03" | "`=upper("$type")'"=="SEDLAC-02" | "`=upper("$type")'"=="SEDLAC-01" {
 						cap drop pais
 						cap drop ano
 						cap gen pais = "`=lower("`country'")'"
 						cap gen ano = `year'
 						if strpos("$surveyid","_")>0 { //fullsurvey id
-							cap drop encuesta							
+							cap drop encuesta
 							qui tokenize "$surveyid", p("_")
 							cap gen encuesta = "`=upper("`5'")'"
 						}
 						else {
 							if strpos("$f1name","_")>0 { //filename
-								cap drop encuesta							
+								cap drop encuesta
 								qui tokenize "$f1name", p("_")
 								cap gen encuesta = "`=upper("`5'")'"
 							}
 							else cap gen encuesta = "$surveyid"
-							
+
 						}
 						local cpilevel pais ano encuesta
-						cap merge m:1 `cpilevel' using `cpiuse', gen(_mcpi) keepus($cpivarw) update replace	
+						cap merge m:1 `cpilevel' using `cpiuse', gen(_mcpi) keepus($cpivarw) update replace
 						if _rc~=0 noi dis as error "Can't merge with CPI data - please check with the regional team."
 					} //SEDLAC
 					else if "`=upper("$type")'"=="LABLAC-01" {
@@ -1607,7 +1607,7 @@ program define _datalibcall, rclass
 						cap drop ano
 						cap drop encuesta
 						cap drop trimestre
-						cap gen pais = "`=lower("`country'")'"   
+						cap gen pais = "`=lower("`country'")'"
 						cap gen ano = `year'
 						if strpos("$surveyid","_")>0 {
 							qui tokenize "$surveyid", p("_")
@@ -1631,12 +1631,12 @@ program define _datalibcall, rclass
 								cap gen trimestre = `trimestre'
 							}
 							else noi dis as error "Can't merge with CPI data - no variables created in merging - please check with the regional team."
-						} //$surveyid check _ CPI	
+						} //$surveyid check _ CPI
 						local cpilevel pais ano encuesta trimestre
 						cap merge m:1 `cpilevel' using `cpiuse', gen(_mcpi) keepus($cpivarw) update replace
 						if _rc~=0 noi dis as error "Can't merge with CPI data - please check with the regional team."
 					} //LABLAC-01
-					else if "`=upper("$type")'"=="GLAD" { //GLAD March 17 2020				
+					else if "`=upper("$type")'"=="GLAD" { //GLAD Sept 10 2020
 						* Brings thresholds triplets defined in dta which should sit in DLW (our version of CPI.dta)
 						cap merge m:1 surveyid idgrade using `cpiuse', keep(master match) nogen
 						if _rc~=0 noi dis as error "Can't merge with grade/score data - please check with the EDU team."
@@ -1661,7 +1661,7 @@ program define _datalibcall, rclass
 									local resultvars : list resultvars | resultvar
 
 									* 3. Also store the full FGT family in another list
-									local all_this_resultvar "`resultvar' fgt1_`resultvar' fgt2_`resultvar'"
+									local all_this_resultvar "bmp_`resultvar' lg_`resultvar' slg_`resultvar'"
 									local all_resultvars : list all_resultvars | all_this_resultvar
 								} //resultvar
 							} //r(N)
@@ -1673,25 +1673,25 @@ program define _datalibcall, rclass
 						} //threshold_res
 
 						* Value labels for dummy variables of Harmonized Proficiency
-						label define lb_hpro 0 "Non-proficient" 1 "Proficient" .a "Missing score/level" .b "Non-harmonized grade", replace
+						label define lb_bmp 0 "Proficient" 1 "Non-proficient" .a "Missing score/level" .b "Non-harmonized grade", replace
 
-						* Loop creating the FGT0 (resultvar), FGT1 (fgt1_resultvar) and FGT2 (fgt2_resultvar)
+						* Loop creating the FGT0 (bmp_resultvar), FGT1 (lg_resultvar) and FGT2 (slg_resultvar)
 						foreach resultvar of local resultvars {
 							* FGT0: Generate all result variables as dummies which start empty
 							* (labeled as if this grade was not being harmonized)
-							gen byte  `resultvar': lb_hpro = .b
-							label var `resultvar' "Harmonized proficiency (subject-specific FGT0)"
-							char `resultvar'[clo_marker] "dummy"
+							gen byte  bmp_`resultvar': lb_bmp = .b
+							label var bmp_`resultvar' "Below minimum proficiency (subject-specific FGT0)"
+							char bmp_`resultvar'[clo_marker] "dummy"
 
 							* FGT1: the gap
-							gen float fgt1_`resultvar' = .
-							label var fgt1_`resultvar' "Gap in harmonized proficiency (subject-specific FGT1)"
-							char fgt1_`resultvar'[clo_marker] "number"
+							gen float lg_`resultvar' = .
+							label var lg_`resultvar' "Learning gap (subject-specific FGT1)"
+							char lg_`resultvar'[clo_marker] "number"
 
 							* FGT2: the gap squared
-							gen float fgt2_`resultvar' = .
-							label var fgt2_`resultvar' "Gap squared in harmonized proficiency (subject-specific FGT2)"
-							char fgt2_`resultvar'[clo_marker] "number"
+							gen float slg_`resultvar' = .
+							label var slg_`resultvar' "Squared learning gap (subject-specific FGT2)"
+							char slg_`resultvar'[clo_marker] "number"
 						} //resultvar
 
 						* Loop through all prefixes
@@ -1706,17 +1706,17 @@ program define _datalibcall, rclass
 									*------
 									* FGT0
 									* Calculate the harmonized proficiency dummy, for example:
-									* resultvar is hpro_read and originalvar is level_llece_read
-									replace `resultvar' = (`originalvar'>=`prefix'_threshold_val) if `prefix'_threshold_res == "`resultvar'" & `prefix'_threshold_var=="`originalvar'" & !missing(`originalvar')
+									* resultvar is bmp_read and originalvar is score_llece_read
+									replace bmp_`resultvar' = (`originalvar' < `prefix'_threshold_val) if `prefix'_threshold_res == "`resultvar'" & `prefix'_threshold_var == "`originalvar'" & !missing(`originalvar')
 
 									* Case of missing test score or test level
-									replace `resultvar' = .a if `prefix'_threshold_res == "`resultvar'" & `prefix'_threshold_var == "`originalvar'" & missing(`originalvar')
+									replace bmp_`resultvar' = .a if `prefix'_threshold_res == "`resultvar'" & `prefix'_threshold_var == "`originalvar'" & missing(`originalvar')
 
 									*-----
-									* FGT1 = dummy * gap (=> so it is equal to 0 if above proficiency threshold)
-									replace fgt1_`resultvar' = (- `originalvar' + `prefix'_threshold_val)/`prefix'_threshold_val if `prefix'_threshold_res == "`resultvar'" & `prefix'_threshold_var=="`originalvar'" & `resultvar' == 0
+									* FGT1 = conditional gap (=> so it is missing if above proficiency threshold)
+									replace lg_`resultvar' = (- `originalvar' + `prefix'_threshold_val)/`prefix'_threshold_val if `prefix'_threshold_res == "`resultvar'" & `prefix'_threshold_var == "`originalvar'" & bmp_`resultvar' == 1
 									* FGT2 = gap squared
-									replace fgt2_`resultvar' = fgt1_`resultvar' * fgt1_`resultvar' if `prefix'_threshold_res == "`resultvar'" & `prefix'_threshold_var=="`originalvar'" & `resultvar' == 0
+									replace slg_`resultvar' = lg_`resultvar' * lg_`resultvar' if `prefix'_threshold_res == "`resultvar'" & `prefix'_threshold_var == "`originalvar'" & bmp_`resultvar' == 1
 								} //resultvars
 							} //originalvars_used_in_prefix
 						} //prefixes
@@ -1728,13 +1728,13 @@ program define _datalibcall, rclass
 						cap unab thresholdvars : *_threshold_var *_threshold_val *_threshold_res
 						if _rc == 111 noi disp as err "No harmonized minimum proficiency thresholds defined for this learning assessment."
 						else          char _dta[onthefly_traitvars] "`thresholdvars'"
-					}				
+					}
 					else {
 						qui merge m:1 code year `cpilevel' using `cpiuse', gen(_mcpi) keepus($cpivarw) update replace
 					}
-					cap drop if _mcpi==2		
+					cap drop if _mcpi==2
 					cap drop _mcpi
-					cap drop datalevel 
+					cap drop datalevel
 					cap drop ppp_note
 					qui if strpos("$surveyid","EU-SILC")>0 replace year = year + 1				//EUSILC year
 					//qui if "`=upper("$type")'"=="UDB-C" | "`=upper("$type")'"=="UDB-L" replace year = year + 1				//EUSILC year
@@ -1747,9 +1747,9 @@ program define _datalibcall, rclass
 	else { //Non-data type
 		foreach fld of global `request' {
 			noi dis in yellow _newline "{p 4 4 2}For folder: `fld'{p_end}"
-			if "`=lower("`fileserver'")'"=="fileserver" cap noisily filesearch, col($type2) country(`country') year(`year') root($root) subfolders(`fld') surveyid(`surveyid') combstring(`filename' `version') `latest' `nometa' 
-			else                                        cap noisily filesearchw2, token(`token') col($type2) country(`country') year(`year') server($rootname) folder(`fld') surveyid(`surveyid') filename(`filename') para1(`version')  `latest' `nometa' `net' 			
-			//else                                      cap noisily filesearchw2, token(`token') col($type2) country(`country') year(`year') server($rootname) folder(`fld') surveyid(`surveyid') filename(`filename') para1(`version')  `latest' `nometa' `net' 			
+			if "`=lower("`fileserver'")'"=="fileserver" cap noisily filesearch, col($type2) country(`country') year(`year') root($root) subfolders(`fld') surveyid(`surveyid') combstring(`filename' `version') `latest' `nometa'
+			else                                        cap noisily filesearchw2, token(`token') col($type2) country(`country') year(`year') server($rootname) folder(`fld') surveyid(`surveyid') filename(`filename') para1(`version')  `latest' `nometa' `net'
+			//else                                      cap noisily filesearchw2, token(`token') col($type2) country(`country') year(`year') server($rootname) folder(`fld') surveyid(`surveyid') filename(`filename') para1(`version')  `latest' `nometa' `net'
 		}
 		exit
 	}
@@ -1770,14 +1770,14 @@ program define _dlogo
 	disp in w _col(2)"non-harmonized (original/raw) data as well as different harmonized collections across"
 	disp in w _col(2)"across Global Practices. It is integrated with Stata through the Datalibweb Stata package."
 	disp in g _n(2)""
-end 
-					  
+end
+
 cap program drop dircheck
 program define dircheck, rclass
 	version 9
 	local curdir `"`c(pwd)'"'
 	cap cd `"`1'"'
-	local confdir = _rc 
+	local confdir = _rc
 	qui cd `"`curdir'"'
 	ret scalar confdir = `confdir'
 end
@@ -1794,7 +1794,7 @@ void _fselectdata(string matrix data, string scalar code, string scalar year, st
 	st_local("loc_name_","")
 	a = select(data, data[.,1]:==code)
 	a = select(a, a[.,2]:==year)
-	a = select(a, a[.,4]:==col)	
+	a = select(a, a[.,4]:==col)
 	if (args()==5) a = select(a, a[.,5]:==mod)
 	if (args()==6) a = select(a, a[.,3]:==survname)
 	if (rows(a)==1) st_local("loc_name_", a[cols(a)])
