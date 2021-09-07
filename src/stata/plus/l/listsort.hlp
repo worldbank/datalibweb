@@ -1,0 +1,70 @@
+.-
+help for ^listsort^                                               (TSJ-1: dm0001)
+.-
+
+In-place sort
+-------------
+
+
+	^listsort^ ^"^item [ item ... ]^"^ [ ^, l^exicographic ^r^everse ]
+
+
+Description
+-----------
+
+^listsort^ sorts the items between the quote marks.
+
+
+Options
+-------
+
+^lexicographic^ performs a lexicographic (alphanumeric) sort. Case is respected.
+
+^reverse^ sorts in descending order (default is ascending).
+
+
+Remarks
+-------
+
+^listsort^ is a programmer's utility. It is occasionally handy to sort a list
+of a small number of items stored in a string, without sorting the same
+via a variable. The latter may be inconvenient and grossly inefficient in
+terms of wasted storage.
+
+Note that the item separator is a space, so that string items may not contain
+embedded spaces.
+
+^listsort^ uses a version of Shell sort (Kernighan & Ritchie 1978, p. 58).
+
+
+Stored results
+--------------
+
+^listsort^ stores the results in S-class macros:
+
+	^s(list)^	sorted items
+	^s(i1)^		item 1
+	^s(i2)^		item 2
+	 ...		 ...
+
+
+Examples
+--------
+
+ . ^listsort "5 10 2 4"^			[^s(list)^ contains "2 4 5 10"]
+ . ^listsort "5 10 2 4", reverse^		[^s(list)^ contains "10 5 4 2"]
+ . ^listsort "5 10 2 4", lexicographic^		[^s(list)^ contains "10 2 4 5"]
+
+
+Author
+------
+
+Patrick Royston, MRC Clinical Trials Unit, London.
+patrick.royston@@ctu.mrc.ac.uk
+
+
+Reference
+---------
+
+Kernighan, B. W. and D. M. Ritchie. 1978. The C programming language.
+	Englewood Cliffs, NJ: Prentice-Hall.

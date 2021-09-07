@@ -1,0 +1,17 @@
+{p 4 6 2} {cmd:WHAT'S NEW:}
+
+{p 4 6 2} BETA: {cmd:1.0} <04may2017> {p_end}
+{p 6 8 2} 1. Include new and faster APIs {p_end}
+{p 6 8 2} 2. Include functionality in user interactivity {p_end}
+{p 6 8 2} 3. Include Graphical User Interface {p_end}
+
+{p 4 6 2} {cmd:History of the file:}
+
+{p 4 6 2} ALPHA: {cmd:0.0}  <02jun2015> {p_end}
+{p 6 8 2} 1. First version {p_end}
+
+{p 4 6 2} BETA: {cmd:0.1} <29oct2015> {p_end}
+{p 6 8 2} 1. Include user interactivity {p_end}
+
+{p 4 6 2} BETA: {cmd:0.2} <30dec2015> {p_end}
+{p 6 8 2} 1. Include new collections {p_end}
