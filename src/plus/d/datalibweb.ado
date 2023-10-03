@@ -1,20 +1,3 @@
-*! version 1.04  12dec2019
-*! Minh Cong Nguyen, Raul Andres Castaneda Aguilar, Jose Montes, Paul Andres Corral Rodas, Joao Pedro Azevedo, Paul Ricci
-* version 0.1  02jun2015
-* version 0.2  26oct2015 - collection dofiles
-* version 0.3  11dec2015 - Add sysdir, conditions for collections, merging
-* version 0.31 11dec2015 - General collection with no CPI loaded
-* version 0.32 12apr2016 - exact search added
-* version 0.4  XXdec2015 - Add date filter, merge (ongoing)
-* version 0.5 Nov2016 - add getfile, mata data function
-* version 0.6 Dec2016 - add new CPI/PPP function connection
-* version 1   Jan2017 - add plugin v2
-* version 1.01 26Jan2017 - add repo option, improve eusilc files and cpi
-* version 1.02 19Feb2018 - add CPI vintages
-* version 1.03 15Apr2019 - add new collections, countrycodes,
-* version 1.04 12dec2019 - new CPI vintage with surveyname, enable some undocumented functions
-
-
 program define datalibweb, rclass	
 	version 10, missing
     local verstata : di "version " string(_caller()) ", missing:" 
@@ -35,37 +18,22 @@ program define datalibweb, rclass
 		NET	NOUPDATE FILEServer GUI									  ///
 		getfile local localpath(string) cpilocal(string) sh(string) ALLmodules         ///
 		]
-	//SURvey(string) 
+
 	qui set checksum off
 	qui set varabbrev on
 	local cmdline: copy local 0
 	
-	// add external program - MUST check and download locally from our incase it is failed for the SSC
-	/*
-	local extpro lstrfun varlocal
-	foreach pg of local extpro {
-		cap which `pg'
-		if _rc~=0 cap ssc inst `pg', replace
-		if _rc~=0 dis as error "You have to download the external program manually."
-	}
-	*/
 	
 	_dlogo		// display datlaibweb log 	
-	//user check
- 	//datalibweb_usercheck
-	//local user = "`r(user)'"	
+
 	global dlw_update = 0
 	local user = c(username)
-	//datalibweb_update 10may2017, user("`user'")	
+
 	datalibweb_update, user("`user'")	
 	if $dlw_update==1 {
-		//cap local exit `r(exit)'
-		//`exit'
 		clear all
 		discard
 		cap program drop datalibweb
-		*cap prog drop _datalibweb
-		*cap prog drop dlwgui
 		exit
 	}
 	if "`=upper("`update'")'"=="ADO" dlw_adoupdate
@@ -117,13 +85,6 @@ program define datalibweb, rclass
 		global errcode 198
 		error 198
 	}
-	/*
-	if ("`vintage'" == "" &  "`country'" == "" ) {
-		noi di as error "option country() or vintage required"
-		global errcode 198
-		error 198
-	}
-	*/
 	**  info and fileserver	
 	if ("`info'" == "info" & "`fileserver'" == "") {
 		disp in red "Info option not available"
@@ -271,9 +232,7 @@ program define datalibweb, rclass
 		if "`module'"=="" & "`filename'"=="" local module $defmod
 		if "`allmodules'"=="allmodules" local module $hhmlist $indmlist
 	}
-	//if $token==8 {
-	//	if "`module'"~="" local para1 ${type}_`module'
-	//}
+
 	//localpath for local or getfile options
 	if "`localpath'"~="" { 
 		dircheck "`localpath'"
@@ -302,14 +261,6 @@ program define datalibweb, rclass
 		global nomatacpi = _rc
 		if $nomatacpi==0 {	
 			if (date("$S_DATE", "DMY")-date("${${rootcpi}_cpivindate}", "DMY")) >0 local dl 1
-			/*
-			if (date("$S_DATE", "DMY")-date("${`type'_cpivindate}", "DMY"))==0 {
-				if "${l`type'cpivin}"=="" {
-					//get latest cpi vintage based on the mata `type'_cpidata
-				}
-			}
-			else local dl 1 //daily reload
-			*/
 		}
 		else local dl 1
 			
@@ -328,7 +279,6 @@ program define datalibweb, rclass
 				bys country year survey (verm): gen l = _n==_N
 				gen col = "${rootcpi}"
 				cap tostring year, replace
-				*cap putmata `=upper("`type'")'_cpidata = (code year survey col verm surveyid), replace
 				cap putmata ${rootcpi}_cpidata = (code year survey col verm surveyid), replace
 				if _rc==0 {
 					global ${rootcpi}_cpivindate $S_DATE
@@ -357,7 +307,6 @@ program define datalibweb, rclass
 		}
 		else global r${rootcpi}cpivin ${l${rootcpi}cpivin} //use latest
 		if `"${cpiw}"'~="" global cpiw ${cpiw}&para1=${r${rootcpi}cpivin}   
-		*noi dis "$cpiw"
 	} //only for harmonized data
 	
 	global localpath `localpath'
@@ -374,7 +323,6 @@ program define datalibweb, rclass
 		}
 		else {
 			noi di in yellow "The cpilocal() option is not specified. You are using the default/sysyem CPI database."
-			*global cpi "`persdir'datalibweb\\data\\$rootname\\Support\Support_2005_CPI\Support_2005_CPI_v01_M\Data\Stata\\${cpifile}"
 			global cpi "`persdir'datalibweb\\data\\$rootname\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data\Stata\\${cpifile}"
 		}
 		local fileserver fileserver
@@ -388,20 +336,11 @@ program define datalibweb, rclass
 	return local cpifile $cpifile
 	global dlcmd `cmdline'
 	global type2 $type
-	//if (strpos("`=upper("$type")'","RAW") > 0) | (strpos("`=upper("$type")'","BASE") > 0) {
 	if $token==5 { //RAW
 		global nocpi nocpi
 		if "`=lower("`fileserver'")'"~="fileserver" global type2 
 	}
 	
-	// NEW info option - check this again, should be top
-	/*
-	if ("`info'" == "info") {
-		datalibweb_info, country(`country') year(`year') type(`type')
-		exit 
-	}
-	*/
-
 	// Generic text
 	dis as text "{hline}"
 	noi dis as text in y "{p 4 4 2}DISCLAIMER:{p_end}"
@@ -481,7 +420,7 @@ program define datalibweb, rclass
 			qui if "`repopt'"=="" { //newfile
 				cap confirm new file "`reporoot'/repo_`reponame'.dta"
 				if _rc==0 {
-					foreach clx0 in region country years module vermast veralt /*surveyid*/ {
+					foreach clx0 in region country years module vermast veralt {
 						if "``clx0''"~="" {
 							local clx2
 							local ofx of
@@ -514,7 +453,7 @@ program define datalibweb, rclass
 			qui if "`repopt'"=="replace" { //replace 
 				cap confirm file "`reporoot'/repo_`reponame'.dta"
 				if _rc==0 {								
-					foreach clx0 in region country years module vermast veralt /*surveyid*/ {
+					foreach clx0 in region country years module vermast veralt {
 						if "``clx0''"~="" {
 							local clx2
 							local ofx of
@@ -547,7 +486,7 @@ program define datalibweb, rclass
 			qui if "`repopt'"=="append" {  //Other options: append, update repo
 				cap confirm file "`reporoot'/repo_`reponame'.dta"
 				if _rc==0 {	
-					foreach clx0 in region country years module vermast veralt /*surveyid*/ {
+					foreach clx0 in region country years module vermast veralt {
 						if "``clx0''"~="" {
 							local clx2
 							local ofx of
@@ -687,7 +626,6 @@ program define datalibweb, rclass
 				foreach yr of numlist `years' {
 					foreach fld of global `request' {
 						noi dis in yellow _newline "{p 4 4 2}For folder: `fld'{p_end}"
-						*cap noi _datalibcall, country(`ctryx') year(`yr') type($type) request(`request') token($token) module(`module') vermast(`vermast') veralt(`veralt') filename(`filename') surveyid(`surveyid') para1(`para1') para2(`para2') para3(`para3') para4(`para4') $nocpi `fileserver' $nometa `base' `net'
 						cap noi _datalibcall, country(`ctryx') year(`yr') type($type) token($token) vermast(`vermast') veralt(`veralt') folder(`fld') surveyid(`surveyid') para1(`para1') para2(`para2') para3(`para3') para4(`para4') $nocpi `fileserver' $nometa `base' `net' period(`period')
 					}
 				}
@@ -701,20 +639,9 @@ program define datalibweb, rclass
 		exit
 	}
 	else local request data
-	*if "`request'"=="" local request data
 	global request `request'
-	
-	/*
-	if "`request'"=="" local request data
-	global request `request'
-	if ("`=upper("`request'")'"=="DOC" | "`=upper("`request'")'"=="PROG") {
-		if "`ext'"=="" global ext
-		local nocpi nocpi
-	}
-	*/
 	
 	//check data in memory
-	//if ("`noupdate'"=="" & "`=upper("`request'")'"=="DATA" & $token==8) {
 	if "`repository'"=="" {
 		if ("`noupdate'"=="" & $token==8) {
 			local dl 0
@@ -810,7 +737,6 @@ program define datalibweb, rclass
 							if "`filename'"~="" noi dis "Use memory ($type): `filename' - in data catalog"
 						}
 					}
-					*cap noi _datalibcall, country(`ctryx') year(`yr0') type($type) request(`request') token($token) module(`module') vermast(`vermast') veralt(`veralt') filename(`filename') surveyid(`surveyid') para1(`para1') para2(`para2') para3(`para3') para4(`para4') $nocpi `fileserver' $nometa `base' `net'
 					cap noi _datalibcall, country(`ctryx') year(`yr0') type($type) token($token) module(`module') vermast(`vermast') veralt(`veralt') filename(`filename') surveyid(`surveyid') para1(`para1') para2(`para2') para3(`para3') para4(`para4') ext($ext) $nocpi `fileserver' $nometa `base' `net' period(`period')
 
 					if $errcode~=0 {
@@ -854,7 +780,6 @@ program define datalibweb, rclass
 							if "`filename'"~="" noi dis "Use memory ($type): `filename' - in data catalog"
 						}
 					}
-					*cap noi _datalibcall, country(`ctryx') year(`yr') type($type) request(`request') token($token) module(`module') vermast(`vermast') veralt(`veralt') filename(`filename') surveyid(`surveyid') para1(`para1') para2(`para2') para3(`para3') para4(`para4') $nocpi `fileserver' $nometa `base' `net'
 					cap noi _datalibcall, country(`ctryx') year(`yr') type($type) token($token) module(`module') vermast(`vermast') veralt(`veralt') filename(`filename') surveyid(`surveyid') para1(`para1') para2(`para2') para3(`para3') para4(`para4') ext($ext) $nocpi `fileserver' $nometa `base' `net' period(`period')
 					if $errcode==0 {
 						local filename
@@ -931,7 +856,6 @@ program define datalibweb, rclass
 					foreach fld of global `request' {
 						noi dis in yellow _newline "{p 4 4 2}For folder: `fld'{p_end}"
 						cap noi dlw_getfile, country(`ctryx') year(`yr') col($type2) server($rootname) savepath("$localpath") folder(`fld') token($token) module(`module') vermast(`vermast') veralt(`veralt') filename(`filename') surveyid(`surveyid') para1(`para1') para2(`para2') para3(`para3') para4(`para4') `base' `net'
-						//cap noi dlw_getfile, col($type2) country(`ctryx') year(`yr') server($rootname) savepath("$localpath") surveyid(`surveyid') folder(`fld')
 						if $errcode~=0 dis in red "There is no files for the request of `request': `ctryx', `yr', $type, and `fld'."
 					} //fld
 				} //yr
@@ -946,8 +870,6 @@ program define datalibweb, rclass
 					if "`dlibFileName'"~="ECAFileinfo.csv" {
 						cap shell mkdir "${localpath}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data\Stata"
 						cap copy "`tempcpi'" "${localpath}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data\Stata\\${cpifile}", replace
-						*cap shell mkdir "${localpath}\\Support\Support_2005_CPI\Support_2005_CPI_v01_M\Data\Stata"
-						*cap copy "`tempcpi'" "${localpath}\\Support\Support_2005_CPI\Support_2005_CPI_v01_M\Data\Stata\\${cpifile}", replace
 						if _rc~=0 dis in red `"Failed to copy the CPI/PPP data with the defined structure: $cpiw"'
 					}
 					else {
@@ -965,10 +887,6 @@ program define datalibweb, rclass
 	clear
 end
 
-*! version 0.2 26oct2015
-*! Minh Cong Nguyen
-* version 0.1 2jun2015
-cap program drop _datalibcall
 program define _datalibcall, rclass	
 	version 10, missing
     local verstata : di "version " string(_caller()) ", missing:" 
@@ -995,8 +913,6 @@ program define _datalibcall, rclass
 	* Get the version
 	local latest
 	local version
-	//if "`vermast'" == "" & "`veralt'" =="" & "`surveyid'"=="" local latest latest
-	*if "`vermast'" == "" & "`veralt'" =="" local latest latest
 	if "`vermast'" == "" & "`veralt'" =="" & strpos("`filename'","_WRK_")==0 local latest latest
 	if "`vermast'" ~= "" & "`veralt'" ~="" local version `vermast'_M_`veralt'_A
 	if "`vermast'" ~= "" & "`veralt'" =="" local version `vermast'_M
@@ -1040,13 +956,6 @@ program define _datalibcall, rclass
 				global type2
 			}
 		}
-		/*
-		else {
-			di in red "This type ($type) has no base option. Please check with the collection admin." _new
-			global errcode 198
-			error 198
-		}
-		*/
 	}
 
 	if ($token==5) {
@@ -1055,714 +964,650 @@ program define _datalibcall, rclass
 	}
 	
 	// search options	
-	*if "`=upper("`request'")'"=="DATA" {
-		* Get the requested module
-		if `=wordcount("`module'")' ==0 {
-			if "`=lower("`fileserver'")'"=="fileserver" cap noisily filesearch, col($type2) country(`country') year(`year') root($root) subfolders($subfolders) surveyid(`surveyid') combstring(`filename' `version') `latest' `nometa' /* save("`data2'")  */
-			else                                        cap noisily filesearchw2, token(`token') col($type2) country(`country') year(`year') server($rootname) surveyid(`surveyid') filename(`filename') folder(`folder') para1(`para1') para2(`para2') para3(`para3') para4(`para4') `latest' `nometa' `net' /* save("`data2'")  */			
-			*else                                        cap noisily filesearchw2, token(`token') col($type2) country(`country') year(`year') server($rootname) filename(`filename') folder($subfolders) para1(`para1') para2(`para2') para3(`para3') para4(`para4') `latest' `nometa' `net' /* save("`data2'")  */			
-			//else                                      cap noisily filesearchw2, token(`token') col($type2) country(`country') year(`year') server($rootname) surveyid(`surveyid') filename(`filename') para1(`version')  `latest' `nometa' `net' /* save("`data2'")  */			
-								
-			local rc = _rc
-			return local type `r(type)'
-			return local module `r(module)'
-			return local verm `r(verm)'
-			return local vera `r(vera)'
-			return local surveyid  `r(surveyid)'
-			return local filename `r(filename)'
-			return local filedate `r(filedate)'
-			return local idno `r(idno)'
-			global surveyid  `r(surveyid)'
-			global f1name `r(filename)'
-			
-			//Add code to the database
-			qui if strpos("`r(surveyid)'","EU-SILC")>0 & (upper("`r(module)'")=="D" | upper("`r(module)'")=="H" | upper("`r(module)'")=="P" | upper("`r(module)'")=="R") { 	
-				cap clonevar `=lower("`r(module)'")'b020 = country0
-				cap drop code
-				gen str6 code=""
-				replace code="AUT" if `=lower("`r(module)'")'b020=="AT"
-				replace code="BEL" if `=lower("`r(module)'")'b020=="BE"
-				replace code="BGR" if `=lower("`r(module)'")'b020=="BG"
-				replace code="CYP" if `=lower("`r(module)'")'b020=="CY"
-				replace code="CZE" if `=lower("`r(module)'")'b020=="CZ"
-				replace code="DEU" if `=lower("`r(module)'")'b020=="DE"
-				replace code="DNK" if `=lower("`r(module)'")'b020=="DK"
-				replace code="EST" if `=lower("`r(module)'")'b020=="EE"
-				replace code="GRC" if `=lower("`r(module)'")'b020=="EL" | `=lower("`r(module)'")'b020=="GR"
-				replace code="ESP" if `=lower("`r(module)'")'b020=="ES"
-				replace code="FIN" if `=lower("`r(module)'")'b020=="FI"
-				replace code="FRA" if `=lower("`r(module)'")'b020=="FR"
-				replace code="HUN" if `=lower("`r(module)'")'b020=="HU"
-				replace code="IRL" if `=lower("`r(module)'")'b020=="IE"
-				replace code="ISL" if `=lower("`r(module)'")'b020=="IS"
-				replace code="ITA" if `=lower("`r(module)'")'b020=="IT"
-				replace code="LTU" if `=lower("`r(module)'")'b020=="LT"
-				replace code="LUX" if `=lower("`r(module)'")'b020=="LU"
-				replace code="LVA" if `=lower("`r(module)'")'b020=="LV"
-				replace code="MLT" if `=lower("`r(module)'")'b020=="MT"
-				replace code="NLD" if `=lower("`r(module)'")'b020=="NL"
-				replace code="NOR" if `=lower("`r(module)'")'b020=="NO"
-				replace code="POL" if `=lower("`r(module)'")'b020=="PL"
-				replace code="PRT" if `=lower("`r(module)'")'b020=="PT"
-				replace code="ROU" if `=lower("`r(module)'")'b020=="RO"
-				replace code="SRB" if `=lower("`r(module)'")'b020=="RS"
-				replace code="SWE" if `=lower("`r(module)'")'b020=="SE"
-				replace code="SVN" if `=lower("`r(module)'")'b020=="SI"
-				replace code="SVK" if `=lower("`r(module)'")'b020=="SK"
-				replace code="GBR" if `=lower("`r(module)'")'b020=="UK"
-				replace code="HRV" if `=lower("`r(module)'")'b020=="HR"
-				replace code="CHE" if `=lower("`r(module)'")'b020=="CH"			
-			}
+	* Get the requested module
+	if `=wordcount("`module'")' ==0 {
+		if "`=lower("`fileserver'")'"=="fileserver" cap noisily filesearch, col($type2) country(`country') year(`year') root($root) subfolders($subfolders) surveyid(`surveyid') combstring(`filename' `version') `latest' `nometa' /* save("`data2'")  */
+		else                                        cap noisily filesearchw2, token(`token') col($type2) country(`country') year(`year') server($rootname) surveyid(`surveyid') filename(`filename') folder(`folder') para1(`para1') para2(`para2') para3(`para3') para4(`para4') `latest' `nometa' `net' /* save("`data2'")  */			
+						
+		local rc = _rc
+		return local type `r(type)'
+		return local module `r(module)'
+		return local verm `r(verm)'
+		return local vera `r(vera)'
+		return local surveyid  `r(surveyid)'
+		return local filename `r(filename)'
+		return local filedate `r(filedate)'
+		return local idno `r(idno)'
+		global surveyid  `r(surveyid)'
+		global f1name `r(filename)'
+		
+		//Add code to the database
+		qui if strpos("`r(surveyid)'","EU-SILC")>0 & (upper("`r(module)'")=="D" | upper("`r(module)'")=="H" | upper("`r(module)'")=="P" | upper("`r(module)'")=="R") { 	
+			cap clonevar `=lower("`r(module)'")'b020 = country0
+			cap drop code
+			gen str6 code=""
+			replace code="AUT" if `=lower("`r(module)'")'b020=="AT"
+			replace code="BEL" if `=lower("`r(module)'")'b020=="BE"
+			replace code="BGR" if `=lower("`r(module)'")'b020=="BG"
+			replace code="CYP" if `=lower("`r(module)'")'b020=="CY"
+			replace code="CZE" if `=lower("`r(module)'")'b020=="CZ"
+			replace code="DEU" if `=lower("`r(module)'")'b020=="DE"
+			replace code="DNK" if `=lower("`r(module)'")'b020=="DK"
+			replace code="EST" if `=lower("`r(module)'")'b020=="EE"
+			replace code="GRC" if `=lower("`r(module)'")'b020=="EL" | `=lower("`r(module)'")'b020=="GR"
+			replace code="ESP" if `=lower("`r(module)'")'b020=="ES"
+			replace code="FIN" if `=lower("`r(module)'")'b020=="FI"
+			replace code="FRA" if `=lower("`r(module)'")'b020=="FR"
+			replace code="HUN" if `=lower("`r(module)'")'b020=="HU"
+			replace code="IRL" if `=lower("`r(module)'")'b020=="IE"
+			replace code="ISL" if `=lower("`r(module)'")'b020=="IS"
+			replace code="ITA" if `=lower("`r(module)'")'b020=="IT"
+			replace code="LTU" if `=lower("`r(module)'")'b020=="LT"
+			replace code="LUX" if `=lower("`r(module)'")'b020=="LU"
+			replace code="LVA" if `=lower("`r(module)'")'b020=="LV"
+			replace code="MLT" if `=lower("`r(module)'")'b020=="MT"
+			replace code="NLD" if `=lower("`r(module)'")'b020=="NL"
+			replace code="NOR" if `=lower("`r(module)'")'b020=="NO"
+			replace code="POL" if `=lower("`r(module)'")'b020=="PL"
+			replace code="PRT" if `=lower("`r(module)'")'b020=="PT"
+			replace code="ROU" if `=lower("`r(module)'")'b020=="RO"
+			replace code="SRB" if `=lower("`r(module)'")'b020=="RS"
+			replace code="SWE" if `=lower("`r(module)'")'b020=="SE"
+			replace code="SVN" if `=lower("`r(module)'")'b020=="SI"
+			replace code="SVK" if `=lower("`r(module)'")'b020=="SK"
+			replace code="GBR" if `=lower("`r(module)'")'b020=="UK"
+			replace code="HRV" if `=lower("`r(module)'")'b020=="HR"
+			replace code="CHE" if `=lower("`r(module)'")'b020=="CH"			
 		}
-		if `=wordcount("`module'")' ==1 {
-			global para1 `para1'
-			global para2 `para2'
-			global para3 `para3'
-			global para4 `para4'	
-			if ("`para1'"=="") global para1 ${type2}_`module'
+	}
+	if `=wordcount("`module'")' ==1 {
+		global para1 `para1'
+		global para2 `para2'
+		global para3 `para3'
+		global para4 `para4'	
+		if ("`para1'"=="") global para1 ${type2}_`module'
+		else {
+			if ("`para2'"=="") global para2 ${type2}_`module'
 			else {
-				if ("`para2'"=="") global para2 ${type2}_`module'
+				if ("`para3'"=="") global para3 ${type2}_`module'
 				else {
-					if ("`para3'"=="") global para3 ${type2}_`module'
+					if ("`para4'"=="") global para4 ${type2}_`module'
 					else {
-						if ("`para4'"=="") global para4 ${type2}_`module'
-						else {
-							dis as error "Too many conditions (para1-4 and `cond'), please redefine the parameters."
-							error 1
-						}
+						dis as error "Too many conditions (para1-4 and `cond'), please redefine the parameters."
+						error 1
 					}
 				}
 			}
-				
-			if "`=lower("`fileserver'")'"=="fileserver" cap noisily filesearch, col($type2) country(`country') year(`year') root($root) subfolders($subfolders) surveyid(`surveyid') combstring(${type}_`module'$ext `version' `filename') `latest' `nometa' /* save("`data2'")  */				
-			else	                                    cap noisily filesearchw2, token(`token') col($type2) country(`country') year(`year') server($rootname) surveyid(`surveyid') filename(`filename') folder($subfolders) para1($para1) para2($para2) para3($para3) para4($para4) `latest' `nometa' `net' /* save("`data2'")  */				
-			//else	                                    cap noisily filesearchw2, token(`token') col($type2) country(`country') year(`year') server($rootname) surveyid(`surveyid') para1(${type}_`module'$ext) para2(`version') para3(`filename') `latest' `nometa' `net' /* save("`data2'")  */				
-						
-			local rc = _rc
-			return local type `r(type)'
-			return local module `r(module)'
-			return local verm `r(verm)'
-			return local vera `r(vera)'
-			return local surveyid  `r(surveyid)'
-			return local filename `r(filename)'
-			return local filedate `r(filedate)'
-			return local idno `r(idno)'
-			global surveyid  `r(surveyid)'
-			global f1name `r(filename)'
+		}
 			
-			//Add code to the database
-			qui if strpos("`r(surveyid)'","EU-SILC")>0 & (upper("`r(module)'")=="D" | upper("`r(module)'")=="H" | upper("`r(module)'")=="P" | upper("`r(module)'")=="R") { 	
-				cap clonevar `=lower("`r(module)'")'b020 = country0
-				cap drop code
-				gen str6 code=""
-				replace code="AUT" if `=lower("`r(module)'")'b020=="AT"
-				replace code="BEL" if `=lower("`r(module)'")'b020=="BE"
-				replace code="BGR" if `=lower("`r(module)'")'b020=="BG"
-				replace code="CYP" if `=lower("`r(module)'")'b020=="CY"
-				replace code="CZE" if `=lower("`r(module)'")'b020=="CZ"
-				replace code="DEU" if `=lower("`r(module)'")'b020=="DE"
-				replace code="DNK" if `=lower("`r(module)'")'b020=="DK"
-				replace code="EST" if `=lower("`r(module)'")'b020=="EE"
-				replace code="GRC" if `=lower("`r(module)'")'b020=="EL" | `=lower("`r(module)'")'b020=="GR"
-				replace code="ESP" if `=lower("`r(module)'")'b020=="ES"
-				replace code="FIN" if `=lower("`r(module)'")'b020=="FI"
-				replace code="FRA" if `=lower("`r(module)'")'b020=="FR"
-				replace code="HUN" if `=lower("`r(module)'")'b020=="HU"
-				replace code="IRL" if `=lower("`r(module)'")'b020=="IE"
-				replace code="ISL" if `=lower("`r(module)'")'b020=="IS"
-				replace code="ITA" if `=lower("`r(module)'")'b020=="IT"
-				replace code="LTU" if `=lower("`r(module)'")'b020=="LT"
-				replace code="LUX" if `=lower("`r(module)'")'b020=="LU"
-				replace code="LVA" if `=lower("`r(module)'")'b020=="LV"
-				replace code="MLT" if `=lower("`r(module)'")'b020=="MT"
-				replace code="NLD" if `=lower("`r(module)'")'b020=="NL"
-				replace code="NOR" if `=lower("`r(module)'")'b020=="NO"
-				replace code="POL" if `=lower("`r(module)'")'b020=="PL"
-				replace code="PRT" if `=lower("`r(module)'")'b020=="PT"
-				replace code="ROU" if `=lower("`r(module)'")'b020=="RO"
-				replace code="SRB" if `=lower("`r(module)'")'b020=="RS"
-				replace code="SWE" if `=lower("`r(module)'")'b020=="SE"
-				replace code="SVN" if `=lower("`r(module)'")'b020=="SI"
-				replace code="SVK" if `=lower("`r(module)'")'b020=="SK"
-				replace code="GBR" if `=lower("`r(module)'")'b020=="UK"
-				replace code="HRV" if `=lower("`r(module)'")'b020=="HR"
-				replace code="CHE" if `=lower("`r(module)'")'b020=="CH"			
+		if "`=lower("`fileserver'")'"=="fileserver" cap noisily filesearch, col($type2) country(`country') year(`year') root($root) subfolders($subfolders) surveyid(`surveyid') combstring(${type}_`module'$ext `version' `filename') `latest' `nometa' /* save("`data2'")  */				
+		else	                                    cap noisily filesearchw2, token(`token') col($type2) country(`country') year(`year') server($rootname) surveyid(`surveyid') filename(`filename') folder($subfolders) para1($para1) para2($para2) para3($para3) para4($para4) `latest' `nometa' `net' /* save("`data2'")  */				
+					
+		local rc = _rc
+		return local type `r(type)'
+		return local module `r(module)'
+		return local verm `r(verm)'
+		return local vera `r(vera)'
+		return local surveyid  `r(surveyid)'
+		return local filename `r(filename)'
+		return local filedate `r(filedate)'
+		return local idno `r(idno)'
+		global surveyid  `r(surveyid)'
+		global f1name `r(filename)'
+		
+		//Add code to the database
+		qui if strpos("`r(surveyid)'","EU-SILC")>0 & (upper("`r(module)'")=="D" | upper("`r(module)'")=="H" | upper("`r(module)'")=="P" | upper("`r(module)'")=="R") { 	
+			cap clonevar `=lower("`r(module)'")'b020 = country0
+			cap drop code
+			gen str6 code=""
+			replace code="AUT" if `=lower("`r(module)'")'b020=="AT"
+			replace code="BEL" if `=lower("`r(module)'")'b020=="BE"
+			replace code="BGR" if `=lower("`r(module)'")'b020=="BG"
+			replace code="CYP" if `=lower("`r(module)'")'b020=="CY"
+			replace code="CZE" if `=lower("`r(module)'")'b020=="CZ"
+			replace code="DEU" if `=lower("`r(module)'")'b020=="DE"
+			replace code="DNK" if `=lower("`r(module)'")'b020=="DK"
+			replace code="EST" if `=lower("`r(module)'")'b020=="EE"
+			replace code="GRC" if `=lower("`r(module)'")'b020=="EL" | `=lower("`r(module)'")'b020=="GR"
+			replace code="ESP" if `=lower("`r(module)'")'b020=="ES"
+			replace code="FIN" if `=lower("`r(module)'")'b020=="FI"
+			replace code="FRA" if `=lower("`r(module)'")'b020=="FR"
+			replace code="HUN" if `=lower("`r(module)'")'b020=="HU"
+			replace code="IRL" if `=lower("`r(module)'")'b020=="IE"
+			replace code="ISL" if `=lower("`r(module)'")'b020=="IS"
+			replace code="ITA" if `=lower("`r(module)'")'b020=="IT"
+			replace code="LTU" if `=lower("`r(module)'")'b020=="LT"
+			replace code="LUX" if `=lower("`r(module)'")'b020=="LU"
+			replace code="LVA" if `=lower("`r(module)'")'b020=="LV"
+			replace code="MLT" if `=lower("`r(module)'")'b020=="MT"
+			replace code="NLD" if `=lower("`r(module)'")'b020=="NL"
+			replace code="NOR" if `=lower("`r(module)'")'b020=="NO"
+			replace code="POL" if `=lower("`r(module)'")'b020=="PL"
+			replace code="PRT" if `=lower("`r(module)'")'b020=="PT"
+			replace code="ROU" if `=lower("`r(module)'")'b020=="RO"
+			replace code="SRB" if `=lower("`r(module)'")'b020=="RS"
+			replace code="SWE" if `=lower("`r(module)'")'b020=="SE"
+			replace code="SVN" if `=lower("`r(module)'")'b020=="SI"
+			replace code="SVK" if `=lower("`r(module)'")'b020=="SK"
+			replace code="GBR" if `=lower("`r(module)'")'b020=="UK"
+			replace code="HRV" if `=lower("`r(module)'")'b020=="HR"
+			replace code="CHE" if `=lower("`r(module)'")'b020=="CH"			
+		}
+	}
+
+	* Merge between modules	
+	if `=wordcount("`module'")'  >1 {
+		local filenames
+		local filedates
+		local modules
+		local indm
+		local hhm
+		foreach m of local module {
+			if inlist(upper("`m'"), $indmlist) local indm `"`indm' `m'"'
+			if inlist(upper("`m'"), $hhmlist) local hhm `"`hhm' `m'"'
+		}
+		** Get individual modules
+		if wordcount("`indm'") >0 {
+			foreach m0 of local indm {
+				global para1 `para1'
+				global para2 `para2'
+				global para3 `para3'
+				global para4 `para4'		
+				if ("`para1'"=="") global para1 ${type2}_`m0'
+				else {
+					if ("`para2'"=="") global para2 ${type2}_`m0'
+					else {
+						if ("`para3'"=="") global para3 ${type2}_`m0'
+						else {
+							if ("`para4'"=="") global para4 ${type2}_`m0'
+							else {
+								dis as error "Too many conditions (para1-4 and `cond'), please redefine the parameters."
+								error 1
+							}
+						}
+					}
+				}
+				tempfile d`m0'				
+				if "`=lower("`fileserver'")'"=="fileserver" cap noisily filesearch,  col($type2) country(`country') year(`year') root($root) subfolders($subfolders) surveyid(`surveyid') combstring(${type}_`m0'$ext `version' `filename') `latest' `nometa' /*save("`data2'")  */
+				else                                        cap noisily filesearchw2, token(`token') col($type2) country(`country') year(`year') server($rootname) surveyid(`surveyid') filename(`filename') folder(`folder') para1($para1) para2($para2) para3($para3) para4($para4) `latest' `nometa' `net' /*save("`data2'")  */
+				local filenames "`filenames' `r(filename)';"
+				local filedates "`filedates' `r(filedate)';"
+				local modules "`modules' `r(module)'"
+				global surveyid  `r(surveyid)' //new sep 22 2016
+				if strpos("`r(surveyid)'","EU-SILC")>0 & (upper("`r(module)'")=="P" | upper("`r(module)'")=="R") { //EU-SILC UDB-C hhid
+					cap confirm variable hhid
+					if _rc==0 {
+						clonevar hhid_n = hhid
+						clonevar pid_n = pid
+					}
+					else {
+						*gen double hhid_n = int(`=lower("`r(module)'")'b030/100)
+						gen double hhid_n = `=lower("`r(module)'")'x030 // changed Feb 2 2018 based on Eurostat email
+						gen double pid_n  = `=lower("`r(module)'")'b030
+					}
+					clonevar year_n = `=lower("`r(module)'")'b010
+					cap clonevar `=lower("`r(module)'")'b020 = country0
+					clonevar ctry_n = `=lower("`r(module)'")'b020					
+					order year_n ctry_n hhid_n pid_n
+					global hhid year_n ctry_n hhid_n
+					global pid pid_n
+					
+					//Add code to the database
+					qui {
+						cap drop code
+						gen str6 code=""
+						replace code="AUT" if `=lower("`r(module)'")'b020=="AT"
+						replace code="BEL" if `=lower("`r(module)'")'b020=="BE"
+						replace code="BGR" if `=lower("`r(module)'")'b020=="BG"
+						replace code="CYP" if `=lower("`r(module)'")'b020=="CY"
+						replace code="CZE" if `=lower("`r(module)'")'b020=="CZ"
+						replace code="DEU" if `=lower("`r(module)'")'b020=="DE"
+						replace code="DNK" if `=lower("`r(module)'")'b020=="DK"
+						replace code="EST" if `=lower("`r(module)'")'b020=="EE"
+						replace code="GRC" if `=lower("`r(module)'")'b020=="EL" | `=lower("`r(module)'")'b020=="GR"
+						replace code="ESP" if `=lower("`r(module)'")'b020=="ES"
+						replace code="FIN" if `=lower("`r(module)'")'b020=="FI"
+						replace code="FRA" if `=lower("`r(module)'")'b020=="FR"
+						replace code="HUN" if `=lower("`r(module)'")'b020=="HU"
+						replace code="IRL" if `=lower("`r(module)'")'b020=="IE"
+						replace code="ISL" if `=lower("`r(module)'")'b020=="IS"
+						replace code="ITA" if `=lower("`r(module)'")'b020=="IT"
+						replace code="LTU" if `=lower("`r(module)'")'b020=="LT"
+						replace code="LUX" if `=lower("`r(module)'")'b020=="LU"
+						replace code="LVA" if `=lower("`r(module)'")'b020=="LV"
+						replace code="MLT" if `=lower("`r(module)'")'b020=="MT"
+						replace code="NLD" if `=lower("`r(module)'")'b020=="NL"
+						replace code="NOR" if `=lower("`r(module)'")'b020=="NO"
+						replace code="POL" if `=lower("`r(module)'")'b020=="PL"
+						replace code="PRT" if `=lower("`r(module)'")'b020=="PT"
+						replace code="ROU" if `=lower("`r(module)'")'b020=="RO"
+						replace code="SRB" if `=lower("`r(module)'")'b020=="RS"
+						replace code="SWE" if `=lower("`r(module)'")'b020=="SE"
+						replace code="SVN" if `=lower("`r(module)'")'b020=="SI"
+						replace code="SVK" if `=lower("`r(module)'")'b020=="SK"
+						replace code="GBR" if `=lower("`r(module)'")'b020=="UK"
+						replace code="HRV" if `=lower("`r(module)'")'b020=="HR"
+						replace code="CHE" if `=lower("`r(module)'")'b020=="CH"
+					} 						
+				}
+				cap destring year_n hhid_n $pid, force replace
+				cap destring year, force replace
+				qui save `d`m0'', replace
+				clear					
 			}
+			
+			** Merge individual modules
+			tempfile inddata			
+			tokenize `indm'
+			qui if wordcount("`indm'") >1 {					
+				use `d`1'', clear
+				forv j=2(1)`=wordcount("`indm'")' {
+					merge 1:1 $hhid $pid using `d``j''', gen(_m`1'``j'')
+					// Check condition of merge
+					save `inddata', replace					
+				}
+			}
+			qui else {					
+				use `d`1'', clear
+				save `inddata', replace				
+			}			
 		}
 		
-		* Merge between modules	
-		if `=wordcount("`module'")'  >1 {
-			local filenames
-			local filedates
-			local modules
-			local indm
-			local hhm
-			foreach m of local module {
-				if inlist(upper("`m'"), $indmlist) local indm `"`indm' `m'"'
-				if inlist(upper("`m'"), $hhmlist) local hhm `"`hhm' `m'"'
-			}
-			** Get individual modules
-			if wordcount("`indm'") >0 {
-				foreach m0 of local indm {
-					global para1 `para1'
-					global para2 `para2'
-					global para3 `para3'
-					global para4 `para4'		
-					if ("`para1'"=="") global para1 ${type2}_`m0'
+		** Get household modules
+		if wordcount("`hhm'") >0 {
+			foreach m0 of local hhm {
+				global para1 `para1'
+				global para2 `para2'
+				global para3 `para3'
+				global para4 `para4'	 	
+				if ("`para1'"=="") global para1 ${type2}_`m0'
+				else {
+					if ("`para2'"=="") global para2 ${type2}_`m0'
 					else {
-						if ("`para2'"=="") global para2 ${type2}_`m0'
+						if ("`para3'"=="") global para3 ${type2}_`m0'
 						else {
-							if ("`para3'"=="") global para3 ${type2}_`m0'
+							if ("`para4'"=="") global para4 ${type2}_`m0'
 							else {
-								if ("`para4'"=="") global para4 ${type2}_`m0'
-								else {
-									dis as error "Too many conditions (para1-4 and `cond'), please redefine the parameters."
-									error 1
-								}
+								dis as error "Too many conditions (para1-4 and `cond'), please redefine the parameters."
+								error 1
 							}
 						}
 					}
-					tempfile d`m0'				
-					if "`=lower("`fileserver'")'"=="fileserver" cap noisily filesearch,  col($type2) country(`country') year(`year') root($root) subfolders($subfolders) surveyid(`surveyid') combstring(${type}_`m0'$ext `version' `filename') `latest' `nometa' /*save("`data2'")  */
-					else                                        cap noisily filesearchw2, token(`token') col($type2) country(`country') year(`year') server($rootname) surveyid(`surveyid') filename(`filename') folder(`folder') para1($para1) para2($para2) para3($para3) para4($para4) `latest' `nometa' `net' /*save("`data2'")  */
-					*else                                        cap noisily filesearchw2, token(`token') col($type2) country(`country') year(`year') server($rootname) folder($subfolders) para1($para1) para2($para2) para3($para3) para4($para4) `latest' `nometa' `net' /*save("`data2'")  */
-					//else                                      cap noisily filesearchw2, token(`token') col($type2) country(`country') year(`year') server($rootname) surveyid(`surveyid') para1(${type}_`m0'$ext) para2(`version') para3(`filename') `latest' `nometa' `net' /*save("`data2'")  */
-
-					local filenames "`filenames' `r(filename)';"
-					local filedates "`filedates' `r(filedate)';"
-					local modules "`modules' `r(module)'"
-					global surveyid  `r(surveyid)' //new sep 22 2016
-					if strpos("`r(surveyid)'","EU-SILC")>0 & (upper("`r(module)'")=="P" | upper("`r(module)'")=="R") { //EU-SILC UDB-C hhid
-						cap confirm variable hhid
-						if _rc==0 {
-							clonevar hhid_n = hhid
-							clonevar pid_n = pid
-						}
-						else {
-							*gen double hhid_n = int(`=lower("`r(module)'")'b030/100)
-							gen double hhid_n = `=lower("`r(module)'")'x030 // changed Feb 2 2018 based on Eurostat email
-							gen double pid_n  = `=lower("`r(module)'")'b030
-						}
-						clonevar year_n = `=lower("`r(module)'")'b010
-						cap clonevar `=lower("`r(module)'")'b020 = country0
-						clonevar ctry_n = `=lower("`r(module)'")'b020					
-						order year_n ctry_n hhid_n pid_n
-						global hhid year_n ctry_n hhid_n
-						global pid pid_n
-						
-						//Add code to the database
-						qui {
-							cap drop code
-							gen str6 code=""
-							replace code="AUT" if `=lower("`r(module)'")'b020=="AT"
-							replace code="BEL" if `=lower("`r(module)'")'b020=="BE"
-							replace code="BGR" if `=lower("`r(module)'")'b020=="BG"
-							replace code="CYP" if `=lower("`r(module)'")'b020=="CY"
-							replace code="CZE" if `=lower("`r(module)'")'b020=="CZ"
-							replace code="DEU" if `=lower("`r(module)'")'b020=="DE"
-							replace code="DNK" if `=lower("`r(module)'")'b020=="DK"
-							replace code="EST" if `=lower("`r(module)'")'b020=="EE"
-							replace code="GRC" if `=lower("`r(module)'")'b020=="EL" | `=lower("`r(module)'")'b020=="GR"
-							replace code="ESP" if `=lower("`r(module)'")'b020=="ES"
-							replace code="FIN" if `=lower("`r(module)'")'b020=="FI"
-							replace code="FRA" if `=lower("`r(module)'")'b020=="FR"
-							replace code="HUN" if `=lower("`r(module)'")'b020=="HU"
-							replace code="IRL" if `=lower("`r(module)'")'b020=="IE"
-							replace code="ISL" if `=lower("`r(module)'")'b020=="IS"
-							replace code="ITA" if `=lower("`r(module)'")'b020=="IT"
-							replace code="LTU" if `=lower("`r(module)'")'b020=="LT"
-							replace code="LUX" if `=lower("`r(module)'")'b020=="LU"
-							replace code="LVA" if `=lower("`r(module)'")'b020=="LV"
-							replace code="MLT" if `=lower("`r(module)'")'b020=="MT"
-							replace code="NLD" if `=lower("`r(module)'")'b020=="NL"
-							replace code="NOR" if `=lower("`r(module)'")'b020=="NO"
-							replace code="POL" if `=lower("`r(module)'")'b020=="PL"
-							replace code="PRT" if `=lower("`r(module)'")'b020=="PT"
-							replace code="ROU" if `=lower("`r(module)'")'b020=="RO"
-							replace code="SRB" if `=lower("`r(module)'")'b020=="RS"
-							replace code="SWE" if `=lower("`r(module)'")'b020=="SE"
-							replace code="SVN" if `=lower("`r(module)'")'b020=="SI"
-							replace code="SVK" if `=lower("`r(module)'")'b020=="SK"
-							replace code="GBR" if `=lower("`r(module)'")'b020=="UK"
-							replace code="HRV" if `=lower("`r(module)'")'b020=="HR"
-							replace code="CHE" if `=lower("`r(module)'")'b020=="CH"
-						} 						
-					}
-					//cap destring $hhid $pid, force replace
-					cap destring year_n hhid_n $pid, force replace
-					cap destring year, force replace
-					qui save `d`m0'', replace
-					clear					
 				}
-				
-				** Merge individual modules
-				tempfile inddata			
-				tokenize `indm'
-				qui if wordcount("`indm'") >1 {					
-					use `d`1'', clear
-					forv j=2(1)`=wordcount("`indm'")' {
-						merge 1:1 $hhid $pid using `d``j''', gen(_m`1'``j'')
-						// Check condition of merge
-						save `inddata', replace					
-					}
-				}
-				qui else {					
-					use `d`1'', clear
-					save `inddata', replace				
-				}			
+				tempfile d`m0'
+				** get info
+				if "`=lower("`fileserver'")'"=="fileserver" cap noisily filesearch, col($type2) country(`country') year(`year') root($root) subfolders($subfolders) surveyid(`surveyid') combstring(${type}_`m0'$ext `version' `filename') `latest' `nometa' /*save("`data2'")  */
+				else                                        cap noisily filesearchw2, token(`token') col($type2) country(`country') year(`year') server($rootname) surveyid(`surveyid') filename(`filename') folder(`folder') para1($para1) para2($para2) para3($para3) para4($para4) `latest' `nometa' `net' /*save("`data2'")  */
+				local filenames "`filenames' `r(filename)';"
+				local filedates "`filedates' `r(filedate)';"
+				local modules "`modules' `r(module)'"
+				global surveyid  `r(surveyid)' //new sep 22 2016
+				if strpos("`r(surveyid)'","EU-SILC")>0 & (upper("`r(module)'")=="D" | upper("`r(module)'")=="H") { //EU-SILC UDB-C hhid
+					cap confirm variable hhid 
+					if _rc==0 clonevar hhid_n = hhid
+					else      clonevar hhid_n = `=lower("`r(module)'")'b030
+					cap clonevar year_n = `=lower("`r(module)'")'b010
+					cap clonevar `=lower("`r(module)'")'b020 = country0
+					cap clonevar ctry_n = `=lower("`r(module)'")'b020
+					order year_n ctry_n hhid_n 
+					global hhid year_n ctry_n hhid_n 
+					
+					//Add code to the database
+					qui {					
+						cap drop code
+						gen str6 code=""
+						replace code="AUT" if `=lower("`r(module)'")'b020=="AT"
+						replace code="BEL" if `=lower("`r(module)'")'b020=="BE"
+						replace code="BGR" if `=lower("`r(module)'")'b020=="BG"
+						replace code="CYP" if `=lower("`r(module)'")'b020=="CY"
+						replace code="CZE" if `=lower("`r(module)'")'b020=="CZ"
+						replace code="DEU" if `=lower("`r(module)'")'b020=="DE"
+						replace code="DNK" if `=lower("`r(module)'")'b020=="DK"
+						replace code="EST" if `=lower("`r(module)'")'b020=="EE"
+						replace code="GRC" if `=lower("`r(module)'")'b020=="EL" | `=lower("`r(module)'")'b020=="GR"
+						replace code="ESP" if `=lower("`r(module)'")'b020=="ES"
+						replace code="FIN" if `=lower("`r(module)'")'b020=="FI"
+						replace code="FRA" if `=lower("`r(module)'")'b020=="FR"
+						replace code="HUN" if `=lower("`r(module)'")'b020=="HU"
+						replace code="IRL" if `=lower("`r(module)'")'b020=="IE"
+						replace code="ISL" if `=lower("`r(module)'")'b020=="IS"
+						replace code="ITA" if `=lower("`r(module)'")'b020=="IT"
+						replace code="LTU" if `=lower("`r(module)'")'b020=="LT"
+						replace code="LUX" if `=lower("`r(module)'")'b020=="LU"
+						replace code="LVA" if `=lower("`r(module)'")'b020=="LV"
+						replace code="MLT" if `=lower("`r(module)'")'b020=="MT"
+						replace code="NLD" if `=lower("`r(module)'")'b020=="NL"
+						replace code="NOR" if `=lower("`r(module)'")'b020=="NO"
+						replace code="POL" if `=lower("`r(module)'")'b020=="PL"
+						replace code="PRT" if `=lower("`r(module)'")'b020=="PT"
+						replace code="ROU" if `=lower("`r(module)'")'b020=="RO"
+						replace code="SRB" if `=lower("`r(module)'")'b020=="RS"
+						replace code="SWE" if `=lower("`r(module)'")'b020=="SE"
+						replace code="SVN" if `=lower("`r(module)'")'b020=="SI"
+						replace code="SVK" if `=lower("`r(module)'")'b020=="SK"
+						replace code="GBR" if `=lower("`r(module)'")'b020=="UK"
+						replace code="HRV" if `=lower("`r(module)'")'b020=="HR"
+						replace code="CHE" if `=lower("`r(module)'")'b020=="CH"
+					} 
+				}				
+				cap destring year_n hhid_n , force replace 
+				cap destring year, force replace
+				qui save `d`m0'', replace
+				clear
 			}
 			
-			** Get household modules
-			if wordcount("`hhm'") >0 {
-				foreach m0 of local hhm {
-					global para1 `para1'
-					global para2 `para2'
-					global para3 `para3'
-					global para4 `para4'	 	
-					if ("`para1'"=="") global para1 ${type2}_`m0'
-					else {
-						if ("`para2'"=="") global para2 ${type2}_`m0'
-						else {
-							if ("`para3'"=="") global para3 ${type2}_`m0'
-							else {
-								if ("`para4'"=="") global para4 ${type2}_`m0'
-								else {
-									dis as error "Too many conditions (para1-4 and `cond'), please redefine the parameters."
-									error 1
-								}
-							}
-						}
-					}
-					tempfile d`m0'
-					** get info
-					if "`=lower("`fileserver'")'"=="fileserver" cap noisily filesearch, col($type2) country(`country') year(`year') root($root) subfolders($subfolders) surveyid(`surveyid') combstring(${type}_`m0'$ext `version' `filename') `latest' `nometa' /*save("`data2'")  */
-					//OLD if "`=lower("`fileserver'")'"=="fileserver" cap noisily filesearch, col($type2) country(`country') year(`year') root($root) subfolders($subfolders) anystring(${type}_`m0'$ext `version') `latest' `nometa' /*save("`data2'")  */				
-					else                                        cap noisily filesearchw2, token(`token') col($type2) country(`country') year(`year') server($rootname) surveyid(`surveyid') filename(`filename') folder(`folder') para1($para1) para2($para2) para3($para3) para4($para4) `latest' `nometa' `net' /*save("`data2'")  */
-					*else                                        cap noisily filesearchw2, token(`token') col($type2) country(`country') year(`year') server($rootname) folder($subfolders) para1($para1) para2($para2) para3($para3) para4($para4) `latest' `nometa' `net' /*save("`data2'")  */
-					//else                                      cap noisily filesearchw2, token(`token') col($type2) country(`country') year(`year') server($rootname) para1(${type}_`m0'$ext) para2(`version') `latest' `nometa' `net' /*save("`data2'")  */
-
-					local filenames "`filenames' `r(filename)';"
-					local filedates "`filedates' `r(filedate)';"
-					local modules "`modules' `r(module)'"
-					global surveyid  `r(surveyid)' //new sep 22 2016
-					if strpos("`r(surveyid)'","EU-SILC")>0 & (upper("`r(module)'")=="D" | upper("`r(module)'")=="H") { //EU-SILC UDB-C hhid
-						cap confirm variable hhid 
-						if _rc==0 clonevar hhid_n = hhid
-						else      clonevar hhid_n = `=lower("`r(module)'")'b030
-						cap clonevar year_n = `=lower("`r(module)'")'b010
-						cap clonevar `=lower("`r(module)'")'b020 = country0
-						cap clonevar ctry_n = `=lower("`r(module)'")'b020
-						order year_n ctry_n hhid_n 
-						global hhid year_n ctry_n hhid_n 
-						
-						//Add code to the database
-						qui {					
-							cap drop code
-							gen str6 code=""
-							replace code="AUT" if `=lower("`r(module)'")'b020=="AT"
-							replace code="BEL" if `=lower("`r(module)'")'b020=="BE"
-							replace code="BGR" if `=lower("`r(module)'")'b020=="BG"
-							replace code="CYP" if `=lower("`r(module)'")'b020=="CY"
-							replace code="CZE" if `=lower("`r(module)'")'b020=="CZ"
-							replace code="DEU" if `=lower("`r(module)'")'b020=="DE"
-							replace code="DNK" if `=lower("`r(module)'")'b020=="DK"
-							replace code="EST" if `=lower("`r(module)'")'b020=="EE"
-							replace code="GRC" if `=lower("`r(module)'")'b020=="EL" | `=lower("`r(module)'")'b020=="GR"
-							replace code="ESP" if `=lower("`r(module)'")'b020=="ES"
-							replace code="FIN" if `=lower("`r(module)'")'b020=="FI"
-							replace code="FRA" if `=lower("`r(module)'")'b020=="FR"
-							replace code="HUN" if `=lower("`r(module)'")'b020=="HU"
-							replace code="IRL" if `=lower("`r(module)'")'b020=="IE"
-							replace code="ISL" if `=lower("`r(module)'")'b020=="IS"
-							replace code="ITA" if `=lower("`r(module)'")'b020=="IT"
-							replace code="LTU" if `=lower("`r(module)'")'b020=="LT"
-							replace code="LUX" if `=lower("`r(module)'")'b020=="LU"
-							replace code="LVA" if `=lower("`r(module)'")'b020=="LV"
-							replace code="MLT" if `=lower("`r(module)'")'b020=="MT"
-							replace code="NLD" if `=lower("`r(module)'")'b020=="NL"
-							replace code="NOR" if `=lower("`r(module)'")'b020=="NO"
-							replace code="POL" if `=lower("`r(module)'")'b020=="PL"
-							replace code="PRT" if `=lower("`r(module)'")'b020=="PT"
-							replace code="ROU" if `=lower("`r(module)'")'b020=="RO"
-							replace code="SRB" if `=lower("`r(module)'")'b020=="RS"
-							replace code="SWE" if `=lower("`r(module)'")'b020=="SE"
-							replace code="SVN" if `=lower("`r(module)'")'b020=="SI"
-							replace code="SVK" if `=lower("`r(module)'")'b020=="SK"
-							replace code="GBR" if `=lower("`r(module)'")'b020=="UK"
-							replace code="HRV" if `=lower("`r(module)'")'b020=="HR"
-							replace code="CHE" if `=lower("`r(module)'")'b020=="CH"
-						} 
-					}				
-					//cap destring $hhid, force replace 
-					cap destring year_n hhid_n , force replace 
-					cap destring year, force replace
-					qui save `d`m0'', replace
-					clear
-				}
-				
-				** Merge HH modules
-				tempfile hhsdata			
-				tokenize `hhm'
-				qui if wordcount("`hhm'") >1 {					
-					use `d`1'', clear
-					forv j=2(1)`=wordcount("`hhm'")' {
-						merge 1:1 $hhid using `d``j''', gen(_m`1'``j'')
-						// Check condition of merge
-						save `hhsdata', replace
-					}
-				}
-				qui else {					
-					use `d`1'', clear
+			** Merge HH modules
+			tempfile hhsdata			
+			tokenize `hhm'
+			qui if wordcount("`hhm'") >1 {					
+				use `d`1'', clear
+				forv j=2(1)`=wordcount("`hhm'")' {
+					merge 1:1 $hhid using `d``j''', gen(_m`1'``j'')
+					// Check condition of merge
 					save `hhsdata', replace
 				}
 			}
-			
-			// Merge HH and individual
-			qui if `=wordcount("`indm'")' >0 & `=wordcount("`hhm'")'==0 use `inddata', clear
-			qui if `=wordcount("`indm'")'==0 & `=wordcount("`hhm'")' >0 use `hhsdata', clear
-			qui if `=wordcount("`indm'")' >0 & `=wordcount("`hhm'")' >0 {
-				use `hhsdata', clear
-				merge 1:m $hhid using `inddata', gen(_mhhind)
-				//report merge
+			qui else {					
+				use `d`1'', clear
+				save `hhsdata', replace
 			}
-			local rc = _rc
-			
-			return local type `r(type)'
-			return local module `modules'
-			return local verm `r(verm)'
-			return local vera `r(vera)'
-			return local surveyid  `r(surveyid)'
-			return local filename `filenames'
-			return local filedate `filedates'
-			return local idno `r(idno)'
-			*global surveyid  `r(surveyid)'
-			if "$surveyid"=="" global surveyid  `r(surveyid)'
-			global f1name `r(filename)'
-		} //merge between modules
+		}
 		
-		// merge CPI
-		qui if "`nocpi'"=="" /*& `rc'==0*/ { // _rc check
-			tempfile datafinal cpiuse
-			cap save `datafinal', replace
-			if _rc==0 { //there is some data to save so it can be merged later			
-				tempfile tempcpi
-				local cpino = 0
-				if "`=lower("`fileserver'")'"=="fileserver" {
-					if "$cpi"~="" {
-						use "$cpi", clear
-						local cpino = 1
-					}
+		// Merge HH and individual
+		qui if `=wordcount("`indm'")' >0 & `=wordcount("`hhm'")'==0 use `inddata', clear
+		qui if `=wordcount("`indm'")'==0 & `=wordcount("`hhm'")' >0 use `hhsdata', clear
+		qui if `=wordcount("`indm'")' >0 & `=wordcount("`hhm'")' >0 {
+			use `hhsdata', clear
+			merge 1:m $hhid using `inddata', gen(_mhhind)
+		}
+		local rc = _rc
+		
+		return local type `r(type)'
+		return local module `modules'
+		return local verm `r(verm)'
+		return local vera `r(vera)'
+		return local surveyid  `r(surveyid)'
+		return local filename `filenames'
+		return local filedate `filedates'
+		return local idno `r(idno)'
+		if "$surveyid"=="" global surveyid  `r(surveyid)'
+		global f1name `r(filename)'
+	} //merge between modules
+
+	// merge CPI
+	qui if "`nocpi'"=="" { // _rc check
+		tempfile datafinal cpiuse
+		cap save `datafinal', replace
+		if _rc==0 { //there is some data to save so it can be merged later			
+			tempfile tempcpi
+			local cpino = 0
+			if "`=lower("`fileserver'")'"=="fileserver" {
+				if "$cpi"~="" {
+					use "$cpi", clear
+					local cpino = 1
 				}
-				else {
-					if `"$cpiw"'~="" { //check vintage of CPI data 
-						local dl 0
-						local persdir : sysdir PERSONAL
-						if "$S_OS"=="Windows" local persdir : subinstr local persdir "/" "\", all										
-						
-						if "${${rootname}CPI_date}"~="" {
-							if (date("$S_DATE", "DMY")-date("${${rootname}CPI_date}", "DMY")) <= $updateday {
-								*cap use "`persdir'datalibweb\data\\${rootname}\\${cpifile}", clear	
-								cap use "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data\Stata\\${cpifile}", clear	
-								if _rc==0 local cpino = 1
-								else local dl 1
-								*noi dis "use localfile"
-							}
-							else local dl 1						
+			}
+			else {
+				if `"$cpiw"'~="" { //check vintage of CPI data 
+					local dl 0
+					local persdir : sysdir PERSONAL
+					if "$S_OS"=="Windows" local persdir : subinstr local persdir "/" "\", all										
+					
+					if "${${rootname}CPI_date}"~="" {
+						if (date("$S_DATE", "DMY")-date("${${rootname}CPI_date}", "DMY")) <= $updateday {
+							cap use "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data\Stata\\${cpifile}", clear	
+							if _rc==0 local cpino = 1
+							else local dl 1
 						}
-						else { 
-							*cap confirm file "`persdir'datalibweb\data\\${rootname}\\${cpifile}"
-							cap confirm file "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data\Stata\\${cpifile}"
+						else local dl 1						
+					}
+					else { 
+						cap confirm file "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data\Stata\\${cpifile}"
+						if _rc==0 {
+							cap use "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data\Stata\\${cpifile}", clear
 							if _rc==0 {
-								*cap use "`persdir'datalibweb\data\\${rootname}\\${cpifile}", clear
-								cap use "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data\Stata\\${cpifile}", clear
-								if _rc==0 {
-									local dtadate : char _dta[version]			
-									if (date("$S_DATE", "DMY")-date("`dtadate'", "DMY")) > $updateday local dl 1
-									else {
-										local cpino = 1
-										global ${rootname}CPI_date `dtadate'
-									}
+								local dtadate : char _dta[version]			
+								if (date("$S_DATE", "DMY")-date("`dtadate'", "DMY")) > $updateday local dl 1
+								else {
+									local cpino = 1
+									global ${rootname}CPI_date `dtadate'
 								}
-								else local dl 1
 							}
-							else {
+							else local dl 1
+						}
+						else {
+							cap mkdir "`persdir'datalibweb\data\\${rootname}"
+							cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}"
+							cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI"
+							cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}"
+							cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data"
+							cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data\Stata"				
+							local dl 1
+						}
+					}
+					
+					if `dl'==1 {
+						cap program define _datalibweb, plugin using("dlib2_`=cond(strpos(`"`=c(machine_type)'"',"64"),64,32)'.dll")					
+						plugin call _datalibweb, "0" "`tempcpi'" "$cpiw"	
+						if `dlibrc'==0 {
+							if "`dlibFileName'"~="ECAFileinfo.csv" {			
+								use `tempcpi', clear
+								char _dta[version] $S_DATE							
+								compress
 								cap mkdir "`persdir'datalibweb\data\\${rootname}"
 								cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}"
 								cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI"
 								cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}"
 								cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data"
-								cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data\Stata"				
-								local dl 1
-							}
-						}
-						
-						if `dl'==1 {
-							cap program define _datalibweb, plugin using("dlib2_`=cond(strpos(`"`=c(machine_type)'"',"64"),64,32)'.dll")					
-							plugin call _datalibweb, "0" "`tempcpi'" "$cpiw"	
-							if `dlibrc'==0 {
-								if "`dlibFileName'"~="ECAFileinfo.csv" {			
-									use `tempcpi', clear
-									char _dta[version] $S_DATE							
-									compress
-									cap mkdir "`persdir'datalibweb\data\\${rootname}"
-									cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}"
-									cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI"
-									cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}"
-									cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data"
-									cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data\Stata"	
-									saveold "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data\Stata\\${cpifile}", replace	
-									*saveold "`persdir'datalibweb\data\\${rootname}\\${cpifile}", replace	
-									local cpino = 1
-									global ${rootname}CPI_date $S_DATE
-								}
-								else {
-									noi dis as error "Failed to load the CPI data with the defined structure $cpiw"
-									noi dis as error "The CPI data should be publicly available, please inform the collection admins."
-								}
+								cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data\Stata"	
+								saveold "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data\Stata\\${cpifile}", replace	
+								local cpino = 1
+								global ${rootname}CPI_date $S_DATE
 							}
 							else {
 								noi dis as error "Failed to load the CPI data with the defined structure $cpiw"
-								dlw_message, error(`dlibrc')
+								noi dis as error "The CPI data should be publicly available, please inform the collection admins."
 							}
 						}
+						else {
+							noi dis as error "Failed to load the CPI data with the defined structure $cpiw"
+							dlw_message, error(`dlibrc')
+						}
 					}
-					else local cpino = 0 //cpiw is empty and user requested CPI
 				}
-				//Check CPI data is available or not
-				if `cpino'==0 use `datafinal', clear	
-				if `cpino'==1 {
-					//OLD 30Jan18: qui if strpos("$surveyid)","EU-SILC")==0 cap keep if code=="`=upper("`country'")'"
-					//qui if "`=upper("$type")'"=="UDB-C" | "`=upper("$type")'"=="UDB-L" cap keep if code=="`=upper("`country'")'"
-					save `cpiuse', replace
-					
-					use `datafinal', clear	
-					cap destring year, replace
-					cap gen str code = "`=upper("`country'")'"   //need to be removed later
-					cap gen year = `year'                        //need to be removed later			
-					qui if strpos("$surveyid)","EU-SILC")>0 replace year = year - 1				//EUSILC year
-					//qui if "`=upper("$type")'"=="UDB-C" | "`=upper("$type")'"=="UDB-L" replace year = year - 1				//EUSILC year
-					//datalevel  
-					local cpilevel				
-					if "`=upper("$type")'"=="GPWG" | "`=upper("$type")'"=="GMD" | "`=upper("$type")'"=="SSAPOV" | "`=upper("$type")'"=="PCN" {	
-						cap drop datalevel
-						local cpilevel datalevel survname
-						qui if "`=upper("`country'")'"=="IDN" | "`=upper("`country'")'"=="CHN" | "`=upper("`country'")'"=="IND" gen datalevel = urban						
-						else gen datalevel = 2						
-						//DEC2019: add survey acronym (survname) to the merge as CPIv04 now is unique at the level code year survname datalevel					
-						cap drop survname							
-						if strpos("$surveyid","_")>0 { //fullsurvey id							
-							qui tokenize "$surveyid", p("_")
+				else local cpino = 0 //cpiw is empty and user requested CPI
+			}
+			//Check CPI data is available or not
+			if `cpino'==0 use `datafinal', clear	
+			if `cpino'==1 {
+				save `cpiuse', replace
+				
+				use `datafinal', clear	
+				cap destring year, replace
+				cap gen str code = "`=upper("`country'")'"   //need to be removed later
+				cap gen year = `year'                        //need to be removed later			
+				qui if strpos("$surveyid)","EU-SILC")>0 replace year = year - 1				//EUSILC year
+				//datalevel  
+				local cpilevel				
+				if "`=upper("$type")'"=="GPWG" | "`=upper("$type")'"=="GMD" | "`=upper("$type")'"=="SSAPOV" | "`=upper("$type")'"=="PCN" {	
+					cap drop datalevel
+					local cpilevel datalevel survname
+					qui if "`=upper("`country'")'"=="IDN" | "`=upper("`country'")'"=="CHN" | "`=upper("`country'")'"=="IND" gen datalevel = urban						
+					else gen datalevel = 2						
+					//DEC2019: add survey acronym (survname) to the merge as CPIv04 now is unique at the level code year survname datalevel					
+					cap drop survname							
+					if strpos("$surveyid","_")>0 { //fullsurvey id							
+						qui tokenize "$surveyid", p("_")
+						cap gen survname = "`=upper("`5'")'"
+					}
+					else {
+						if strpos("$f1name","_")>0 { //filename								
+							qui tokenize "$f1name", p("_")
 							cap gen survname = "`=upper("`5'")'"
 						}
-						else {
-							if strpos("$f1name","_")>0 { //filename								
-								qui tokenize "$f1name", p("_")
-								cap gen survname = "`=upper("`5'")'"
-							}
-							else cap gen survname = "$surveyid"							
-						}
+						else cap gen survname = "$surveyid"							
 					}
-					if "`=upper("$type")'"=="SARMD" { //new Mar 15 17						
-						local cpilevel datalevel
-						if "`=upper("`country'")'"=="IND" gen datalevel = urban
-						else gen datalevel = 2
-						*gen urb = urban
-						*local cpilevel urban						
+				}
+				if "`=upper("$type")'"=="SARMD" { //new Mar 15 17						
+					local cpilevel datalevel
+					if "`=upper("`country'")'"=="IND" gen datalevel = urban
+					else gen datalevel = 2
+					*gen urb = urban
+					*local cpilevel urban						
+				}
+				if "`=upper("$type")'"=="EAPPOV" { //new June 6 18						
+					local cpilevel datalevel
+					if "`=upper("`country'")'"=="IDN" gen datalevel = urban
+					else gen datalevel = 2						
+				}
+				//merge CPI   
+				if "`=upper("$type")'"=="SEDLAC-03" | "`=upper("$type")'"=="SEDLAC-02" | "`=upper("$type")'"=="SEDLAC-01" {
+					cap drop pais
+					cap drop ano
+					cap gen pais = "`=lower("`country'")'"
+					cap gen ano = `year'
+					if strpos("$surveyid","_")>0 { //fullsurvey id
+						cap drop encuesta							
+						qui tokenize "$surveyid", p("_")
+						cap gen encuesta = "`=upper("`5'")'"
 					}
-					if "`=upper("$type")'"=="EAPPOV" { //new June 6 18						
-						local cpilevel datalevel
-						if "`=upper("`country'")'"=="IDN" gen datalevel = urban
-						else gen datalevel = 2						
-					}
-					//merge CPI   
-					if "`=upper("$type")'"=="SEDLAC-03" | "`=upper("$type")'"=="SEDLAC-02" | "`=upper("$type")'"=="SEDLAC-01" {
-						cap drop pais
-						cap drop ano
-						cap gen pais = "`=lower("`country'")'"
-						cap gen ano = `year'
-						if strpos("$surveyid","_")>0 { //fullsurvey id
+					else {
+						if strpos("$f1name","_")>0 { //filename
 							cap drop encuesta							
-							qui tokenize "$surveyid", p("_")
+							qui tokenize "$f1name", p("_")
 							cap gen encuesta = "`=upper("`5'")'"
 						}
-						else {
-							if strpos("$f1name","_")>0 { //filename
-								cap drop encuesta							
-								qui tokenize "$f1name", p("_")
-								cap gen encuesta = "`=upper("`5'")'"
-							}
-							else cap gen encuesta = "$surveyid"
-							
+						else cap gen encuesta = "$surveyid"
+						
+					}
+					cap merge m:1 pais ano encuesta using `cpiuse', gen(_mcpi) keepus($cpivarw)	update replace	
+					if _rc~=0 noi dis as error "Can't merge with CPI data - please check with the regional team."
+				}
+				if "`=upper("$type")'"=="GLAD" { //GLAD March 17 2020
+					
+					* Brings thresholds triplets defined in dta which should sit in DLW (our version of CPI.dta)
+					merge m:1 surveyid idgrade using `cpiuse', keep(master match) nogen
+					* Each prefix_threshold is a triplet: prefix_threshold_var, prefix_threshold_val, prefix_threshold_res
+					* Loop through all threshold triplets (specifically, prefix_threshold_res but could be val or var)
+					ds *_threshold_res
+					foreach threshold_res of varlist `r(varlist)' {
+						local this_prefix = subinstr("`threshold_res'", "_threshold_res", "", 1)
+						* Check if this_prefix was used for this assessment-year, or has all missing obs
+						count if missing(`threshold_res')
+						if `r(N)'<_N {
+						* Not all observations are missing
+						* Concatenate list of prefixes used
+						local prefixes = "`prefixes' `this_prefix'"
+						* Concatenate list of results to be created, in two steps
+						* 1. loop through all results used in a prefix
+						levelsof `threshold_res', local(resultvars_in_prefix)
+						foreach resultvar of local resultvars_in_prefix {
+							* 2. Update the list of results (unique entries only)
+							local resultvars : list resultvars | resultvar
+							* 3. Also store the full FGT family in another list
+							local all_this_resultvar "`resultvar' fgt1_`resultvar' fgt2_`resultvar'"
+							local all_resultvars : list all_resultvars | all_this_resultvar
 						}
-						cap merge m:1 pais ano encuesta using `cpiuse', gen(_mcpi) keepus($cpivarw)	update replace	
-						if _rc~=0 noi dis as error "Can't merge with CPI data - please check with the regional team."
+						}
+						else {
+						* All observations are missing
+						* Drop the threshold triplet, for it was not used at all
+						drop `this_prefix'_threshold_*
+						}
 					}
-					if "`=upper("$type")'"=="GLAD" { //GLAD March 17 2020
-						
-						  * Brings thresholds triplets defined in dta which should sit in DLW (our version of CPI.dta)
-						  merge m:1 surveyid idgrade using `cpiuse', keep(master match) nogen
-
-						  * Each prefix_threshold is a triplet: prefix_threshold_var, prefix_threshold_val, prefix_threshold_res
-
-						  * Loop through all threshold triplets (specifically, prefix_threshold_res but could be val or var)
-						  ds *_threshold_res
-						  foreach threshold_res of varlist `r(varlist)' {
-
-							local this_prefix = subinstr("`threshold_res'", "_threshold_res", "", 1)
-
-							* Check if this_prefix was used for this assessment-year, or has all missing obs
-							count if missing(`threshold_res')
-							if `r(N)'<_N {
-							  * Not all observations are missing
-
-							  * Concatenate list of prefixes used
-							  local prefixes = "`prefixes' `this_prefix'"
-
-							  * Concatenate list of results to be created, in two steps
-							  * 1. loop through all results used in a prefix
-							  levelsof `threshold_res', local(resultvars_in_prefix)
-							  foreach resultvar of local resultvars_in_prefix {
-								* 2. Update the list of results (unique entries only)
-								local resultvars : list resultvars | resultvar
-
-								* 3. Also store the full FGT family in another list
-								local all_this_resultvar "`resultvar' fgt1_`resultvar' fgt2_`resultvar'"
-								local all_resultvars : list all_resultvars | all_this_resultvar
-							  }
-							}
-
-							else {
-							  * All observations are missing
-							  * Drop the threshold triplet, for it was not used at all
-							  drop `this_prefix'_threshold_*
-							}
-						  }
-
-						  * Value labels for dummy variables of Harmonized Proficiency
-						  label define lb_hpro 0 "Non-proficient" 1 "Proficient" .a "Missing score/level" .b "Non-harmonized grade", replace
-
-						  * Loop creating the FGT0 (resultvar), FGT1 (fgt1_resultvar) and FGT2 (fgt2_resultvar)
-						  foreach resultvar of local resultvars {
-
-							* FGT0: Generate all result variables as dummies which start empty
-							* (labeled as if this grade was not being harmonized)
-							gen byte  `resultvar': lb_hpro = .b
-							label var `resultvar' "Harmonized proficiency (subject-specific FGT0)"
-							char `resultvar'[clo_marker] "dummy"
-
-							* FGT1: the gap
-							gen float fgt1_`resultvar' = .
-							label var fgt1_`resultvar' "Gap in harmonized proficiency (subject-specific FGT1)"
-							char fgt1_`resultvar'[clo_marker] "number"
-
-							* FGT2: the gap squared
-							gen float fgt2_`resultvar' = .
-							label var fgt2_`resultvar' "Gap squared in harmonized proficiency (subject-specific FGT2)"
-							char fgt2_`resultvar'[clo_marker] "number"
-						  }
-
-
-						  * Loop through all prefixes
-						  foreach prefix of local prefixes {
-
-							  * Retrieves list of variables used in the current prefix_threshold_var
-							  levelsof `prefix'_threshold_var, local(originalvars_used_in_prefix)
-
-							  * Loop through all variables used in the current prefix,
-							  * and performs the calculation based on it
-							  foreach originalvar of local originalvars_used_in_prefix {
-								foreach resultvar of local resultvars {
-
-								  *------
-								  * FGT0
-
-								  * Calculate the harmonized proficiency dummy, for example:
-								  * resultvar is hpro_read and originalvar is level_llece_read
-								  replace `resultvar' = (`originalvar'>=`prefix'_threshold_val) if `prefix'_threshold_res == "`resultvar'" & `prefix'_threshold_var=="`originalvar'" & !missing(`originalvar')
-
-								  * Case of missing test score or test level
-								  replace `resultvar' = .a if `prefix'_threshold_res == "`resultvar'" & `prefix'_threshold_var == "`originalvar'" & missing(`originalvar')
-
-								  *-----
-								  * FGT1 = dummy * gap (=> so it is equal to 0 if above proficiency threshold)
-								  replace fgt1_`resultvar' = (- `originalvar' + `prefix'_threshold_val)/`prefix'_threshold_val if `prefix'_threshold_res == "`resultvar'" & `prefix'_threshold_var=="`originalvar'" & `resultvar' == 0
-								  * FGT2 = gap squared
-								  replace fgt2_`resultvar' = fgt1_`resultvar' * fgt1_`resultvar' if `prefix'_threshold_res == "`resultvar'" & `prefix'_threshold_var=="`originalvar'" & `resultvar' == 0
-
-							  }
-							}
-						  }
-
-						  * When this ado is called, a GLAD.dta is open and it should already
-						  * have the metadata as standardized in the collection. This adds more:
-						  char _dta[onthefly_valuevars] "`all_resultvars'"
-						  * Unabbreviate wildcards* in the threshold triplets variables
-						  cap unab thresholdvars : *_threshold_var *_threshold_val *_threshold_res
-						  if _rc == 111 noi disp as err "No harmonized minimum proficiency thresholds defined for this learning assessment."
-						  else          char _dta[onthefly_traitvars] "`thresholdvars'"
-
-						
-						
+					* Value labels for dummy variables of Harmonized Proficiency
+					label define lb_hpro 0 "Non-proficient" 1 "Proficient" .a "Missing score/level" .b "Non-harmonized grade", replace
+					* Loop creating the FGT0 (resultvar), FGT1 (fgt1_resultvar) and FGT2 (fgt2_resultvar)
+					foreach resultvar of local resultvars {
+						* FGT0: Generate all result variables as dummies which start empty
+						* (labeled as if this grade was not being harmonized)
+						gen byte  `resultvar': lb_hpro = .b
+						label var `resultvar' "Harmonized proficiency (subject-specific FGT0)"
+						char `resultvar'[clo_marker] "dummy"
+						* FGT1: the gap
+						gen float fgt1_`resultvar' = .
+						label var fgt1_`resultvar' "Gap in harmonized proficiency (subject-specific FGT1)"
+						char fgt1_`resultvar'[clo_marker] "number"
+						* FGT2: the gap squared
+						gen float fgt2_`resultvar' = .
+						label var fgt2_`resultvar' "Gap squared in harmonized proficiency (subject-specific FGT2)"
+						char fgt2_`resultvar'[clo_marker] "number"
 					}
-					else if "`=upper("$type")'"=="LABLAC-01" {
-						cap drop pais
-						cap drop ano
-						cap drop encuesta
-						cap drop trimestre
-						cap gen pais = "`=lower("`country'")'"   
-						cap gen ano = `year'
-						if strpos("$surveyid","_")>0 {
-							qui tokenize "$surveyid", p("_")
+					* Loop through all prefixes
+					foreach prefix of local prefixes {
+						* Retrieves list of variables used in the current prefix_threshold_var
+						levelsof `prefix'_threshold_var, local(originalvars_used_in_prefix)
+						* Loop through all variables used in the current prefix,
+						* and performs the calculation based on it
+						foreach originalvar of local originalvars_used_in_prefix {
+							foreach resultvar of local resultvars {
+							*------
+							* FGT0
+							* Calculate the harmonized proficiency dummy, for example:
+							* resultvar is hpro_read and originalvar is level_llece_read
+							replace `resultvar' = (`originalvar'>=`prefix'_threshold_val) if `prefix'_threshold_res == "`resultvar'" & `prefix'_threshold_var=="`originalvar'" & !missing(`originalvar')
+							* Case of missing test score or test level
+							replace `resultvar' = .a if `prefix'_threshold_res == "`resultvar'" & `prefix'_threshold_var == "`originalvar'" & missing(`originalvar')
+							*-----
+							* FGT1 = dummy * gap (=> so it is equal to 0 if above proficiency threshold)
+							replace fgt1_`resultvar' = (- `originalvar' + `prefix'_threshold_val)/`prefix'_threshold_val if `prefix'_threshold_res == "`resultvar'" & `prefix'_threshold_var=="`originalvar'" & `resultvar' == 0
+							* FGT2 = gap squared
+							replace fgt2_`resultvar' = fgt1_`resultvar' * fgt1_`resultvar' if `prefix'_threshold_res == "`resultvar'" & `prefix'_threshold_var=="`originalvar'" & `resultvar' == 0
+						}
+						}
+					}
+					* When this ado is called, a GLAD.dta is open and it should already
+					* have the metadata as standardized in the collection. This adds more:
+					char _dta[onthefly_valuevars] "`all_resultvars'"
+					* Unabbreviate wildcards* in the threshold triplets variables
+					cap unab thresholdvars : *_threshold_var *_threshold_val *_threshold_res
+					if _rc == 111 noi disp as err "No harmonized minimum proficiency thresholds defined for this learning assessment."
+					else          char _dta[onthefly_traitvars] "`thresholdvars'"
+					
+					
+				}
+				else if "`=upper("$type")'"=="LABLAC-01" {
+					cap drop pais
+					cap drop ano
+					cap drop encuesta
+					cap drop trimestre
+					cap gen pais = "`=lower("`country'")'"   
+					cap gen ano = `year'
+					if strpos("$surveyid","_")>0 {
+						qui tokenize "$surveyid", p("_")
+						cap gen encuesta = "`=upper("`5'")'"
+						local trimestre `17'
+						local trimestre : subinstr local trimestre "Q" "", all
+						local trimestre = real("`trimestre'")
+						cap gen trimestre = `trimestre'
+					}
+					else { //cant find _ in the surveyid when it is provided with surveyname
+						if strpos("$f1name","_")>0 { //filename
+							qui tokenize "$f1name", p("_")
 							cap gen encuesta = "`=upper("`5'")'"
 							local trimestre `17'
+							local trimestre : subinstr local trimestre ".dta" "", all
+							local trimestre : subinstr local trimestre ".DTA" "", all
 							local trimestre : subinstr local trimestre "Q" "", all
 							local trimestre = real("`trimestre'")
 							cap gen trimestre = `trimestre'
-							*cap merge m:1 pais ano encuesta trimestre `cpilevel' using `cpiuse', gen(_mcpi) keepus($cpivarw) update replace
-							*if _rc~=0 noi dis as error "Can't merge with CPI data - please check with the regional team."
 						}
-						else { //cant find _ in the surveyid when it is provided with surveyname
-							if strpos("$f1name","_")>0 { //filename
-								qui tokenize "$f1name", p("_")
-								cap gen encuesta = "`=upper("`5'")'"
-								local trimestre `17'
-								local trimestre : subinstr local trimestre ".dta" "", all
-								local trimestre : subinstr local trimestre ".DTA" "", all
-								local trimestre : subinstr local trimestre "Q" "", all
-								local trimestre = real("`trimestre'")
-								cap gen trimestre = `trimestre'
-							}
-							else noi dis as error "Can't merge with CPI data - no variables created in merging - please check with the regional team."
-						} //$surveyid check _ CPI	
-						cap merge m:1 pais ano encuesta trimestre `cpilevel' using `cpiuse', gen(_mcpi) keepus($cpivarw) update replace
-						if _rc~=0 noi dis as error "Can't merge with CPI data - please check with the regional team."
-					}
-					else {
-						qui merge m:1 code year `cpilevel' using `cpiuse', gen(_mcpi) keepus($cpivarw) update replace
-					}
-					qui drop if _mcpi==2		
-					qui drop _mcpi
-					cap drop datalevel 
-					cap drop ppp_note
-					qui if strpos("$surveyid","EU-SILC")>0 replace year = year + 1				//EUSILC year
-					//qui if "`=upper("$type")'"=="UDB-C" | "`=upper("$type")'"=="UDB-L" replace year = year + 1				//EUSILC year
-					
+						else noi dis as error "Can't merge with CPI data - no variables created in merging - please check with the regional team."
+					} //$surveyid check _ CPI	
+					cap merge m:1 pais ano encuesta trimestre `cpilevel' using `cpiuse', gen(_mcpi) keepus($cpivarw) update replace
+					if _rc~=0 noi dis as error "Can't merge with CPI data - please check with the regional team."
 				}
-			} //_rc save
-		}
-		//end
-	*}
-	/*
-	else { //Non-data type
-		foreach fld of global `request' {
-			noi dis in yellow _newline "{p 4 4 2}For folder: `fld'{p_end}"
-			if "`=lower("`fileserver'")'"=="fileserver" cap noisily filesearch, col($type2) country(`country') year(`year') root($root) subfolders(`fld') surveyid(`surveyid') combstring(`filename' `version') `latest' `nometa' 
-			else                                        cap noisily filesearchw2, token(`token') col($type2) country(`country') year(`year') server($rootname) folder(`fld') surveyid(`surveyid') filename(`filename') para1(`version')  `latest' `nometa' `net' 			
-			//else                                      cap noisily filesearchw2, token(`token') col($type2) country(`country') year(`year') server($rootname) folder(`fld') surveyid(`surveyid') filename(`filename') para1(`version')  `latest' `nometa' `net' 			
-		}
-		exit
+				else {
+					qui merge m:1 code year `cpilevel' using `cpiuse', gen(_mcpi) keepus($cpivarw) update replace
+				}
+				qui drop if _mcpi==2		
+				qui drop _mcpi
+				cap drop datalevel 
+				cap drop ppp_note
+				qui if strpos("$surveyid","EU-SILC")>0 replace year = year + 1				//EUSILC year
+			}
+		} //_rc save
 	}
-	*/
 end
 
 
