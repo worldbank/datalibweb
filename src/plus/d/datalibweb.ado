@@ -14,7 +14,7 @@
 * version 1.03 15Apr2019 - add new collections, countrycodes,
 * version 1.04 12dec2019 - new CPI vintage with surveyname, enable some undocumented functions
 
-cap program drop datalibweb
+
 program define datalibweb, rclass	
 	version 10, missing
     local verstata : di "version " string(_caller()) ", missing:" 
