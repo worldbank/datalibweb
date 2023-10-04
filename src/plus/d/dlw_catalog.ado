@@ -22,7 +22,6 @@ program define dlw_catalog, rclass
 	tempfile servercatalog
 	if `opt'==2 {
 		dlw_api, option(`opt') outfile(`servercatalog') query("`server'")
-		local dlibrc `r(rc)'
 		if `dlibrc'==0 {
 			if ("`dlibType'"=="csv") {
 				//local ser = subinstr("`server'",".xml","",.)
@@ -144,7 +143,6 @@ program define dlw_catalog, rclass
 	if `opt'==3 {
 		tempfile tmpcatalog
 		dlw_api, option(`opt') outfile(`tmpcatalog'), query("`code'")
-		local dlibrc `r(rc)'
 		if `dlibrc'==0 {
 			if ("`dlibType'"=="csv" | "`dlibType'"=="bin") {
 				cap insheet using "`tmpcatalog'", clear	names

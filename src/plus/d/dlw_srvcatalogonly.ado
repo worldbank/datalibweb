@@ -7,7 +7,6 @@ program define dlw_srvcatalogonly, rclass
 	//server catalog	
 	tempfile servercatalog
 	dlw_api, option(2) outfile(`servercatalog') query("`server'")
-	local dlibrc `r(rc)'
 	if `dlibrc'==0 {
 		if ("`dlibType'"=="csv") {				
 			cap insheet using "`servercatalog'", clear names

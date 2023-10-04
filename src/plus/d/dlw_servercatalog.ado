@@ -57,7 +57,6 @@ program define dlw_servercatalog, rclass
 			global ftmpaudit 0
 			tempfile audit
 			dlw_api, option(6) outfile(`audit') // "Download" !!!!!!!!!!!!!!!!!
-			local dlibrc `r(rc)'
 			//qui plugin call _datalibweb , "6" "`audit'" " " "Download" 
 			if `dlibrc'==0 {    
 				if ("`dlibType'"=="csv") {
@@ -121,7 +120,6 @@ program define dlw_servercatalog, rclass
 			global ftmpsub 0					
 			tempfile subscription
 			dlw_api, option(5) outfile(`subscription')
-			local dlibrc `r(rc)'
 			if `dlibrc'==0 {
 				if ("`dlibType'"=="csv") {
 					cap insheet using "`subscription'", clear names					
@@ -169,7 +167,6 @@ program define dlw_servercatalog, rclass
 		global ftmpserver = 0
 		tempfile servercatalog
 		dlw_api, option(2) outfile(`servercatalog') query("`server'")
-		local dlibrc `r(rc)'
 		if `dlibrc'==0 {
 			if ("`dlibType'"=="csv") {				
 				cap insheet using "`servercatalog'", clear names

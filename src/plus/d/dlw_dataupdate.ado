@@ -36,7 +36,6 @@ program define dlw_dataupdate
 				if "`surveyid'"~="" local dlibapi : subinstr local dlibapi "`surveyid'" "`ids'" //replace surveyid with ids							
 				tempfile temp2
 				dlw_api, option(0) outfile(`temp2') query("`dlibapi'")
-				local dlibrc `r(rc)'
 				if `dlibrc'==0 {
 					if "`dlibFileName'"~="ECAFileinfo.csv" {
 						if ("`savepath'"~="" & "`relpath'" ~="") {

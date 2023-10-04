@@ -852,7 +852,6 @@ program define datalibweb, rclass
 			if `"$cpiw"'~="" {
 				tempfile tempcpi
 				dlw_api, option(0) outfile(`tempcpi') query("$cpiw")
-				local dlibrc `r(rc)'
 				if `dlibrc'==0 {
 					if "`dlibFileName'"~="ECAFileinfo.csv" {
 						cap shell mkdir "${localpath}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data\Stata"
@@ -1375,7 +1374,6 @@ program define _datalibcall, rclass
 					
 					if `dl'==1 {
 						dlw_api, option(0) outfile(`tempcpi') query("$cpiw")
-						local dlibrc `r(rc)'
 						if `dlibrc'==0 {
 							if "`dlibFileName'"~="ECAFileinfo.csv" {			
 								use `tempcpi', clear

@@ -35,7 +35,6 @@ program define dlw_usercatalog, rclass
 		global ftmpconfig = 0
 		tempfile tmpconfig
 		dlw_api, option(4) outfile(`tmpconfig')
-		local dlibrc `r(rc)'
 		if `dlibrc'==0 {
 			if ("`dlibType'"=="csv") {
 				cap insheet using "`tmpconfig'", clear names
@@ -70,7 +69,6 @@ program define dlw_usercatalog, rclass
 		global ftmpcatalog = 0
 		tempfile tmpcatalog
 		dlw_api, option(3) outfile(`tmpcatalog') query("`code'")
-		local dlibrc `r(rc)'
 		if `dlibrc'==0 {
 			if ("`dlibType'"=="csv") {
 				cap insheet using "`tmpcatalog'", clear	names
@@ -147,7 +145,6 @@ program define dlw_usercatalog, rclass
 		global faudit 0
 		tempfile audit
 		dlw_api, option(6) outfile(`audit') query("`code'") // "Download" ?????????????????
-		local dlibrc `r(rc)'
 		//qui plugin call _datalibweb , "6" "`audit'" "`code'" "Download" 
 		qui if `dlibrc'==0 {    
 			if ("`dlibType'"=="csv") {
@@ -188,7 +185,6 @@ program define dlw_usercatalog, rclass
 		global fsubscription 0					
 		tempfile subscription
 		dlw_api, option(5) outfile(`subscription') query("`code'")
-		local dlibrc `r(rc)'
 		if `dlibrc'==0 {
 			if ("`dlibType'"=="csv") {
 				cap insheet using "`subscription'", clear names

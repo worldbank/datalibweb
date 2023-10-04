@@ -30,7 +30,6 @@ program define dlw_serverlist, rclass
 		//server config		
 		tempfile tmpconfig
 		dlw_api, option(4) outfile(`tmpconfig')
-		local dlibrc `r(rc)'
 		if `dlibrc'==0 {
 			if ("`dlibType'"=="csv") {
 				cap insheet using "`tmpconfig'", clear names
