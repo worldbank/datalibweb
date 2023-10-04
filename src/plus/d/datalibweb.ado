@@ -1,5 +1,5 @@
 program define datalibweb, rclass	
-	version 10, missing
+	version 14, missing
     local verstata : di "version " string(_caller()) ", missing:" 
 	syntax [anything] [if] [in] [,                                    ///
 		COUNtry(string) Years(string) CIRca(string)                   ///
@@ -10,7 +10,7 @@ program define datalibweb, rclass
 		ppp(numlist) INCppp(string) PLppp(numlist) PLlcu(numlist) 	  ///
 		VERMast(string) VERAlt(string)                                ///
 		PROject(string) VINTage(string) NATure(string)                ///
-		IGNOREerror  CONFidential                                     ///
+		IGNOREerror CONFidential                                      ///
 		Working base latesty info                                     ///
 		region(string) CPIVINtage(string)                             ///
 		merge(string) update(string)                                  ///
@@ -19,12 +19,9 @@ program define datalibweb, rclass
 		getfile local localpath(string) cpilocal(string) sh(string) ALLmodules         ///
 		]
 
-	qui set checksum off
-	qui set varabbrev on
 	local cmdline: copy local 0
 	
-	
-	_dlogo		// display datlaibweb log 	
+	_display_logo		// display datlaibweb logo	
 
 	global dlw_update = 0
 	local user = c(username)
@@ -127,7 +124,8 @@ program define datalibweb, rclass
 	if ( "`vintage'" == "" &  "`country'" == "" & "`type'" != "" & "`repository'" == "") {  /* NEW */
 		datalibweb_inventory, type(`type') `info'
 		exit 
-	}	
+	}
+
 	***********************************************************************	
 	global ext
 	if "`filename'"=="" {
@@ -341,18 +339,7 @@ program define datalibweb, rclass
 		if "`=lower("`fileserver'")'"~="fileserver" global type2 
 	}
 	
-	// Generic text
-	dis as text "{hline}"
-	noi dis as text in y "{p 4 4 2}DISCLAIMER:{p_end}"
-	noi dis as text `"{p 6 4 0 80}This is the beta version of the Datalibweb command. This application was developed to facilitate the access of the original data and ex-post harmonization and is a work in progress. Please use with {cmd: CAUTION} and please remember to follow the {help datalibweb##termsofuse:TERMS OF USE}!! {p_end}"'
-	noi dis as text `"{p 6 4 0 80}Users are expected to conduct their own due diligence before implementing any analysis using this harmonization. Please notice that not all survey years within specific countries are necessarily comparable due to changes in survey design and questionnaire. For further information regarding the metadata of the each original survey used in this harmonization and to access any supporting documentation, please visit the regional data portals {browse "http://poverty/" : Poverty} or {browse "http://microdatalib.worldbank.org/index.php/home":Microdata Library}. {p_end}"'
-	noi dis as text `"{p 6 4 0 80}Users are expected to check summary statistics and published critical indicators computed with this microdata (poverty, inequality, and/or shared prosperity numbers) before conducting any analysis. {p_end}"'
-	noi dis as text "{p 6 4 0 80}Users are encouraged to take note of the vintage of the harmonization that is being used in order to assure future replicability of results. Please notice that this application will also retrieve by default the latest version of the harmonization, and this might change over time. For more information please read the {help datalibweb: help file}, including on how to retrieve previous vintages. {p_end}"
-	noi dis as text "{p 6 4 0 80}Please cite the data used as follows: {p_end}"
-	noi dis as text in white "{p 8 12 2 80}$distxt ([year of access (YYYY)]). Survey IDs: [Survey IDs separated by semi-colon (countrycode, survey year, survey acronym)]. As of [date of access (dd/mm/yyyy)] via Datalibweb Stata Package {p_end}"
-	noi dis as text `"{p 6 4 0 80} For any comments and/or questions on the datalibweb system, please write to {browse "mailto:datalibweb@worldbank.org; ?subject=Datalibweb ado helpdesk: <<<please describe your question and/or comment here>>>&cc=mnguyen3@worldbank.org" :datalibweb ado helpdesk}  {p_end}"'
-    noi dis as text `"{p 6 4 0 80} For any comments and/or questions on the micro data (raw and/or harmonized), please write to regional admins {browse "mailto:$email, ?subject=Datalibweb microdata helpdesk: <<<please describe your question and/or comment here>>>&cc=datalibweb@worldbank.org" :datalibweb microdata helpdesk}  {p_end}"'
-	dis as text "{hline}"
+	_display_disclaimer
 	
 	// Repo options
 	if ("`repository'" != "") { //adopted from datalib
@@ -839,7 +826,6 @@ program define datalibweb, rclass
 			}		
 		}		
 		qui exit $errcode
-		//qui error $errcode
 	}
 	else { //getfile
 		if "`=upper("`request'")'"=="DATA" { //get data
@@ -865,7 +851,8 @@ program define datalibweb, rclass
 		if ($token==8 & "`=upper("`request'")'"=="DATA" ) { //get CPI for harmonized
 			if `"$cpiw"'~="" {
 				tempfile tempcpi
-				plugin call _datalibweb, "0" "`tempcpi'" "$cpiw"
+				dlw_api, option(0) outfile(`tempcpi') query("$cpiw")
+				local dlibrc `r(rc)'
 				if `dlibrc'==0 {
 					if "`dlibFileName'"~="ECAFileinfo.csv" {
 						cap shell mkdir "${localpath}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data\Stata"
@@ -1387,8 +1374,8 @@ program define _datalibcall, rclass
 					}
 					
 					if `dl'==1 {
-						cap program define _datalibweb, plugin using("dlib2_`=cond(strpos(`"`=c(machine_type)'"',"64"),64,32)'.dll")					
-						plugin call _datalibweb, "0" "`tempcpi'" "$cpiw"	
+						dlw_api, option(0) outfile(`tempcpi') query("$cpiw")
+						local dlibrc `r(rc)'
 						if `dlibrc'==0 {
 							if "`dlibFileName'"~="ECAFileinfo.csv" {			
 								use `tempcpi', clear
@@ -1610,9 +1597,7 @@ program define _datalibcall, rclass
 	}
 end
 
-
-cap program drop  _dlogo
-program define _dlogo
+program define _display_logo
 	disp in g _n(2)""
 	disp in g _col(2)"  ___  ____  ____  ____            ____        ____  ___ (R)"
 	disp in g _col(2)" /  / ____/   /   ____/   /    /  /___/ /   / /___ /___/"
@@ -1624,9 +1609,23 @@ program define _dlogo
 	disp in w _col(2)"non-harmonized (original/raw) data as well as different harmonized collections across"
 	disp in w _col(2)"across Global Practices. It is integrated with Stata through the Datalibweb Stata package."
 	disp in g _n(2)""
-end 
-					  
-cap program drop dircheck
+end
+
+program define _display_disclaimer
+	// Generic text
+	display as text "{hline}"
+	display as text in y "{p 4 4 2}DISCLAIMER:{p_end}"
+	display as text `"{p 6 4 0 80}This is the beta version of the Datalibweb command. This application was developed to facilitate the access of the original data and ex-post harmonization and is a work in progress. Please use with {cmd: CAUTION} and please remember to follow the {help datalibweb##termsofuse:TERMS OF USE}!! {p_end}"'
+	display as text `"{p 6 4 0 80}Users are expected to conduct their own due diligence before implementing any analysis using this harmonization. Please notice that not all survey years within specific countries are necessarily comparable due to changes in survey design and questionnaire. For further information regarding the metadata of the each original survey used in this harmonization and to access any supporting documentation, please visit the regional data portals {browse "http://poverty/" : Poverty} or {browse "http://microdatalib.worldbank.org/index.php/home":Microdata Library}. {p_end}"'
+	display as text `"{p 6 4 0 80}Users are expected to check summary statistics and published critical indicators computed with this microdata (poverty, inequality, and/or shared prosperity numbers) before conducting any analysis. {p_end}"'
+	display as text "{p 6 4 0 80}Users are encouraged to take note of the vintage of the harmonization that is being used in order to assure future replicability of results. Please notice that this application will also retrieve by default the latest version of the harmonization, and this might change over time. For more information please read the {help datalibweb: help file}, including on how to retrieve previous vintages. {p_end}"
+	display as text "{p 6 4 0 80}Please cite the data used as follows: {p_end}"
+	display as text in white "{p 8 12 2 80}$distxt ([year of access (YYYY)]). Survey IDs: [Survey IDs separated by semi-colon (countrycode, survey year, survey acronym)]. As of [date of access (dd/mm/yyyy)] via Datalibweb Stata Package {p_end}"
+	display as text `"{p 6 4 0 80} For any comments and/or questions on the datalibweb system, please write to {browse "mailto:datalibweb@worldbank.org; ?subject=Datalibweb ado helpdesk: <<<please describe your question and/or comment here>>>&cc=mnguyen3@worldbank.org" :datalibweb ado helpdesk}  {p_end}"'
+    display as text `"{p 6 4 0 80} For any comments and/or questions on the micro data (raw and/or harmonized), please write to regional admins {browse "mailto:$email, ?subject=Datalibweb microdata helpdesk: <<<please describe your question and/or comment here>>>&cc=datalibweb@worldbank.org" :datalibweb microdata helpdesk}  {p_end}"'
+	display as text "{hline}"
+end
+				  
 program define dircheck, rclass
 	version 9
 	local curdir `"`c(pwd)'"'
@@ -1637,13 +1636,9 @@ program define dircheck, rclass
 end
 
 version 10
-cap mata : mata drop _fselectdata()
+
 mata:
-mata set matalnum on
-mata set mataoptimize on
-mata set matafavor speed
-//mata drop _fselectdata()
-//return the result to the local
+
 void _fselectdata(string matrix data, string scalar code, string scalar year, string scalar col,| string scalar mod, string scalar survname) {
 	st_local("loc_name_","")
 	a = select(data, data[.,1]:==code)

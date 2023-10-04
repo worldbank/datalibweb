@@ -65,8 +65,8 @@ program define dlw_getfile, rclass
 		else local s_`cstr' "&`cstr'=``cstr''"
 	}
 	local dlibapi "Server=`server'&Country=`country'&Year=`year'`s_collection'`s_folder'`s_token'`s_filename'`s_para1'`s_para2'`s_para3'`s_para4'`s_ext'"
-	qui plugin call _datalibweb, "0" "`temp1'" "`dlibapi'"		
-	*plugin call _datalibweb, "`temp1'" "`collname'" "`country'" "`year'" "`col'"  "`flnames'" "`para1'" "`para2'" "`para3'" "`para4'"
+	dlw_api, option(0) outfile(`temp1') query("`dlibapi'")
+	local dlibrc `r(rc)'
 	qui if `dlibrc'==0 { //1st _datalibweb
 		if "`dlibFileName'"=="ECAFileinfo.csv" { // results in list of files
 			qui insheet using "`temp1'", clear	
@@ -234,7 +234,8 @@ program define dlw_getfile, rclass
 							local dlibapi "Server=`server'&Country=`code'&Year=`year'`s_collection'`s_folder'`s_token'`s_filename'`s_para1'`s_para2'`s_para3'`s_para4'`s_ext'"
 							if "`surveyid'"~="" local dlibapi : subinstr local dlibapi "`surveyid'" "`ids'" //replace surveyid with ids							
 							tempfile temp2
-							qui plugin call _datalibweb, "0" "`temp2'" "`dlibapi'"								
+							dlw_api, option(0) outfile(`temp2') query("`dlibapi'")
+							local dlibrc `r(rc)'
 							if `dlibrc'==0 {
 								if "`dlibFileName'"~="ECAFileinfo.csv" {
 									if ("`savepath'"~="" & "`relpath'" ~="") {

@@ -4,10 +4,6 @@
 * version 0.2  26oct2015
 * version 0.3  19jan2017 - plugin v2
 
-*capture program define _datalibweb, plugin using("DataLib`=cond(strpos(`"`=c(machine_type)'"',"64"),64,32)'.dll")
-capture program define _datalibweb, plugin using("dlib2_`=cond(strpos(`"`=c(machine_type)'"',"64"),64,32)'.dll")
-
-cap program drop filesearchw2
 program define filesearchw2, rclass
 	version 12, missing
 	local verstata : di "version " string(_caller()) ", missing:"
@@ -37,9 +33,9 @@ program define filesearchw2, rclass
 		else local s_`cstr' "&`cstr'=``cstr''"
 	}
 	local dlibapi "Server=`server'&Country=`country'&Year=`year'`s_collection'`s_folder'`s_token'`s_filename'`s_para1'`s_para2'`s_para3'`s_para4'`s_ext'"			
-	//dis "`dlibapi'"
-	qui plugin call _datalibweb, "0" "`temp1'" "`dlibapi'"	
-	*plugin call _datalibweb, "1" "`temp1'" "`collname'" "`country'" "`year'" "`collection'" "`filename'" "`para1'" "`para2'" "`para3'" "`para4'"
+
+	dlw_api, option(0) outfile(`temp1') query("`dlibapi'")
+	local dlibrc `r(rc)'
 	if `dlibrc'==0 {
 		if "`dlibFileName'"=="ECAFileinfo.csv" { // results in list of files		
 			qui insheet using "`temp1'", clear				
@@ -228,8 +224,8 @@ program define filesearchw2, rclass
 								else local s_`cstr' "&`cstr'=``cstr''"
 							}
 							local dlibapi "Server=`server'&Country=`country'&Year=`year'`s_collection'`s_folder'`s_token'`s_filename'`s_para1'`s_para2'`s_para3'`s_para4'`s_ext'"			
-							plugin call _datalibweb, "0" "`temp2'" "`dlibapi'"	
-							*qui plugin call _datalibweb, "1" "`temp2'" "`collname'" "`country'" "`year'" "`collection'" "`=file[1]'" /* "`para1'" "`para2'" "`para3'" "`para4'" */
+							dlw_api, option(0) outfile(`temp2') query("`dlibapi'")
+							local dlibrc `r(rc)'
 							if `dlibrc'==0 {			
 								if "`dlibFileName'"=="ECAFileinfo.csv" {
 									qui insheet using "`temp2'", clear

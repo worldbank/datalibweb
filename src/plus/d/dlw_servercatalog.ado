@@ -1,10 +1,6 @@
 *! version 0.1 16apr017
 *! Minh Cong Nguyen
 
-capture program define _datalibweb, plugin using("dlib2_`=cond(strpos(`"`=c(machine_type)'"',"64"),64,32)'.dll")
-*capture program define _datalibweb, plugin using("DataLib`=cond(strpos(`"`=c(machine_type)'"',"64"),64,32)'.dll")
-
-cap program drop dlw_servercatalog
 program define dlw_servercatalog, rclass	
 	version 10, missing
     local verstata : di "version " string(_caller()) ", missing:" 
@@ -60,7 +56,9 @@ program define dlw_servercatalog, rclass
 		qui if `dlaudit'==1 {	
 			global ftmpaudit 0
 			tempfile audit
-			qui plugin call _datalibweb , "6" "`audit'" " " "Download" 
+			dlw_api, option(6) outfile(`audit') // "Download" !!!!!!!!!!!!!!!!!
+			local dlibrc `r(rc)'
+			//qui plugin call _datalibweb , "6" "`audit'" " " "Download" 
 			if `dlibrc'==0 {    
 				if ("`dlibType'"=="csv") {
 					cap insheet using "`audit'", clear	names
@@ -122,7 +120,8 @@ program define dlw_servercatalog, rclass
 		qui if `dlsub'==1 {	
 			global ftmpsub 0					
 			tempfile subscription
-			qui plugin call _datalibweb , "5" "`subscription'" ""
+			dlw_api, option(5) outfile(`subscription')
+			local dlibrc `r(rc)'
 			if `dlibrc'==0 {
 				if ("`dlibType'"=="csv") {
 					cap insheet using "`subscription'", clear names					
@@ -169,7 +168,8 @@ program define dlw_servercatalog, rclass
 		//server catalog
 		global ftmpserver = 0
 		tempfile servercatalog
-		qui plugin call _datalibweb , "2" "`servercatalog'" "`server'"
+		dlw_api, option(2) outfile(`servercatalog') query("`server'")
+		local dlibrc `r(rc)'
 		if `dlibrc'==0 {
 			if ("`dlibType'"=="csv") {				
 				cap insheet using "`servercatalog'", clear names

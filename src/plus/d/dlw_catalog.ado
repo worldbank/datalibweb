@@ -3,10 +3,6 @@
 * version 0.1 19jan2017 - new
 * version 0.2 15apr2019 - enable Support for testing
 
-capture program define _datalibweb, plugin using("dlib2_`=cond(strpos(`"`=c(machine_type)'"',"64"),64,32)'.dll")
-*capture program define _datalibweb, plugin using("DataLib`=cond(strpos(`"`=c(machine_type)'"',"64"),64,32)'.dll")
-
-cap program drop dlw_catalog
 program define dlw_catalog, rclass	
 	version 10, missing
     local verstata : di "version " string(_caller()) ", missing:" 
@@ -25,7 +21,8 @@ program define dlw_catalog, rclass
 	//server catalog
 	tempfile servercatalog
 	if `opt'==2 {
-		qui plugin call _datalibweb , "`opt'" "`servercatalog'" "`server'"
+		dlw_api, option(`opt') outfile(`servercatalog') query("`server'")
+		local dlibrc `r(rc)'
 		if `dlibrc'==0 {
 			if ("`dlibType'"=="csv") {
 				//local ser = subinstr("`server'",".xml","",.)
@@ -146,7 +143,8 @@ program define dlw_catalog, rclass
 	//country catalog
 	if `opt'==3 {
 		tempfile tmpcatalog
-		qui plugin call _datalibweb , "`opt'" "`tmpcatalog'" "`code'"
+		dlw_api, option(`opt') outfile(`tmpcatalog'), query("`code'")
+		local dlibrc `r(rc)'
 		if `dlibrc'==0 {
 			if ("`dlibType'"=="csv" | "`dlibType'"=="bin") {
 				cap insheet using "`tmpcatalog'", clear	names

@@ -1,10 +1,6 @@
 *! version 0.1 28apr017
 *! Minh Cong Nguyen
 
-capture program define _datalibweb, plugin using("dlib2_`=cond(strpos(`"`=c(machine_type)'"',"64"),64,32)'.dll")
-*capture program define _datalibweb, plugin using("DataLib`=cond(strpos(`"`=c(machine_type)'"',"64"),64,32)'.dll")
-
-cap program drop dlw_serverlist
 program define dlw_serverlist, rclass	
 	version 10, missing
 	local persdir : sysdir PERSONAL
@@ -33,7 +29,8 @@ program define dlw_serverlist, rclass
 	qui if `dl'==1 {	
 		//server config		
 		tempfile tmpconfig
-		qui plugin call _datalibweb , "4" "`tmpconfig'"
+		dlw_api, option(4) outfile(`tmpconfig')
+		local dlibrc `r(rc)'
 		if `dlibrc'==0 {
 			if ("`dlibType'"=="csv") {
 				cap insheet using "`tmpconfig'", clear names
