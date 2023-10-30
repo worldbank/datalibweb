@@ -3,9 +3,6 @@
 * version 0.1 16feb2017 - original
 * version 0.2 15apr2019 - add new collection category in type2
 
-capture program define _datalibweb, plugin using("dlib2_`=cond(strpos(`"`=c(machine_type)'"',"64"),64,32)'.dll")
-capture program define dlwgui, plugin using("dlib2g_`=cond(strpos(`"`=c(machine_type)'"',"64"),64,32)'.dll")		
-cap program drop dlw_usercatalog
 program define dlw_usercatalog, rclass	
 	version 10, missing
     local verstata : di "version " string(_caller()) ", missing:" 
@@ -33,12 +30,11 @@ program define dlw_usercatalog, rclass
 		}
 	}
 	
-	*cap mkdir "`persdir'datalibweb\data"	
 	qui if `dl'==1 {
 		//server config
 		global ftmpconfig = 0
 		tempfile tmpconfig
-		qui plugin call _datalibweb , "4" "`tmpconfig'"
+		dlw_api, option(4) outfile(`tmpconfig')
 		if `dlibrc'==0 {
 			if ("`dlibType'"=="csv") {
 				cap insheet using "`tmpconfig'", clear names
@@ -72,7 +68,7 @@ program define dlw_usercatalog, rclass
 		//catalog country
 		global ftmpcatalog = 0
 		tempfile tmpcatalog
-		qui plugin call _datalibweb , "3" "`tmpcatalog'" "`code'"
+		dlw_api, option(3) outfile(`tmpcatalog') query("`code'")
 		if `dlibrc'==0 {
 			if ("`dlibType'"=="csv") {
 				cap insheet using "`tmpcatalog'", clear	names
@@ -148,7 +144,8 @@ program define dlw_usercatalog, rclass
 		//audit
 		global faudit 0
 		tempfile audit
-		qui plugin call _datalibweb , "6" "`audit'" "`code'" "Download" 
+		dlw_api, option(6) outfile(`audit') query("`code'") // "Download" ?????????????????
+		//qui plugin call _datalibweb , "6" "`audit'" "`code'" "Download" 
 		qui if `dlibrc'==0 {    
 			if ("`dlibType'"=="csv") {
 				cap insheet using "`audit'", clear	names					
@@ -187,7 +184,7 @@ program define dlw_usercatalog, rclass
 		//subscription	
 		global fsubscription 0					
 		tempfile subscription
-		qui plugin call _datalibweb , "5" "`subscription'" "`code'"
+		dlw_api, option(5) outfile(`subscription') query("`code'")
 		if `dlibrc'==0 {
 			if ("`dlibType'"=="csv") {
 				cap insheet using "`subscription'", clear names

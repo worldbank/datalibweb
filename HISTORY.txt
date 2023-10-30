@@ -1,0 +1,15 @@
+*! version 1.04  12dec2019
+*! Minh Cong Nguyen, Raul Andres Castaneda Aguilar, Jose Montes, Paul Andres Corral Rodas, Joao Pedro Azevedo, Paul Ricci
+* version 0.1  02jun2015
+* version 0.2  26oct2015 - collection dofiles
+* version 0.3  11dec2015 - Add sysdir, conditions for collections, merging
+* version 0.31 11dec2015 - General collection with no CPI loaded
+* version 0.32 12apr2016 - exact search added
+* version 0.4  XXdec2015 - Add date filter, merge (ongoing)
+* version 0.5 Nov2016 - add getfile, mata data function
+* version 0.6 Dec2016 - add new CPI/PPP function connection
+* version 1   Jan2017 - add plugin v2
+* version 1.01 26Jan2017 - add repo option, improve eusilc files and cpi
+* version 1.02 19Feb2018 - add CPI vintages
+* version 1.03 15Apr2019 - add new collections, countrycodes,
+* version 1.04 12dec2019 - new CPI vintage with surveyname, enable some undocumented functions

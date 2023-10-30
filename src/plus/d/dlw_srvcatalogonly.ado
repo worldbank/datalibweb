@@ -1,7 +1,3 @@
-capture program define _datalibweb, plugin using("dlib2_`=cond(strpos(`"`=c(machine_type)'"',"64"),64,32)'.dll")
-*capture program define _datalibweb, plugin using("DataLib`=cond(strpos(`"`=c(machine_type)'"',"64"),64,32)'.dll")
-
-cap program drop dlw_srvcatalogonly
 program define dlw_srvcatalogonly, rclass	
 	version 10, missing
     local verstata : di "version " string(_caller()) ", missing:" 
@@ -10,7 +6,7 @@ program define dlw_srvcatalogonly, rclass
 	
 	//server catalog	
 	tempfile servercatalog
-	qui plugin call _datalibweb , "2" "`servercatalog'" "`server'"
+	dlw_api, option(2) outfile(`servercatalog') query("`server'")
 	if `dlibrc'==0 {
 		if ("`dlibType'"=="csv") {				
 			cap insheet using "`servercatalog'", clear names
