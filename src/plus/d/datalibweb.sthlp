@@ -477,16 +477,22 @@ By typing {helpb return list}, the following results are reported:
 {dlgtab: Supporting data}
 
 {p 8 12}{stata "dlw, country(support) year(2005) type(gmdraw)" :. dlw, country(support) year(2005) type(gmdraw)}{p_end}
-{pstd} It provides supporting database for Global Poverty Monitoring such as yearly, quarterly and monthly CPIs, weighted CPI to use with surveys. 
+{pstd} It provides supporting database for Global Poverty Monitoring such as yearly, quarterly and monthly CPIs, weighted CPI to use with surveys.
 Users should explore the database here to facilite their works.
-Some examples here use the v03 vintage of database. The vintage will be updated yearly around Nov/Dec.{p_end}
+Some examples here use the v03 vintage of database. The vintage will be updated yearly around Nov/Dec.
+{p_end}
 
-	{p 8 12}{stata "dlw, country(Support) year(2005) type(GMDRAW) surveyid(Support_2005_CPI_v03_M) filename(Final_CPI_PPP_to_be_used.dta)" :.dlw, country(Support) year(2005) type(GMDRAW) surveyid(Support_2005_CPI_v03_M) filename(Final_CPI_PPP_to_be_used.dta)}{p_end}
-	{p 8 12}{stata "dlw, country(Support) year(2005) type(GMDRAW) surveyid(Support_2005_CPI_v03_M) filename(Yearly_CPI_Final.dta)" :.dlw, country(Support) year(2005) type(GMDRAW) surveyid(Support_2005_CPI_v03_M) filename(Yearly_CPI_Final.dta)}{p_end}
-	{p 8 12}{stata "dlw, country(Support) year(2005) type(GMDRAW) surveyid(Support_2005_CPI_v03_M) filename(repo_SM19MPO.dta)" :.dlw, country(Support) year(2005) type(GMDRAW) surveyid(Support_2005_CPI_v03_M) filename(repo_SM19MPO.dta)}{p_end}
-	{p 8 12}{stata "dlw, country(Support) year(2005) type(GMDRAW) surveyid(Support_2005_CPI_v03_M) filename(Monthly_CPI.dta)" :.dlw, country(Support) year(2005) type(GMDRAW) surveyid(Support_2005_CPI_v03_M) filename(Monthly_CPI.dta)}{p_end}
-	{p 8 12}{stata "dlw, country(Support) year(2005) type(GMDRAW) surveyid(Support_2005_CPI_v03_M) filename(Survey_price_framework.dta)" :.dlw, country(Support) year(2005) type(GMDRAW) surveyid(Support_2005_CPI_v03_M) filename(Survey_price_framework.dta)}{p_end}
-	
+{p 8 12}
+{stata "dlw, country(Support) year(2005) type(GMDRAW) surveyid(Support_2005_CPI_v03_M) filename(Final_CPI_PPP_to_be_used.dta)" :.dlw, country(Support) year(2005) type(GMDRAW)}
+{stata "dlw, country(Support) year(2005) type(GMDRAW) surveyid(Support_2005_CPI_v03_M) filename(Final_CPI_PPP_to_be_used.dta)" :surveyid(Support_2005_CPI_v03_M) filename(Final_CPI_PPP_to_be_used.dta)}
+{p_end}
+{p 8 12}{stata "dlw, country(Support) year(2005) type(GMDRAW) surveyid(Support_2005_CPI_v03_M) filename(Yearly_CPI_Final.dta)" :.dlw, country(Support) year(2005) type(GMDRAW) surveyid(Support_2005_CPI_v03_M) filename(Yearly_CPI_Final.dta)}{p_end}
+{p 8 12}{stata "dlw, country(Support) year(2005) type(GMDRAW) surveyid(Support_2005_CPI_v03_M) filename(repo_SM19MPO.dta)" :.dlw, country(Support) year(2005) type(GMDRAW) surveyid(Support_2005_CPI_v03_M) filename(repo_SM19MPO.dta)}{p_end}
+{p 8 12}{stata "dlw, country(Support) year(2005) type(GMDRAW) surveyid(Support_2005_CPI_v03_M) filename(Monthly_CPI.dta)" :.dlw, country(Support) year(2005) type(GMDRAW) surveyid(Support_2005_CPI_v03_M) filename(Monthly_CPI.dta)}{p_end}
+{p 8 12}
+{stata "dlw, country(Support) year(2005) type(GMDRAW) surveyid(Support_2005_CPI_v03_M) filename(Survey_price_framework.dta)" :.dlw, country(Support) year(2005) type(GMDRAW) surveyid(Support_2005_CPI_v03_M) filename(Survey_price_framework.dta)}
+{p_end}
+
 {dlgtab: interactive interface}
 
 {p 8 12}{stata "datalibweb" :.datalibweb}{p_end}
