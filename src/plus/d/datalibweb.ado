@@ -12,8 +12,7 @@ program define datalibweb
         local command "datalibweb_v1"
     }
     else if "`version'" == "2" {
-        display as error "not implemented"
-        exit 198
+        local command "datalibweb_v2"        
     }
     else {
         display as error "incorrect version `version'"
