@@ -1,7 +1,7 @@
 *! version 0.02 28nov2023
 *! Minh Cong Nguyen, Zurab Sajaia 
 
-program define dlw_api, rclass
+program define dlw_api_v2, rclass
     version 16
     syntax, OPTion(integer) [OUTfile(string) Query(string) Reqtype(string) Token(string)]
 	

@@ -34,7 +34,8 @@ program define filesearchw2, rclass
 	}
 	local dlibapi "Server=`server'&Country=`country'&Year=`year'`s_collection'`s_folder'`s_token'`s_filename'`s_para1'`s_para2'`s_para3'`s_para4'`s_ext'"			
 
-	dlw_api, option(0) outfile(`temp1') query("`dlibapi'")
+	if "$DATALIBWEB_VERSION"=="1" dlw_api, option(0) outfile(`temp1') query("`dlibapi'")
+	else dlw_api_v2, option(0) outfile(`temp1') query("`dlibapi'")
 	if `dlibrc'==0 {
 		if "`dlibFileName'"=="ECAFileinfo.csv" { // results in list of files		
 			qui insheet using "`temp1'", clear				
@@ -51,13 +52,16 @@ program define filesearchw2, rclass
 			qui { //qui
 				cap drop filepath
 				ren filename file
-				cap split filesharepath, p("\")
+				if "$DATALIBWEB_VERSION"=="1" cap split filesharepath, p("\")
+				else cap split filesharepath, p("/")
 				ren filesharepath3 survey
 				ren filesharepath4 surveyid
 				ren filesharepath path
 				gen ext = substr(file,length(file)-strpos(reverse(file),".")+2,strpos(reverse(file),"."))
-				replace filesize = subinstr(filesize, " bytes","",.)
-				destring filesize, replace
+				if "$DATALIBWEB_VERSION"=="1" {						
+					replace filesize = subinstr(filesize, " bytes","",.)
+					destring filesize, replace
+				}
 				replace filesize = round(filesize/1e6,.001) 
 				format %10.3g filesize
 				//Clean and Save the filesearch data
@@ -223,7 +227,8 @@ program define filesearchw2, rclass
 								else local s_`cstr' "&`cstr'=``cstr''"
 							}
 							local dlibapi "Server=`server'&Country=`country'&Year=`year'`s_collection'`s_folder'`s_token'`s_filename'`s_para1'`s_para2'`s_para3'`s_para4'`s_ext'"			
-							dlw_api, option(0) outfile(`temp2') query("`dlibapi'")
+							if "$DATALIBWEB_VERSION"=="1" dlw_api, option(0) outfile(`temp2') query("`dlibapi'")
+							else dlw_api_v2, option(0) outfile(`temp2') query("`dlibapi'")
 							if `dlibrc'==0 {			
 								if "`dlibFileName'"=="ECAFileinfo.csv" {
 									qui insheet using "`temp2'", clear
