@@ -195,6 +195,11 @@ program define dlw_usercatalog, rclass
 				if _rc==0 {
 					if _N==0 noi dis as text in white "User has no subscription in the catalog for this country `code'."
 					else {
+						//hot fix IND due to wrong year
+						if "`code'"=="IND" {
+							cap drop if year=="2017-2021"
+							cap destring year, replace
+						}
 						global fsubscription 1		
 						cap drop userpin emailaddress subscribedto modified created createdby modifiedby
 						ren surveyid acronym
