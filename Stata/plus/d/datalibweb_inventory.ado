@@ -17,8 +17,7 @@ syntax [anything(name=lookup)] , [ ///
 	clear							               ///
 	raw regional  global             ///
 	vermast(string) veralt(string)	 ///
-	survey(string)                   /// 
-	version(string)]
+	survey(string)]
 	version 11
 
 qui {
