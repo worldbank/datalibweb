@@ -34,8 +34,7 @@ program define filesearchw2, rclass
 	}
 	local dlibapi "Server=`server'&Country=`country'&Year=`year'`s_collection'`s_folder'`s_token'`s_filename'`s_para1'`s_para2'`s_para3'`s_para4'`s_ext'"			
 
-	if "$DATALIBWEB_VERSION"=="1" dlw_api, option(0) outfile(`temp1') query("`dlibapi'")
-	else dlw_api_v2, option(0) outfile(`temp1') query("`dlibapi'")
+	dlw_api, option(0) outfile(`temp1') query("`dlibapi'")
 	if `dlibrc'==0 {
 		if "`dlibFileName'"=="ECAFileinfo.csv" { // results in list of files		
 			qui insheet using "`temp1'", clear				
@@ -227,8 +226,7 @@ program define filesearchw2, rclass
 								else local s_`cstr' "&`cstr'=``cstr''"
 							}
 							local dlibapi "Server=`server'&Country=`country'&Year=`year'`s_collection'`s_folder'`s_token'`s_filename'`s_para1'`s_para2'`s_para3'`s_para4'`s_ext'"			
-							if "$DATALIBWEB_VERSION"=="1" dlw_api, option(0) outfile(`temp2') query("`dlibapi'")
-							else dlw_api_v2, option(0) outfile(`temp2') query("`dlibapi'")
+							dlw_api, option(0) outfile(`temp2') query("`dlibapi'")
 							if `dlibrc'==0 {			
 								if "`dlibFileName'"=="ECAFileinfo.csv" {
 									qui insheet using "`temp2'", clear

@@ -1,7 +1,7 @@
 program define datalibweb
     version 16
 
-    syntax [, version(string) *]
+    syntax [, version(string) token(passthru) *]
 
     // use version 1 by default
     if "`version'" == "" {
@@ -20,6 +20,14 @@ program define datalibweb
     }
 
     global DATALIBWEB_VERSION `version'
+
+    if "`token'" != "" {
+        if "`version'" != "2" {
+            display as error "token() option is only supported with version(2) at this moment"
+        }
+        dlw_api, `token' // any other parameter present would be ignored
+        exit
+    }
     `command', `options'
 
 end
