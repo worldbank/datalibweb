@@ -4,7 +4,6 @@
 * version 1.02  15apr2019 - add new category/conditions for type2
 * version 1.03  12dec2019 - add manual refresh link
 
-cap program drop datalibweb_inventory
 program define datalibweb_inventory, rclass
 
 syntax [anything(name=lookup)] , [ ///
@@ -19,8 +18,26 @@ syntax [anything(name=lookup)] , [ ///
 	raw regional  global             ///
 	vermast(string) veralt(string)	 ///
 	survey(string)                   /// 
-	]
+	version(string)]
 	version 11
+
+    // use version 1 by default
+    if "`version'" == "" {
+        local version "1"
+    }
+
+    if "`version'" == "1" | "`version'" == "" {
+        local command "datalibweb_v1"
+    }
+    else if "`version'" == "2" {
+        local command "datalibweb_v2"        
+    }
+    else {
+        display as error "incorrect version `version'"
+        exit 198
+    }
+
+    global DATALIBWEB_VERSION `version'
 
 qui {
 	global yesno 0
