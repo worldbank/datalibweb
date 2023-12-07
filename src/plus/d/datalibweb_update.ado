@@ -92,6 +92,7 @@ program define datalibweb_update, rclass
 			cap prog drop dlwgui
 			copy "`dirfrom'd/dlib2_`mtype'.dll" "`plusdir'd\dlib2_`mtype'.dll", replace         //  DDL					
 			copy "`dirfrom'd/dlib2g_`mtype'.dll" "`plusdir'd\dlib2g_`mtype'.dll", replace         //  DDL					
+			copy "`dirfrom'd/Dlib2SOL_`mtype'.dll" "`plusdir'd\Dlib2SOL_`mtype'.dll", replace         //  DDL					
 			copy "`dirfrom'd/datalibweb_version.txt" "`plusdir'd\datalibweb_version.txt", replace   //  SMCL
 			copy "`dirfrom'd/datalibweb_currentversion.txt" "`plusdir'd\datalibweb_currentversion.txt", replace   //  SMCL			
 			** Zipped files

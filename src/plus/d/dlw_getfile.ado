@@ -1,6 +1,6 @@
 *! version 0.1 26nov2016
 *! Minh Cong Nguyen
-capture program define _datalibweb, plugin using("dlib2_`=cond(strpos(`"`=c(machine_type)'"',"64"),64,32)'.dll")
+*capture program define _datalibweb, plugin using("dlib2_`=cond(strpos(`"`=c(machine_type)'"',"64"),64,32)'.dll")
 *capture program define _datalibweb, plugin using("DataLib`=cond(strpos(`"`=c(machine_type)'"',"64"),64,32)'.dll")
 
 cap program drop dlw_getfile
@@ -15,8 +15,7 @@ program define dlw_getfile, rclass
 	request(string) VERMast(string) VERAlt(string)]
 
 	// Error
-	global errcode 0
-	// pass to _datalibweb
+	global errcode 0	
 	tempfile temp1
 	local collname `server'
 	
@@ -65,7 +64,8 @@ program define dlw_getfile, rclass
 		else local s_`cstr' "&`cstr'=``cstr''"
 	}
 	local dlibapi "Server=`server'&Country=`country'&Year=`year'`s_collection'`s_folder'`s_token'`s_filename'`s_para1'`s_para2'`s_para3'`s_para4'`s_ext'"
-	dlw_api, option(0) outfile(`temp1') query("`dlibapi'")
+	if "$DATALIBWEB_VERSION"=="1" dlw_api, option(0) outfile(`temp1') query("`dlibapi'")
+	else dlw_api_v2, option(0) outfile(`temp1') query("`dlibapi'")
 	qui if `dlibrc'==0 { //1st _datalibweb
 		if "`dlibFileName'"=="ECAFileinfo.csv" { // results in list of files
 			qui insheet using "`temp1'", clear	
@@ -233,7 +233,8 @@ program define dlw_getfile, rclass
 							local dlibapi "Server=`server'&Country=`code'&Year=`year'`s_collection'`s_folder'`s_token'`s_filename'`s_para1'`s_para2'`s_para3'`s_para4'`s_ext'"
 							if "`surveyid'"~="" local dlibapi : subinstr local dlibapi "`surveyid'" "`ids'" //replace surveyid with ids							
 							tempfile temp2
-							dlw_api, option(0) outfile(`temp2') query("`dlibapi'")
+							if "$DATALIBWEB_VERSION"=="1" dlw_api, option(0) outfile(`temp2') query("`dlibapi'")
+							else dlw_api_v2, option(0) outfile(`temp2') query("`dlibapi'")
 							if `dlibrc'==0 {
 								if "`dlibFileName'"~="ECAFileinfo.csv" {
 									if ("`savepath'"~="" & "`relpath'" ~="") {
@@ -271,14 +272,7 @@ program define dlw_getfile, rclass
 			} //one type of survey only	
 		} //ECAFileinfo.csv
 		else { //single file with permission
-			noi dis as text "check here"			
-			*relpath \ALB\ALB_2008_LSMS\ALB_2008_LSMS_v03_M\Data\Stata\
-			*local relpath "\`code'\"	
-			//copy the file
-			//cap shell mkdir -p "`savepath'\\`relpath'"
-			//cap copy "`temp1'" "`savepath'\\`relpath'\\`file'", replace
-			//if _rc==0 noi dis as text in yellow "{p 4 4 2}`file' is successfully saved here (`savepath').{p_end}"
-			//else      noi dis as text in yellow "{p 4 4 2}`file' is NOT successfully saved.{p_end}"
+			noi dis as text "check here"						
 			use "`temp1'", clear
 		}
 	} //1st _datalibweb
