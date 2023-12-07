@@ -51,8 +51,7 @@ program define filesearchw2, rclass
 			qui { //qui
 				cap drop filepath
 				ren filename file
-				if "$DATALIBWEB_VERSION"=="1" cap split filesharepath, p("\")
-				else cap split filesharepath, p("/")
+				cap replace filesharepath = subinstr(filesharepath, "/", "\",.) 				
 				ren filesharepath3 survey
 				ren filesharepath4 surveyid
 				ren filesharepath path

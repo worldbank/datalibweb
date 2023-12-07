@@ -56,10 +56,7 @@ program define dlw_servercatalog, rclass
 		qui if `dlaudit'==1 {	
 			global ftmpaudit 0
 			tempfile audit
-			if "$DATALIBWEB_VERSION"=="1" dlw_api, option(6) outfile(`audit') reqtype("Download") 
-			else dlw_api_v2, option(6) outfile(`audit') reqtype("Download")			
-			//dlw_api, option(6) outfile(`audit') // "Download" !!!!!!!!!!!!!!!!!
-			//qui plugin call _datalibweb , "6" "`audit'" " " "Download" 
+			dlw_api, option(6) outfile(`audit') reqtype("Download") 									
 			if `dlibrc'==0 {    
 				if ("`dlibType'"=="csv") {
 					cap insheet using "`audit'", clear	names
@@ -121,9 +118,7 @@ program define dlw_servercatalog, rclass
 		qui if `dlsub'==1 {	
 			global ftmpsub 0					
 			tempfile subscription
-			if "$DATALIBWEB_VERSION"=="1" dlw_api, option(5) outfile(`subscription')
-			else dlw_api_v2, option(5) outfile(`subscription')	
-			//dlw_api, option(5) outfile(`subscription')
+			dlw_api, option(5) outfile(`subscription')						
 			if `dlibrc'==0 {
 				if ("`dlibType'"=="csv") {
 					cap insheet using "`subscription'", clear names					
@@ -170,8 +165,7 @@ program define dlw_servercatalog, rclass
 		//server catalog
 		global ftmpserver = 0
 		tempfile servercatalog
-		if "$DATALIBWEB_VERSION"=="1" dlw_api, option(2) outfile(`servercatalog') query("`server'")
-		else dlw_api_v2, option(2) outfile(`servercatalog') query("`server'")
+		dlw_api, option(2) outfile(`servercatalog') query("`server'")		
 		if `dlibrc'==0 {
 			if ("`dlibType'"=="csv") {				
 				cap insheet using "`servercatalog'", clear names

@@ -29,8 +29,7 @@ program define dlw_serverlist, rclass
 	qui if `dl'==1 {	
 		//server config		
 		tempfile tmpconfig
-		if "$DATALIBWEB_VERSION"=="1" dlw_api, option(4) outfile(`tmpconfig')
-		else dlw_api_v2, option(4) outfile(`tmpconfig')
+		dlw_api, option(4) outfile(`tmpconfig')		
 		if `dlibrc'==0 {
 			if ("`dlibType'"=="csv") {
 				cap insheet using "`tmpconfig'", clear names
