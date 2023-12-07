@@ -21,8 +21,7 @@ program define dlw_catalog, rclass
 	//server catalog
 	tempfile servercatalog
 	if `opt'==2 {
-		if "$DATALIBWEB_VERSION"=="1" dlw_api, option(`opt') outfile(`servercatalog') query("`server'")
-		else dlw_api_v2, option(`opt') outfile(`servercatalog') query("`server'")
+		dlw_api, option(`opt') outfile(`servercatalog') query("`server'")		
 		if `dlibrc'==0 {
 			if ("`dlibType'"=="csv") {
 				//local ser = subinstr("`server'",".xml","",.)
@@ -36,6 +35,7 @@ program define dlw_catalog, rclass
 						cap drop v7 v8
 						cap drop if year=="NULL"
 						cap destring year, replace
+						cap replace filepath = subinstr(filepath, "/", "\",.) 
 						gen ndir = strlen(filepath) - strlen(subinstr(filepath,"\","",.))
 						gen pos0 = strpos(filepath, ".dta")
 						gen pos1 = strpos(filepath, ".DTA")
@@ -143,8 +143,7 @@ program define dlw_catalog, rclass
 	//country catalog
 	if `opt'==3 {
 		tempfile tmpcatalog
-		if "$DATALIBWEB_VERSION"=="1" dlw_api, option(`opt') outfile(`tmpcatalog'), query("`code'")
-		else dlw_api_v2, option(`opt') outfile(`tmpcatalog'), query("`code'")
+		dlw_api, option(`opt') outfile(`tmpcatalog'), query("`code'")		
 		if `dlibrc'==0 {
 			if ("`dlibType'"=="csv" | "`dlibType'"=="bin") {
 				cap insheet using "`tmpcatalog'", clear	names

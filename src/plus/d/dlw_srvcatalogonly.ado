@@ -6,8 +6,7 @@ program define dlw_srvcatalogonly, rclass
 	
 	//server catalog	
 	tempfile servercatalog
-	if "$DATALIBWEB_VERSION"=="1" dlw_api, option(2) outfile(`servercatalog') query("`server'")
-	else dlw_api_v2, option(2) outfile(`servercatalog') query("`server'")
+	dlw_api, option(2) outfile(`servercatalog') query("`server'")	
 	if `dlibrc'==0 {
 		if ("`dlibType'"=="csv") {				
 			cap insheet using "`servercatalog'", clear names
