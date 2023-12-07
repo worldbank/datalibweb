@@ -52,12 +52,13 @@ program define dlw_api_v2, rclass
 		else { //0 2 3 9
 			if "`query'"~="" plugin call _datalibweb, "`option'" "`outfile'" "`query'"
 			//option 4 only
-			else plugin call _datalibweb, "`option'" "`outfile'" 
+			else plugin call _datalibweb, "4" "`outfile'" 			
 		}
 		
 		c_local dlibrc "`dlibrc'"
 		c_local dlibFileName "`dlibFileName'"
 		c_local dlibDataSize "`dlibDataSize'"
 		c_local dlibType "`dlibType'"
+		
 	} //other API options
 end

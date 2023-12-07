@@ -499,7 +499,7 @@ program define _datalibcall_v2, rclass
 					
 					if `dl'==1 {
 						if "$DATALIBWEB_VERSION"=="1" dlw_api, option(0) outfile(`tempcpi') query("$cpiw")
-						else "$DATALIBWEB_VERSION"=="1" dlw_api_v2, option(0) outfile(`tempcpi') query("$cpiw")
+						else dlw_api_v2, option(0) outfile(`tempcpi') query("$cpiw")
 						if `dlibrc'==0 {
 							if "`dlibFileName'"~="ECAFileinfo.csv" {			
 								use `tempcpi', clear
