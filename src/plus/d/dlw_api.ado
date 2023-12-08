@@ -96,7 +96,7 @@ program define _dlw_api_v2, rclass
 		else { //0 2 3 9
 			if "`query'"~="" plugin call _datalibweb_v2, "`option'" "`outfile'" "`query'"
 			//option 4 only
-			else plugin call _datalibweb_v2, "`option'" "`outfile'" 
+			else plugin call _datalibweb_v2, "4" "`outfile'" 
 		}
 		
 		c_local dlibrc "`dlibrc'"

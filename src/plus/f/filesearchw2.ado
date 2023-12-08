@@ -50,8 +50,8 @@ program define filesearchw2, rclass
 			}
 			qui { //qui
 				cap drop filepath
-				ren filename file
-				cap replace filesharepath = subinstr(filesharepath, "/", "\",.) 				
+				ren filename file								
+				cap split filesharepath, p("\" "/")
 				ren filesharepath3 survey
 				ren filesharepath4 surveyid
 				ren filesharepath path

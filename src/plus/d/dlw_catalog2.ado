@@ -65,6 +65,7 @@ program define dlw_catalog, rclass
 							cap drop v7 v8
 							cap drop if year=="NULL"
 							cap destring year, replace
+							cap replace filepath = subinstr(filepath, "/", "\",.) 
 							gen ndir = strlen(filepath) - strlen(subinstr(filepath,"\","",.))
 							gen pos0 = strpos(filepath, ".dta")
 							gen pos1 = strpos(filepath, ".DTA")
@@ -167,7 +168,7 @@ program define dlw_catalog, rclass
 						if _N==1 noi dis as text in white "No data in the catalog for this country `code'."
 						else {
 							ren survey acronym
-							split filepath, p("\")
+							split filepath, p("\" "/")
 							ren filepath3 surveyid
 							gen token = 1 + strlen(surveyid) - strlen(subinstr(surveyid,"_","",.))
 							gen type = "RAW" if token==5
