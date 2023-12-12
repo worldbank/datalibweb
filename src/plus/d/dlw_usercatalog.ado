@@ -46,6 +46,7 @@ program define dlw_usercatalog, rclass
 						ren server serveralias
 						replace serveralias = upper(serveralias)
 						replace foldername = "" if foldername=="NULL"
+						cap replace foldername = subinstr(foldername, "/", "\",.) 
 						qui saveold "`tmpconfig'", replace	
 						
 						tempfile sub2		
@@ -53,7 +54,7 @@ program define dlw_usercatalog, rclass
 						bys serveralias requesttype token: gen seq = _n
 						bys serveralias requesttype token: gen all = _N
 						reshape wide foldername folderlevel extn, i( serveralias requesttype token all) j(seq)
-						save `sub2', replace
+						save `sub2', replace						
 					}
 				}
 				else {
@@ -77,7 +78,8 @@ program define dlw_usercatalog, rclass
 					else {
 						global ftmpcatalog = 1
 						*ren survey acronym //added May 14 2019 
-						split filepath, p("\")
+						cap replace filepath = subinstr(filepath, "/", "\",.)
+						split filepath, p("\" "/")
 						ren filepath3 surveyid
 						split surveyid, p("_") //added May 14 2019 
 						ren surveyid3 acronym //added May 14 2019 
@@ -92,7 +94,7 @@ program define dlw_usercatalog, rclass
 						gen path1 = filepath1 + "\" + filepath2 + "\" + surveyid + "\"
 						gen filename = substr(filepath, length(filepath)-strpos(reverse(filepath), "\")+2, .)
 						replace serveralias = upper(serveralias)
-						save `tmpcatalog', replace	
+						save `tmpcatalog', replace							
 					}
 				}
 				else {
@@ -137,12 +139,13 @@ program define dlw_usercatalog, rclass
 					cap drop tmp1 tmp2 tmp3 tmp4 tmp5
 				}
 				replace requesttype = finaltype
-				save `tmpcatalog', replace
+				save `tmpcatalog', replace				
 			}
 		}
 
 		//audit
 		global faudit 0
+		
 		tempfile audit
 		dlw_api, option(6) outfile(`audit') query("`code'") reqtype("Download") 
 		qui if `dlibrc'==0 {    
@@ -164,13 +167,16 @@ program define dlw_usercatalog, rclass
 						}
 						//cap drop userpin requesttype accessedfolder organization department timestamp modifiedby createdby created acronym appid applicationid ipaddress collection country year para1 para2 para3 para4 name type token foldername level ext command
 						ren server serveralias
-						ren modified downloaddate
-						bys serveralias surveyid filename ( downloaddate): gen latest = _n==_N
-						keep if latest==1
+						duplicates drop serveralias surveyid filename, force
+						gen downloaddate= "1"
+						//temporary fix until ITS fix in the backend
+						*ren modified downloaddate
+						*bys serveralias surveyid filename ( downloaddate): gen latest = _n==_N
+						*keep if latest==1
 						if _N>0 {
 							global faudit 1
-							drop latest
-							save `audit', replace
+							cap drop latest
+							save `audit', replace							
 						}						
 					}
 				}
@@ -179,7 +185,7 @@ program define dlw_usercatalog, rclass
 				}
 			}
 		}
-
+		
 		//subscription	
 		global fsubscription 0					
 		tempfile subscription
@@ -216,6 +222,7 @@ program define dlw_usercatalog, rclass
 						//drop duplicates due to public and user subscription
 						duplicates drop serveralias country year acronym requesttype token foldername, force
 						save `subscription', replace
+						
 						tempfile sub2
 						drop country year acronym expdate subscribed  ispublic collection
 						duplicates drop _all, force
@@ -240,7 +247,7 @@ program define dlw_usercatalog, rclass
 		if $fsubscription==1 {
 			merge m:1 serveralias country year acronym requesttype token foldername using `subscription', keepus(expdate subscribed)
 			drop if _m==2
-			drop _m
+			drop _m			
 		}
 
 		if $faudit==1 {

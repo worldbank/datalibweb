@@ -21,24 +21,6 @@ syntax [anything(name=lookup)] , [ ///
 	version(string)]
 	version 11
 
-    // use version 1 by default
-    if "`version'" == "" {
-        local version "1"
-    }
-
-    if "`version'" == "1" | "`version'" == "" {
-        local command "datalibweb_v1"
-    }
-    else if "`version'" == "2" {
-        local command "datalibweb_v2"        
-    }
-    else {
-        display as error "incorrect version `version'"
-        exit 198
-    }
-
-    global DATALIBWEB_VERSION `version'
-
 qui {
 	global yesno 0
 	if "$updateday"=="" global updateday 1
