@@ -143,15 +143,16 @@ program define dlw_catalog, rclass
 	//country catalog
 	if `opt'==3 {
 		tempfile tmpcatalog
-		dlw_api, option(`opt') outfile(`tmpcatalog'), query("`code'")		
+		dlw_api, option(`opt') outfile(`tmpcatalog') query("`code'")		
 		if `dlibrc'==0 {
 			if ("`dlibType'"=="csv" | "`dlibType'"=="bin") {
 				cap insheet using "`tmpcatalog'", clear	names
 				if _rc==0 {
 					if _N==1 noi dis as text in white "No data in the catalog for this country `code'."
 					else {
-						ren survey acronym
-						split filepath, p("\")
+						ren survey acronym		
+						cap replace filepath = subinstr(filepath, "/", "\",.) 
+						split filepath, p("\" "/")
 						ren filepath3 surveyid
 						gen token = 1 + strlen(surveyid) - strlen(subinstr(surveyid,"_","",.))
 						gen type = "RAW" if token==5
