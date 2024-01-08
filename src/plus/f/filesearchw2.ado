@@ -52,8 +52,14 @@ program define filesearchw2, rclass
 				cap drop filepath
 				ren filename file								
 				cap split filesharepath, p("\" "/")
-				ren filesharepath3 survey
-				ren filesharepath4 surveyid
+				if "$DATALIBWEB_VERSION"=="1" {	
+					ren filesharepath3 survey
+					ren filesharepath4 surveyid
+				}
+				else {
+					ren filesharepath3 survey
+					ren filesharepath4 surveyid
+				}
 				ren filesharepath path
 				gen ext = substr(file,length(file)-strpos(reverse(file),".")+2,strpos(reverse(file),"."))
 				if "$DATALIBWEB_VERSION"=="1" {						
