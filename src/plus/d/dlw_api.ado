@@ -76,7 +76,9 @@ program define _dlw_api_v2, rclass
 			else {
 				noi dis as error "Datalibweb token is invalid or expired. Please visit the datalibweb website to renew the token."
 				noi dis as text "Use this: dlw_api, option(8) token(your token here)"
-				exit `= _rc'
+				global errcode `=_rc'				
+				error 1
+				*exit `= _rc'
 			}
 		} //token provided
 		else {
@@ -88,20 +90,26 @@ program define _dlw_api_v2, rclass
 	} //opt 8
 	else { //other API options, not 8			
 		if (`option'==6) { //user audit
-			plugin call _datalibweb_v2, "`option'" "`outfile'" "`user'" "`query'" "`reqtype'"
+			cap plugin call _datalibweb_v2, "`option'" "`outfile'" "`user'" "`query'" "`reqtype'"
 		}	
 		else if (`option'==5) { //user subcription
-			plugin call _datalibweb_v2, "`option'" "`outfile'" "`user'" "`query'"
+			cap plugin call _datalibweb_v2, "`option'" "`outfile'" "`user'" "`query'"
 		}
 		else { //0 2 3 9
-			if "`query'"~="" plugin call _datalibweb_v2, "`option'" "`outfile'" "`query'"
+			if "`query'"~="" cap plugin call _datalibweb_v2, "`option'" "`outfile'" "`query'"
 			//option 4 only
-			else plugin call _datalibweb_v2, "4" "`outfile'" 
+			else cap plugin call _datalibweb_v2, "4" "`outfile'" 
 		}
-		
-		c_local dlibrc "`dlibrc'"
-		c_local dlibFileName "`dlibFileName'"
-		c_local dlibDataSize "`dlibDataSize'"
-		c_local dlibType "`dlibType'"
+		if _rc==0 {
+			c_local dlibrc "`dlibrc'"
+			c_local dlibFileName "`dlibFileName'"
+			c_local dlibDataSize "`dlibDataSize'"
+			c_local dlibType "`dlibType'"
+		}
+		else {
+			dlw_message, error(`=_rc')
+			global errcode `=_rc'			
+			error 1
+		}
 	} //other API options
 end

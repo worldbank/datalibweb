@@ -81,9 +81,15 @@ program define dlw_getfile, rclass
 			qui {		
 				cap drop filepath
 				ren filename file
-				cap split filesharepath, p("\")
-				ren filesharepath3 survey
-				ren filesharepath4 surveyid
+				cap split filesharepath, p("\" "/")
+				if "$DATALIBWEB_VERSION"=="1" {	
+					ren filesharepath3 survey
+					ren filesharepath4 surveyid
+				}
+				else {
+					ren filesharepath4 survey
+					ren filesharepath5 surveyid
+				}				
 				ren filesharepath path
 				gen ext = substr(file,length(file)-strpos(reverse(file),".")+2,strpos(reverse(file),"."))
 				replace filesize = subinstr(filesize, " bytes","",.)

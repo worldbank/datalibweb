@@ -3,8 +3,15 @@ cap program drop dlw_message
 program define dlw_message
 	syntax, error(numlist max=1)
 	//subscription error
-	if `error'==404 noi dis "{err}Data is not yet available in DLW catalog"
-	if `error'==408 noi dis "{err}People Search Feed API call respond with timeout"
+	if `error'==3 noi dis "{err}Access denied - Please agree to General MOU/Disclaimer to download at http://datalibweb"
+	if `error'==4 noi dis "{err}Access denied - survey disclaimer has not been accepted"	
+	if `error'==7 noi dis "{err}Access denied - pending request"
+	if `error'==5 noi dis "{err}Access denied - expired subscription for the selected Country/Year/Collection"
+	if `error'==6 noi dis "{err}Access denied - registered users - no permission to the selected Country/Year/Survey/Collection"
+	if `error'==401 noi dis "{err}Error code 401 - Expired or invalid token"
+	if `error'==404 noi dis "{err}Error code 404 -Data is not yet available in DLW catalog"
+	if `error'==408 noi dis "{err}Error code 408 -People Search Feed API call respond with timeout"
+	if `error'==500 noi dis "{err}Error code 500 -Website or API timeout"
 	if `error'==672 noi dis "{err}Please contact IT and activate UPI"
 	if `error'==673 noi dis "{err}Please register with the datalibweb system"
 	if `error'==674 noi dis "{err}Please subscribe the selected country/year/collection/module"
