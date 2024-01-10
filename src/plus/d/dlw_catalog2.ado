@@ -168,7 +168,7 @@ program define dlw_catalog, rclass
 						if _N==1 noi dis as text in white "No data in the catalog for this country `code'."
 						else {
 							ren survey acronym
-							cap replace filepath = subi	nstr(filepath, "/", "\",.)
+							cap replace filepath = subinstr(filepath, "/", "\",.)
 							split filepath, p("\" "/")
 							ren filepath3 surveyid
 							gen token = 1 + strlen(surveyid) - strlen(subinstr(surveyid,"_","",.))
