@@ -203,12 +203,22 @@ program define dlw_usercatalog, rclass
 						}
 						global fsubscription 1		
 						cap drop userpin emailaddress subscribedto modified created createdby modifiedby
-						ren surveyid acronym
+						*ren surveyid acronym
 						ren region serveralias
 						replace serveralias = upper(serveralias)
-						gen double expdate = date(reqexpirydate, "MDYhms")
+						if "$DATALIBWEB_VERSION"=="1" {
+							gen double expdate = date(reqexpirydate, "MDYhms")
+							ren surveyid acronym
+						}
+						if "$DATALIBWEB_VERSION"=="2" {
+							gen double expdate = date(reqexpirydate, "YMDhm")
+							split surveyid, parse("_")
+							ren surveyid3 acronym
+							drop surveyid1 surveyid2 surveyid
+						}
 						format %td expdate
-						gen subscribed = expdate-date("$S_DATE", "DMY")>=0
+						gen subscribed = expdate-date("$S_DATE", "DMY")>=0 if expdate~=.
+						if "$DATALIBWEB_VERSION"=="2" replace subscribed = 1 if upper(ispublic)=="TRUE"
 						drop reqexpirydate
 						replace collection = upper(collection)
 						//For collection specific (~=ALL), keep only token~=5
@@ -244,8 +254,8 @@ program define dlw_usercatalog, rclass
 
 		//combine catalog + subscription + audit
 		use `tmpcatalog', clear
-		if $fsubscription==1 {
-			merge m:1 serveralias country year acronym requesttype token foldername using `subscription', keepus(expdate subscribed)
+		if $fsubscription==1 {	
+			merge m:1 serveralias country year acronym requesttype token foldername using `subscription', keepus(expdate subscribed)			
 			drop if _m==2
 			drop _m			
 		}
@@ -256,10 +266,13 @@ program define dlw_usercatalog, rclass
 			drop if _m==2
 			drop _m
 		}
+		
 		cap drop all path1 requesttype title
 		cap drop extn? folderlevel? foldername? filepath?
 		cap confirm variable subscribed
-		if _rc==0 replace subscribed = -1 if expdate==.
+		if _rc==0 {
+			if "$DATALIBWEB_VERSION"=="1" replace subscribed = -1 if expdate==.
+		}
 		else      gen subscribed = -1
 		
 		cap confirm variable expdate 
