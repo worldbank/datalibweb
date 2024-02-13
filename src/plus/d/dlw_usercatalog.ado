@@ -211,14 +211,17 @@ program define dlw_usercatalog, rclass
 							ren surveyid acronym
 						}
 						if "$DATALIBWEB_VERSION"=="2" {
-							gen double expdate = date(reqexpirydate, "YMDhm")
+							replace reqexpirydate = substr(reqexpirydate,1,10)
+							replace reqexpirydate = "9999-12-30" if upper(ispublic)=="TRUE"
+							gen double expdate = date(reqexpirydate, "YMD")
 							split surveyid, parse("_")
 							ren surveyid3 acronym
 							drop surveyid1 surveyid2 surveyid
+							cap replace foldername = subinstr(foldername, "/", "\",.)
 						}
 						format %td expdate
 						gen subscribed = expdate-date("$S_DATE", "DMY")>=0 if expdate~=.
-						if "$DATALIBWEB_VERSION"=="2" replace subscribed = 1 if upper(ispublic)=="TRUE"
+						*if "$DATALIBWEB_VERSION"=="2" replace subscribed = 1 if upper(ispublic)=="TRUE"
 						drop reqexpirydate
 						replace collection = upper(collection)
 						//For collection specific (~=ALL), keep only token~=5
@@ -230,6 +233,7 @@ program define dlw_usercatalog, rclass
 							gen str foldername = ""
 						}
 						//drop duplicates due to public and user subscription
+						if "$DATALIBWEB_VERSION"=="2" bys serveralias country year acronym requesttype token foldername (expdate): keep if _n==_N
 						duplicates drop serveralias country year acronym requesttype token foldername, force
 						save `subscription', replace
 						
@@ -271,6 +275,7 @@ program define dlw_usercatalog, rclass
 		cap drop extn? folderlevel? foldername? filepath?
 		cap confirm variable subscribed
 		if _rc==0 {
+			replace subscribed = -1 if subscribed==.
 			if "$DATALIBWEB_VERSION"=="1" replace subscribed = -1 if expdate==.
 		}
 		else      gen subscribed = -1
