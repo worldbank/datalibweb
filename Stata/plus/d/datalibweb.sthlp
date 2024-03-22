@@ -27,6 +27,7 @@ where {it:parameters} identify the characteristics of the file to be loaded.
 Sections are presented under the following headings:
 
 		{it:{help datalibweb##desc:Command description}}
+		{it:{help datalibweb##token:Token registration}}
 		{it:{help datalibweb##param:Parameters description}}
 		{it:{help datalibweb##module:Modules by collection}}
 		{it:{help datalibweb##Examples:Examples}}
@@ -39,13 +40,13 @@ Sections are presented under the following headings:
 {title:Description}
 
 {pstd}
-{cmd: datalibweb} Datalibweb is an API data platform specifically designed to enable users to access 
+{cmd: datalibweb} is an API data platform with user token specifically designed to enable users to access 
  the most up-to-date data and documentation available in different regional catalogs 
  at the World Bank. It allows users to access the latest and historical versions of
  non-harmonized (original/raw) data as well as different harmonized collections across
  across Global Practices. It is integrated with Stata through the Datalibweb Stata package. The commands also allows to extract different modules if available.  In 
-addition {cmd: datalibweb} generates time-deflated variables, poverty lines, (LCU equivalent to 2005 or  2011 PPP US$) and the conversion factors used. Prospective 
-users must ask access to: {browse "mailto: datalibweb@worldbank.org":datalibweb@worldbank.org}
+addition {cmd: datalibweb} generates time-deflated variables, poverty lines, (LCU equivalent to 2005, 2011, or 2017 PPP US$) and the conversion factors used. Prospective 
+users must register and request access to the data in the datalibweb website, http://datalibweb, or send an email to: {browse "mailto: datalibweb@worldbank.org":datalibweb@worldbank.org}.
 
 {pstd}
 {cmd: datalibweb} or {cmd: dlw} is a data system developed by the Global Team for Statistical Development, Poverty and Equity GP, of the World Bank in collobration with the ECA IT and QuickStrike teams in the ITS group. {p_end}
@@ -54,6 +55,15 @@ users must ask access to: {browse "mailto: datalibweb@worldbank.org":datalibweb@
 Alternatively, -{cmd:datalibweb}- provides the user with another level of interactivity with Graphical User Interface and in Stata. It is possible type {cmd:datalibweb} on the Stata command window to see an interactive screen 
 that allows users to find available surveys in the datalib system. Users will have to follow a dynamic tree selecting first the desired region, then the country, and finally the 
 collection to see all available harmonized and raw survey dataset. Users can use {cmd:datalibweb} or {cmd:dlw} interchangeably.
+
+{marker token}{...}
+{title:Token registration}
+
+{pstd}
+User must register Datalibweb token every 30 days. The token is available in the Datalibweb website, under your name. To get the token, click renew token and copy that token and put it in Stata to register. Each token is valid for 30 days from the generated date. Without registration of your token in Stata, you will not be able to load any data.
+
+{pstd}
+{cmd:datalibweb}{cmd:, token(your token here)}
 
 {marker Options2}{...}
 {title:Parameters}
@@ -637,17 +647,17 @@ We advise making reference to the date when the database was consulted, as stati
 {p 8 12 2}[Region]TSD ([year of access (YYYY)]). [Collection] ex-post harmonization or raw data. Countries/Survey IDs: [country names/years (separated by semi-colon)]. As of [date of access (dd/mm/yyyy)] via Datalibweb Stata Package{p_end}
  
 {title:Acknowledgements}
-    {p 4 4}This program was developed by the Global-TSD unit in the Global Poverty Practice of the World Bank. The program was benifited significantly from the earlier 
+    {p 4 4}This program was developed by the Data for Goals (D4G) team in the Global Poverty Practice of the World Bank. The program was benifited significantly from the earlier 
 	developments of {cmd:datalib} in LAC TSD (by João Pedro Azevedo and Raul Andres Castañeda Aguilar), and {cmd:datalib2} in ECA TSD (by João Pedro Azevedo and Cesar Cancho).{p_end}	
-	{p 4 4}We would like to thank many colleagues in various teams involving in the discussion, suggestion and testing, implemetation: ECA TSD, LAC TSD, EAP TSD, ECA IT, QuickStrike ITS, Microdata Library, all members of GPWG, regional focal points in all regions (EAP, ECA, LAC, MNA, SAR, and SSA). {p_end} 
+	{p 4 4}We would like to thank many colleagues in various teams involving in the discussion, suggestion and testing, implemetation: ECA TSD, LAC TSD, EAP TSD, ECA IT, QuickStrike ITS, Enterprise ITS, Microdata Library, all members of GPWG andD4G, regional focal points in all regions (EAP, ECA, LAC, MNA, SAR, and SSA). {p_end} 
 	{p 4 4}All errors and ommissions are of exclusive responsability of the authors. Comments and suggestions are most welcome. Please send an email to: {browse "mailto: datalibweb@worldbank.org":datalibweb@worldbank.org}.{p_end} 
 	
 {title:Authors - {cmd:datalibweb} team}
-{p 4 4}Contributing authors: {p_end} 
-{p 4 4}	- Stata front-end application: Minh Cong Nguyen, Raul Andres Castañeda Aguilar, José Montes, and João Pedro Azevedo, with support from Paul Andres Corral Rodas.{p_end} 
-{p 4 4}	- Plugin, IT coordinator/support: Paul Ricci, Louis Wahsieh Elliott, Antonio Ramos-Izquierdo.{p_end} 
-{p 4 4}	- SharePoint web application: Soumalya De; Ravikumar Murugaiah Samy; Intekhab Alam Sheikh, Monisha Menon, Nishant Nitin Trivedi.{p_end} 
-{p 4 4}	- Overall {cmd:datalibweb} project supervision: João Pedro Azevedo and Minh Cong Nguyen.{p_end} 
+
+{p 4 4} {cmd:datalibweb} 2.0 is based on {cmd:datalibweb} 1.0 (2014-2024). {p_end}
+{p 4 4} The {cmd:datalibweb} 2.0 was developed by the Bank teams: Poverty GP - Minh Cong Nguyen, Zurab Sajaia, Laura Liliana Moreno Herrera, Haoyu Wu, Cameron Nadim Haddad, Danielle Victoria Aron, and ITS - Kunal Patel, Ramgopal Erabelly, Sebastian Ariel Dolber, and Rajesh Kumar Danda. {p_end}
+
+{p 4 4} {cmd:datalibweb} 1.0 was developed by the Bank teams: Poverty GP - Minh Cong Nguyen, João Pedro Azevedo, Raul Andres Castañeda Aguilar, José Montes, Paul Andres Corral Rodas; ITS - Paul Ricci, Louis Wahsieh Elliott, Antonio Ramos-Izquierdo, Intekhab Alam Sheikh, Monisha Menon, Nishant Nitin Trivedi.{p_end}
 
 {title:Also see}
 
