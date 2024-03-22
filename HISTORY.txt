@@ -1,5 +1,5 @@
-*! version 1.04  12dec2019
-*! Minh Cong Nguyen, Raul Andres Castaneda Aguilar, Jose Montes, Paul Andres Corral Rodas, Joao Pedro Azevedo, Paul Ricci
+*! version 1.1  21mar2024
+*! Minh Cong Nguyen, Raul Andres Castaneda Aguilar, Jose Montes, Paul Andres Corral Rodas, Joao Pedro Azevedo, Paul Ricci, Zurab Sajaia
 * version 0.1  02jun2015
 * version 0.2  26oct2015 - collection dofiles
 * version 0.3  11dec2015 - Add sysdir, conditions for collections, merging
@@ -13,3 +13,4 @@
 * version 1.02 19Feb2018 - add CPI vintages
 * version 1.03 15Apr2019 - add new collections, countrycodes,
 * version 1.04 12dec2019 - new CPI vintage with surveyname, enable some undocumented functions
+* version 1.1 21mar2024 - update DLW to DLW 2.0 based on new APIs with user token and the website
