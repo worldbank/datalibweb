@@ -1,7 +1,7 @@
-v 1.02
-d Materials by João Pedro Azevedo
+v 1.1
+d Materials by the Datalibweb team
 d World Bank
-d jazevedo@worldbank.org
-d http://www.worldbank.org/en/about/people/j/joao-pedro-azevedo
+d datalibweb@worldbank.org
+d https://github.com/worldbank/datalibweb/
  
 p datalibweb
