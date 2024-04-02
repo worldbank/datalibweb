@@ -1,92 +1,73 @@
 v 1.1
-d 'DATALIBWEB' 
-d 
+d 'Datalibweb': A package for data API, query, and extract.
+d
+d Datalibweb is an API data platform specifically designed to enable users to access 
+d the most up-to-date data and documentation available in different regional catalogs 
+d at the World Bank. It allows users to access the latest and historical versions of
+d non-harmonized (original/raw) data as well as different harmonized collections across
+d across Global Practices. It is integrated with Stata through the Datalibweb Stata package.
+d
+d More substantial information about the program is available at
+d http://datalibweb.
+d
+d KW: API Data
+d KW: Data query
+d KW: Data management
+d
+d Contributing authors: Datalibweb team, D4G, Poverty and Equity GP, World Bank
+d Support: email datalibweb@worldbank.org
+d
 d Distribution-Date: 31Mar2024
 d License: MIT
 d 
-F Stata/personal/datalibweb/UDB-L.do
-F Stata/personal/datalibweb/UDB-C.do
-F Stata/personal/datalibweb/SUF-C.do
-F Stata/personal/datalibweb/SSARAW.do
-F Stata/personal/datalibweb/SSAPOV.do
-F Stata/personal/datalibweb/SES.do
-F Stata/personal/datalibweb/SEDLACRAW.do
-F Stata/personal/datalibweb/SEDLAC-03.do
-F Stata/personal/datalibweb/SEDLAC-02.do
-F Stata/personal/datalibweb/SEDLAC-01.do
-F Stata/personal/datalibweb/SARRAW.do
-F Stata/personal/datalibweb/SARMD.do
-F Stata/personal/datalibweb/PCN.do
-F Stata/personal/datalibweb/MNARAW.do
-F Stata/personal/datalibweb/MNAPOV.do
-F Stata/personal/datalibweb/LABLACRAW.do
-F Stata/personal/datalibweb/LABLAC-01.do
-F Stata/personal/datalibweb/I2D2.do
-F Stata/personal/datalibweb/I2D2-Labor.do
-F Stata/personal/datalibweb/I2D2-Census.do
-F Stata/personal/datalibweb/GPWG.do
-F Stata/personal/datalibweb/GMI.do
-F Stata/personal/datalibweb/GMDRAW.do
-F Stata/personal/datalibweb/GMD.do
-F Stata/personal/datalibweb/GLAD.do
-F Stata/personal/datalibweb/EU-LFS.do
-F Stata/personal/datalibweb/EDURAW.do
-F Stata/personal/datalibweb/ECARAW.do
-F Stata/personal/datalibweb/ECAPOV.do
-F Stata/personal/datalibweb/ECAPOV-03.do
-F Stata/personal/datalibweb/ECAPOV-02.do
-F Stata/personal/datalibweb/EAPRAW.do
-F Stata/personal/datalibweb/EAPPOV.do
-F Stata/personal/datalibweb/EAPLAB.do
-F Stata/personal/datalibweb/CONLACRAW.do
-F Stata/personal/datalibweb/ASPIRE.do
-F Stata/plus/w/wbmetadata.ado
-F Stata/plus/v/varlocal.hlp
-F Stata/plus/v/varlocal.ado
-F Stata/plus/l/lstrfun.hlp
-F Stata/plus/l/lstrfun.ado
-F Stata/plus/l/listsort.hlp
-F Stata/plus/l/listsort.ado
-F Stata/plus/f/filesearchw2.ado
-F Stata/plus/f/filesearch.ado
-F Stata/plus/d/dlw_usercatalog.ado
-F Stata/plus/d/dlw_srvcatalogonly.ado
-F Stata/plus/d/dlw_serverlist.ado
-F Stata/plus/d/dlw_servercatalog.ado
-F Stata/plus/d/dlw_message.ado
-F Stata/plus/d/dlw_gui.do
-F Stata/plus/d/dlw_gui.ado
-F Stata/plus/d/dlw_getfile.ado
-F Stata/plus/d/dlw_display.ado
-F Stata/plus/d/dlw_dataupdate.ado
-F Stata/plus/d/dlw_countryname.ado
-F Stata/plus/d/dlw_catalog2.ado
-F Stata/plus/d/dlw_catalog.ado
-F Stata/plus/d/dlw_cacheupdate.ado
-F Stata/plus/d/dlw_api.ado
-F Stata/plus/d/dlw_adoupdate.ado
-F Stata/plus/d/dlw.ado
-F Stata/plus/d/dlib2g_64.dll
-F Stata/plus/d/dlib2g_32.dll
-F Stata/plus/d/dlib2_64.dll
-F Stata/plus/d/dlib2_32.dll
-F Stata/plus/d/datalibweb_version.txt
-F Stata/plus/d/datalibweb_version.smcl
-F Stata/plus/d/datalibweb_v2.ado
-F Stata/plus/d/datalibweb_v1.ado
-F Stata/plus/d/datalibweb_usercheck.ado
-F Stata/plus/d/datalibweb_update.ado
-F Stata/plus/d/datalibweb_inventory.ado
-F Stata/plus/d/datalibweb_currentversion.txt
-F Stata/plus/d/datalibweb.sthlp
-F Stata/plus/d/datalibweb.hlp
-F Stata/plus/d/datalibweb.ado
-F Stata/plus/d/Dlib2SOL_64.dll
-F Stata/plus/d/Dlib2SOL_32.dll
-F Stata/plus/b/b40.ado
-F Stata/plus/_/_txtsearch.ado
-F Stata/plus/_/_pecatsal.ado
-F Stata/plus/_/_metadisplay.ado
-F Stata/plus/_/_ebin.ado
-F Stata/plus/_/_datalibweb_ini.ado
-F Stata/plus/_/_datalibcall_v2.ado
+F w/wbmetadata.ado
+F v/varlocal.hlp
+F v/varlocal.ado
+F l/lstrfun.hlp
+F l/lstrfun.ado
+F l/listsort.hlp
+F l/listsort.ado
+F f/filesearchw2.ado
+F f/filesearch.ado
+F d/dlw_usercatalog.ado
+F d/dlw_srvcatalogonly.ado
+F d/dlw_serverlist.ado
+F d/dlw_servercatalog.ado
+F d/dlw_message.ado
+F d/dlw_gui.do
+F d/dlw_gui.ado
+F d/dlw_getfile.ado
+F d/dlw_display.ado
+F d/dlw_dataupdate.ado
+F d/dlw_countryname.ado
+F d/dlw_catalog2.ado
+F d/dlw_catalog.ado
+F d/dlw_cacheupdate.ado
+F d/dlw_api.ado
+F d/dlw_adoupdate.ado
+F d/dlw.ado
+F d/dlib2g_64.dll
+F d/dlib2g_32.dll
+F d/dlib2_64.dll
+F d/dlib2_32.dll
+F d/Dlib2SOL_64.dll
+F d/Dlib2SOL_32.dll
+F d/datalibweb_version.txt
+F d/datalibweb_version.smcl
+F d/datalibweb_v2.ado
+F d/datalibweb_v1.ado
+F d/datalibweb_usercheck.ado
+F d/datalibweb_update.ado
+F d/datalibweb_inventory.ado
+F d/datalibweb_currentversion.txt
+F d/datalibweb.sthlp
+F d/datalibweb.hlp
+F d/datalibweb.ado
+F b/b40.ado
+F _/_txtsearch.ado
+F _/_pecatsal.ado
+F _/_metadisplay.ado
+F _/_ebin.ado
+F _/_datalibweb_ini.ado
+F _/_datalibcall_v2.ado
+e
