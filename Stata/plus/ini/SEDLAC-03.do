@@ -6,6 +6,8 @@ global pid com
 global defmod pov
 global hhmlist `""HHD", "REG""'
 global indmlist `""ALL", "EDU", "DMR", "GMD", "IND", "LAB", "POV""'
+global period 
+global periodyn 1 
 global root 
 global rootname SEDLAC 
 global subfolders Data\Harmonized 

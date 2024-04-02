@@ -11,4 +11,4 @@ global token 5
 global updateday 1
 global type ECARAW
 global distxt ECA TSD
-global email datalibweb@worldbank.org; pcorralrodas@worldbank.org; mnguyen3@worldbank.org; rmungai@worldbank.org
+global email datalibweb@worldbank.org;  mnguyen3@worldbank.org; rmungai@worldbank.org
