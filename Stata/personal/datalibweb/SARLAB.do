@@ -1,30 +1,30 @@
 //Datalibweb system file - do not delete or change
-//GPWG.do
+//SARLAB.do
 
-global hhid hhid
-global pid pid	
-global defmod
+global hhid idh
+global pid idp	
+global defmod "IND"	
 global idmod 
-global hhmlist
+global hhmlist	
 global indmlist
 global root 
-global rootname GPWG
-global subfolders
+global rootname SAR
+global subfolders Data\Harmonized
 global data `" "Data\Harmonized" "'
 global doc `" "Doc\Questionnaire" "Doc\Technical" "'
 global prog `" "Programs" "'
 global token 8
 global updateday 1
-global type GPWG
+global type SARLAB
 global base 
-global basedeffile
+global basedeffile 
 global cpi 
-global cpifile Final CPI PPP to be used.dta
+global cpifile Final CPI PPP to be used SARMD.dta
 global cpic SUPPORT
-global cpiy 2005
+global cpiy 2011
 global cpif Data\Stata
-global rootcpi GMD
+global rootcpi SAR
 global cpiw "Server=$rootcpi&Country=$cpic&Year=$cpiy&filename=$cpifile&folder=$cpif"
-global cpivarw icp* cpi*
-global distxt GLOBAL TSD/GPWG
-global email datalibweb@worldbank.org
+global cpivarw ppp* cpi* 
+global distxt SAR TSD/SARLAB 
+global email datalibweb@worldbank.org; sardatalab@worldbank.org

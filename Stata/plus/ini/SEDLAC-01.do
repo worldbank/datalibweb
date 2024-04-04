@@ -6,6 +6,8 @@ global pid com
 global defmod all
 global hhmlist 
 global indmlist
+global period 
+global periodyn 1 
 global root 
 global rootname SEDLAC 
 global subfolders Data\Harmonized 

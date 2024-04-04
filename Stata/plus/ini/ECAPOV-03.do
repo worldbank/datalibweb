@@ -1,11 +1,11 @@
 //Datalibweb system file - do not delete or change
-//ECAPOV.do
+//ECAPOV-03.do
 global hhid hhid
 global pid pid	
 global defmod "3"	
 global idmod 
-global hhmlist `""3", "4""'
-global indmlist `""2", "6", "7", "9", "hoi""'
+global hhmlist `""1", "3", "4", "5""'
+global indmlist `""2", "6", "7", "9""'
 global root 
 global rootname ECA
 global subfolders Data\Harmonized

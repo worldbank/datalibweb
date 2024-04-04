@@ -1,30 +1,29 @@
 //Datalibweb system file - do not delete or change
-//PCN.do
-
+//GLAD.do
 global hhid hhid
 global pid pid	
-global defmod "ALL"
+global defmod "ALL"	
 global idmod 
-global hhmlist	
-global indmlist `""ALL""'
+global hhmlist 
+global indmlist 
 global root 
-global rootname GMD
-global subfolders 
+global rootname EDU
+global subfolders Data\Harmonized
 global data `" "Data\Harmonized" "'
 global doc `" "Doc\Questionnaire" "Doc\Technical" "'
 global prog `" "Programs" "'
 global token 8
 global updateday 1
-global type PCN
+global type GLAD
 global base 
-global basedeffile
+global basedeffile 
 global cpi 
-global cpifile Final_CPI_PPP_to_be_used.dta
+global cpifile lpv_thresholds.dta
 global cpic SUPPORT
-global cpiy 2005
+global cpiy 2015
 global cpif Data\Stata
-global rootcpi GMD
+global rootcpi EDU
 global cpiw "Server=$rootcpi&Country=$cpic&Year=$cpiy&filename=$cpifile&folder=$cpif"
-global cpivarw icp* cpi*
-global distxt Povcalnet
-global email gmd@worldbank.org; datalibweb@worldbank.org
+global cpivarw *
+global distxt Education GP
+global email datalibweb@worldbank.org; eduanalytics@worldbank.org

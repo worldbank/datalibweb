@@ -1,76 +1,74 @@
-v 1.02
-d 'DATALIBWEB' 
-d 
-d Distribution-Date: 19fev2019
+v 1.1
+d 'Datalibweb': A package for data API, query, and extract.
+d
+d Datalibweb is an API data platform specifically designed to enable users to access 
+d the most up-to-date data and documentation available in different regional catalogs 
+d at the World Bank. It allows users to access the latest and historical versions of
+d non-harmonized (original/raw) data as well as different harmonized collections across
+d across Global Practices. It is integrated with Stata through the Datalibweb Stata package.
+d
+d More substantial information about the program is available at
+d http://datalibweb.
+d
+d KW: API Data
+d KW: Data query
+d KW: Data management
+d
+d Contributing authors: Datalibweb team, D4G, Poverty and Equity GP, World Bank
+d Support: email datalibweb@worldbank.org
+d
+d Distribution-Date: 31Mar2024
 d License: MIT
 d 
-F src/personal/datalibweb/aspire.do
-F src/personal/datalibweb/eaplab.do
-F src/personal/datalibweb/eappov.do
-F src/personal/datalibweb/eapraw.do
-F src/personal/datalibweb/ecapov.do
-F src/personal/datalibweb/ecaraw.do
-F src/personal/datalibweb/eu-lfs.do
-F src/personal/datalibweb/gmd.do
-F src/personal/datalibweb/gmdraw.do
-F src/personal/datalibweb/gpwg.do
-F src/personal/datalibweb/i2d2-census.do
-F src/personal/datalibweb/i2d2-labor.do
-F src/personal/datalibweb/i2d2.do
-F src/personal/datalibweb/lablac-01.do
-F src/personal/datalibweb/lablacraw.do
-F src/personal/datalibweb/mnapov.do
-F src/personal/datalibweb/mnaraw.do
-F src/personal/datalibweb/pcn.do
-F src/personal/datalibweb/sarmd.do
-F src/personal/datalibweb/sarraw.do
-F src/personal/datalibweb/sedlac-01.do
-F src/personal/datalibweb/sedlac-02.do
-F src/personal/datalibweb/sedlac-03.do
-F src/personal/datalibweb/sedlacraw.do
-F src/personal/datalibweb/ses.do
-F src/personal/datalibweb/ssapov.do
-F src/personal/datalibweb/ssaraw.do
-F src/personal/datalibweb/suf-c.do
-F src/personal/datalibweb/udb-c.do
-F src/personal/datalibweb/udb-l.do
-F src/plus/d/datalibweb.ado
-F src/plus/d/datalibweb.sthlp
-F src/plus/d/datalibweb_currentversion.txt
-F src/plus/d/datalibweb_ini.zip
-F src/plus/d/datalibweb_inventory.ado
-F src/plus/d/datalibweb_update.ado
-F src/plus/d/datalibweb_usercheck.ado
-F src/plus/d/datalibweb_version.smcl
-F src/plus/d/datalibweb_version.txt
-F src/plus/d/dlib2g_32.dll
-F src/plus/d/dlib2g_64.dll
-F src/plus/d/dlib2_32.dll
-F src/plus/d/dlib2_64.dll
-F src/plus/d/dlw_adoupdate.ado
-F src/plus/d/dlw_cacheupdate.ado
-F src/plus/d/dlw_catalog.ado
-F src/plus/d/dlw_catalog2.ado
-F src/plus/d/dlw_countryname.ado
-F src/plus/d/dlw_dataupdate.ado
-F src/plus/d/dlw_display.ado
-F src/plus/d/dlw_getfile.ado
-F src/plus/d/dlw_gui.ado
-F src/plus/d/dlw_gui.do
-F src/plus/d/dlw_message.ado
-F src/plus/d/dlw_servercatalog.ado
-F src/plus/d/dlw_serverlist.ado
-F src/plus/d/dlw_srvcatalogonly.ado
-F src/plus/d/dlw_usercatalog.ado
-F src/plus/f/filesearch.ado
-F src/plus/f/filesearchw2.ado
-F src/plus/l/listsort.ado
-F src/plus/l/listsort.hlp
-F src/plus/l/lstrfun.ado
-F src/plus/l/lstrfun.hlp
-F src/plus/v/varlocal.ado
-F src/plus/v/varlocal.hlp
-F src/plus/w/wbmetadata.ado
-F src/plus/_/_datalibweb_ini.ado
-F src/plus/_/_metadisplay.ado
-F src/plus/_/_txtsearch.ado
+F w/wbmetadata.ado
+F v/varlocal.hlp
+F v/varlocal.ado
+F l/lstrfun.hlp
+F l/lstrfun.ado
+F l/listsort.hlp
+F l/listsort.ado
+F f/filesearchw2.ado
+F f/filesearch.ado
+F d/dlw_usercatalog.ado
+F d/dlw_srvcatalogonly.ado
+F d/dlw_serverlist.ado
+F d/dlw_servercatalog.ado
+F d/dlw_message.ado
+F d/dlw_gui.do
+F d/dlw_gui.ado
+F d/dlw_getfile.ado
+F d/dlw_display.ado
+F d/dlw_dataupdate.ado
+F d/dlw_countryname.ado
+F d/dlw_catalog2.ado
+F d/dlw_catalog.ado
+F d/dlw_cacheupdate.ado
+F d/dlw_api.ado
+F d/dlw_adoupdate.ado
+F d/dlw.ado
+F d/dlib2g_64.dll
+F d/dlib2g_32.dll
+F d/dlib2_64.dll
+F d/dlib2_32.dll
+F d/Dlib2SOL_64.dll
+F d/Dlib2SOL_32.dll
+F d/datalibweb_version.txt
+F d/datalibweb_version.smcl
+F d/datalibweb_v2.ado
+F d/datalibweb_v1.ado
+F d/datalibweb_usercheck.ado
+F d/datalibweb_update.ado
+F d/datalibweb_inventory.ado
+F d/datalibweb_currentversion.txt
+F d/datalibweb.sthlp
+F d/datalibweb.hlp
+F d/datalibweb.ado
+F d/datalibweb_ini.zip
+F b/b40.ado
+F _/_txtsearch.ado
+F _/_pecatsal.ado
+F _/_metadisplay.ado
+F _/_ebin.ado
+F _/_datalibweb_ini.ado
+F _/_datalibcall_v2.ado
+e
