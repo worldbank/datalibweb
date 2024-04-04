@@ -18,7 +18,7 @@ program define dlw_adoupdate
 	}
 	
 	** Main FROM-directories 
-	local dirfrom "http://ecaweb.worldbank.org/povdata/datalibweb/_ado/" 
+	local dirfrom "http://ecaweb.worldbank.org/povdata/statapackages/" 
 	
 	** Create aux TO-directory
 	cap mkdir "`other'datalibweb"
