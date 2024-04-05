@@ -169,8 +169,8 @@ program define datalibweb_v2, rclass
 		//check installation again
 		tempfile zpfile
 		local cdir `c(pwd)'		
-		qui set checksum off
-		qui copy "http://ecaweb.worldbank.org/povdata/statapackages/d/datalibweb_ini.zip" "`zpfile'", replace 
+		qui set checksum off		          
+		qui copy "http://ecaweb.worldbank.org/povdata/statapackages/d/datalibweb/d/datalibweb_ini.zip" "`zpfile'", replace 
 		//qui cd "`other'"
 		qui cap mkdir "`persdir'datalibweb"
 		qui cd "`persdir'datalibweb"		

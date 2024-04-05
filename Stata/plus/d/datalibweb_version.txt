@@ -1,9 +1,13 @@
 	WHAT'S NEW
+	DLW2: 1.1 <04Apr2024>
+		1. Update DLW code/helpfile to DLW2 with new API endpoints and features
+	
+
+	History of the file:
 	BETA: 1.2.0 <12dec2019>
 		1. Add surveyname to CPI database to merge for some collections (e.g. GMD)
 		2. Enable undocumented features to update cache (dlw, update(cache)) and data with getfile option (dlw, update(data))
 
-	History of the file:
 	BETA: 1.1.9 <15aug2019>
 		1. Add a new repo function - repo(usefile) - to load the repository directly
 		2. Add a new collection CONLAC (Consumption surveys in LAC)
