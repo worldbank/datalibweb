@@ -39,7 +39,7 @@ program define datalibweb_update, rclass
 	}
 	
 	** Main FROM-directories 
-	local dirfrom "http://ecaweb.worldbank.org/povdata/statapackages/" 
+	local dirfrom "http://ecaweb.worldbank.org/povdata/statapackages/d/" 
 	
 	** Create aux TO-directory
 	cap mkdir "`other'datalibweb"
@@ -65,7 +65,7 @@ program define datalibweb_update, rclass
 		
 		tempfile tfile
 		tempname tf
-		copy "`dirfrom'd\datalibweb_currentversion.txt" `tfile'
+		copy "`dirfrom'datalibweb\d\datalibweb_currentversion.txt" `tfile'
 
 		file open `tf' using `tfile', read
 		file read `tf' line					// first line
@@ -90,15 +90,15 @@ program define datalibweb_update, rclass
 			clear all
 			cap prog drop _datalibweb
 			cap prog drop dlwgui
-			copy "`dirfrom'd/dlib2_`mtype'.dll" "`plusdir'd\dlib2_`mtype'.dll", replace         //  DDL					
-			copy "`dirfrom'd/dlib2g_`mtype'.dll" "`plusdir'd\dlib2g_`mtype'.dll", replace         //  DDL					
-			copy "`dirfrom'd/Dlib2SOL_`mtype'.dll" "`plusdir'd\Dlib2SOL_`mtype'.dll", replace         //  DDL					
-			copy "`dirfrom'd/datalibweb_version.txt" "`plusdir'd\datalibweb_version.txt", replace   //  SMCL
-			copy "`dirfrom'd/datalibweb_currentversion.txt" "`plusdir'd\datalibweb_currentversion.txt", replace   //  SMCL			
+			copy "`dirfrom'datalibweb/d/dlib2_`mtype'.dll" "`plusdir'd\dlib2_`mtype'.dll", replace         //  DDL					
+			copy "`dirfrom'datalibweb/d/dlib2g_`mtype'.dll" "`plusdir'd\dlib2g_`mtype'.dll", replace         //  DDL					
+			copy "`dirfrom'datalibweb/d/Dlib2SOL_`mtype'.dll" "`plusdir'd\Dlib2SOL_`mtype'.dll", replace         //  DDL					
+			copy "`dirfrom'datalibweb/d/datalibweb_version.txt" "`plusdir'd\datalibweb_version.txt", replace   //  SMCL
+			copy "`dirfrom'datalibweb/d/datalibweb_currentversion.txt" "`plusdir'd\datalibweb_currentversion.txt", replace   //  SMCL			
 			** Zipped files
 			tempfile zpfile
 			local cdir `c(pwd)'			
-			qui copy "`dirfrom'd/datalibweb_ini.zip" "`zpfile'", replace 
+			qui copy "`dirfrom'datalibweb/d/datalibweb_ini.zip" "`zpfile'", replace 
 			qui cd "`other'datalibweb"
 			cap unzipfile "`zpfile'", replace // name of zip file.
 			if _rc==0 noi dis in y _n "Successfully updated Setting dofiles"
@@ -121,7 +121,7 @@ program define datalibweb_update, rclass
 		return local exit "`exit'"
 	}
 	else {
-		copy "`dirfrom'd/datalibweb_currentversion.txt" "`plusdir'd\datalibweb_currentversion.txt", replace  
+		copy "`dirfrom'datalibweb/d/datalibweb_currentversion.txt" "`plusdir'd\datalibweb_currentversion.txt", replace  
 	}
 end
 exit
