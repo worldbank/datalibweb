@@ -1417,7 +1417,8 @@ program define _datalibcall, rclass
 				if "`=upper("$type")'"=="GPWG" | "`=upper("$type")'"=="GMD" | "`=upper("$type")'"=="SSAPOV" | "`=upper("$type")'"=="PCN" {	
 					cap drop datalevel
 					local cpilevel datalevel survname
-					qui if "`=upper("`country'")'"=="IDN" | "`=upper("`country'")'"=="CHN" | "`=upper("`country'")'"=="IND" gen datalevel = urban						
+					//Apr2024: force to use without urban/rural for IDN, old cpiverion needs to merge manually `=upper("`country'")'"=="IDN" 
+					qui if "`=upper("`country'")'"=="CHN" | "`=upper("`country'")'"=="IND" gen datalevel = urban						
 					else gen datalevel = 2						
 					//DEC2019: add survey acronym (survname) to the merge as CPIv04 now is unique at the level code year survname datalevel					
 					cap drop survname							
@@ -1442,8 +1443,10 @@ program define _datalibcall, rclass
 				}
 				if "`=upper("$type")'"=="EAPPOV" { //new June 6 18						
 					local cpilevel datalevel
-					if "`=upper("`country'")'"=="IDN" gen datalevel = urban
-					else gen datalevel = 2						
+					//Apr2024: force to use without urban/rural for IDN, old cpiverion needs to merge manually `=upper("`country'")'"=="IDN" 
+					gen datalevel = 2
+					*if "`=upper("`country'")'"=="IDN" gen datalevel = urban
+					*else gen datalevel = 2						
 				}
 				//merge CPI   
 				if "`=upper("$type")'"=="SEDLAC-03" | "`=upper("$type")'"=="SEDLAC-02" | "`=upper("$type")'"=="SEDLAC-01" {

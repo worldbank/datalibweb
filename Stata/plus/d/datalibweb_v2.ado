@@ -297,7 +297,7 @@ program define datalibweb_v2, rclass
 			`code'
 			local cpivin `loc_name_'
 			if "`cpivin'"=="" {
-				noi di as error `"The requeted cpivintage(`cpivintage') is not available. Please check and change it."' _new
+				noi di as error `"The requested cpivintage(`cpivintage') is not available. Please check and change it."' _new
 				global errcode 170
 				error 170
 			}
