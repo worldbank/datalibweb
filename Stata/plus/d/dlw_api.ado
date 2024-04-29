@@ -49,7 +49,7 @@ program define _dlw_api_v2, rclass
     version 16.0
     syntax, OPTion(integer) [OUTfile(string) Query(string) Reqtype(string) Token(string)]
 	
-    capture program define _datalibweb_v2, plugin using("Dlib2SOL_`=cond(strpos(`"`=c(machine_type)'"',"64"),64,32)'.dll")	
+    capture program define _datalibweb_v2, plugin using("dlib2sol_`=cond(strpos(`"`=c(machine_type)'"',"64"),64,32)'.dll")	
     if _rc > 0 & _rc != 110 {
         display as error "Unable to load the plugin from its location, please check if Dlib2SOL_`=cond(strpos(`"`=c(machine_type)'"',"64"),64,32)'.dll is copied to PLUS folder or no other plugin application is running."
         exit `= _rc'
