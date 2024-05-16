@@ -596,7 +596,7 @@ program define _datalibcall_v2, rclass
 					cap merge m:1 pais ano encuesta using `cpiuse', gen(_mcpi) keepus($cpivarw)	update replace	
 					if _rc~=0 noi dis as error "Can't merge with CPI data - please check with the regional team."
 				}
-				if "`=upper("$type")'"=="GLAD" { //GLAD March 17 2020
+				else if "`=upper("$type")'"=="GLAD" { //GLAD March 17 2020
 					
 					* Brings thresholds triplets defined in dta which should sit in DLW (our version of CPI.dta)
 					merge m:1 surveyid idgrade using `cpiuse', keep(master match) nogen
