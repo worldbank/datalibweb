@@ -199,7 +199,7 @@ program define filesearchw2, rclass
 							if _rc==0 noi dis as text _col(5) "{cmd:Module:} " in y "`=mod[1]'"
 							noi dis as text _col(5) "{cmd:File name(s):} " in y "`=file[1]'" 
 							noi dis as text _col(5) "{cmd:File size (MB):} " in y "`=filesize[1]'"
-							noi dis as text _col(5) "{cmd:Last modified date(s):} " in y "`=filelastmodifeddate[1]'" 
+							noi dis as text _col(5) "{cmd:Last modified date(s):} " in y "`=filelastmodifieddate[1]'" 
 							if "`=filelastdownloadeddate[1]'"~="." noi dis as text _col(5) "{cmd:Last downloaded date(s):} " in y "`=filelastdownloadeddate[1]'"
 							dis as text "{hline}" _newline							
 							if "`nometa'"=="" _metadisplay, surveyid(`=trim("`ids'")')
@@ -221,7 +221,7 @@ program define filesearchw2, rclass
 							if _rc==0 local vera `=vera[1]'						
 							local surveyid `ids'
 							local filename `=file[1]'
-							local filedate `=filelastmodifeddate[1]'
+							local filedate `=filelastmodifieddate[1]'
 							local idno `r(id)'
 							// call the single file, often no permission
 							tempfile temp2
@@ -345,7 +345,7 @@ program define filesearchw2, rclass
 			local filesize : dis %10.3g `=`dlibDataSize'/1e6'
 			noi dis as text _col(5) "{cmd:File size(MB):} "   in y "`=trim("`filesize'")'"
 			*noi dis as text _col(5) "{cmd:File size(MB):} "   in y "`=`dlibDataSize'/1e6'" 
-			//noi dis as text _col(5) "{cmd:Last modified date(s):} "   in y "`=filelastmodifeddate[1]'" as text " {p_end}"
+			//noi dis as text _col(5) "{cmd:Last modified date(s):} "   in y "`=filelastmodifieddate[1]'" as text " {p_end}"
 			//noi dis as text _col(5) "{cmd:Last downloaded date(s):} "   in y "`=filelastdownloadeddate[1]'" as text " {p_end}"										
 			dis as text "{hline}" _newline
 			if "`surveyid'"=="" local surveyid = subinstr("`strtoken'",".dta","",.)
