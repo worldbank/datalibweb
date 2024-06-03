@@ -90,7 +90,7 @@ program define _dlw_api_v2, rclass
 	} //opt 8
 	else { //other API options, not 8			
 		if (`option'==6) { //user audit
-			cap plugin call _datalibweb_v2, "`option'" "`outfile'" "`user'" "`query'" "`reqtype'"
+			cap plugin call _datalibweb_v2, "`option'" "`outfile'" "`user'" "`query'" "`reqtype'" "Y"
 		}	
 		else if (`option'==5) { //user subcription
 			cap plugin call _datalibweb_v2, "`option'" "`outfile'" "`user'" "`query'"

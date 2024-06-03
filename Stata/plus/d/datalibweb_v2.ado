@@ -755,7 +755,7 @@ program define datalibweb_v2, rclass
 						
 						local filename
 						local wrong = 0
-						cap append using `alldata'
+						cap append using `alldata', force
 						qui save `alldata', replace emptyok
 					}
 				}  
@@ -802,8 +802,8 @@ program define datalibweb_v2, rclass
 						
 						local filename
 						cap destring year, replace
-						cap append using `alldata'
-						qui save `alldata', replace empty
+						cap append using `alldata', force
+						qui save `alldata', replace empty						
 					}
 				}  
 			}
