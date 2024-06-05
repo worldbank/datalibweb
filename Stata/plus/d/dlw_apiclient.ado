@@ -24,10 +24,10 @@ program define dlw_apiclient
         dlw_apiwrapper `api_params'
 	}
     else {
-        syntax , [OUTfile(string) nocache replace *]
+        syntax , [OUTfile(string) nocache replace update *]
 
         tempfile returnedfile
-        datacache, `cache' : dlw_apiclient_cached `action', `options' outfile(`returnedfile') replace
+        datacache, `cache' `update': dlw_apiclient_cached `action', `options' outfile(`returnedfile') replace
     }
 
 

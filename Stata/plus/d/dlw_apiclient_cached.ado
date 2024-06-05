@@ -10,7 +10,10 @@ program define dlw_apiclient_cached, rclass properties(cachable disk outfile)
 	local user = subinstr("`user'","C","",.)
 	local user = subinstr("`user'","S","",.)
 	local user = subinstr("`user'","D","",.)
-	local user : display %09.0f `user'
+	//local user : display %09.0f `user' // !!!!! audit endpoint doesn't work if the leading zeros are present !!!!!
+
+	dlw_version
+	local current_version "`r(version)'"
 
     local process_command "_process_empty"
 
@@ -30,7 +33,7 @@ program define dlw_apiclient_cached, rclass properties(cachable disk outfile)
             }
         }
 
-        local signature_string "`action'|`query'"
+        local signature_string "`current_version'|`action'|`query'"
 		local api_params `""0" "`outfile'" "`query'""'
     
         local process_command "_process_filelist"
@@ -40,7 +43,7 @@ program define dlw_apiclient_cached, rclass properties(cachable disk outfile)
 
 		syntax, server(string)
 
-        local signature_string "`action'|`server'"
+        local signature_string "`current_version'|`action'|`server'"
 		local api_params `""2" "`outfile'" "`server'""'
 	
 		local fail_message "Can't open the catalog data."
@@ -52,7 +55,7 @@ program define dlw_apiclient_cached, rclass properties(cachable disk outfile)
 
 		syntax, country(string)
 
-        local signature_string "`action'|`country'"
+        local signature_string "`current_version'|`action'|`country'"
     	local api_params `""3" "`outfile'" "`country'""'
 	
 		local fail_message "Can't open the catalog data."
@@ -70,7 +73,7 @@ program define dlw_apiclient_cached, rclass properties(cachable disk outfile)
 
         syntax, country(string)
 
-        local signature_string "`action'|`country'"
+        local signature_string "`current_version'|`action'|`country'"
         local api_params `""5" "`outfile'" "`user'" "`country'""'
 
         local process_command "_process_subscriptions"
@@ -80,9 +83,10 @@ program define dlw_apiclient_cached, rclass properties(cachable disk outfile)
 
         syntax, [country(string)]
 
-        local signature_string "`action'|`country'"
-        local api_params `""6" "`outfile'" "`user'" "`country'" "Download""'
+        local signature_string "`current_version'|`action'|`country'"
+        local api_params `""6" "`outfile'" "`user'" "`country'" "Download" "Y""'
 
+		local process_command "_process_audit"
     }
 
     if "`signature'" != "" {
@@ -117,6 +121,11 @@ end
 program define _process_catalog
 	args returnfile
 
+	tempfile server_configs
+	dlw_apiclient server_configs //, outfile(`server_configs')
+	generate Ufoldername = strupper(foldername)
+	save `server_configs'
+
 	insheet using "`returnfile'", clear names
 	if _N==1 {
 		display as text in white "No data in the catalog for this `filter'."
@@ -126,14 +135,33 @@ program define _process_catalog
 	rename survey acronym		
 	split filepath, p("\" "/")
 	local pathvars = r(k_new)
-	rename filepath`pathvars' filename
+	generate filename = filepath`pathvars'
+	replace filename = filepath4 if filename == ""
 
 	rename filepath3 surveyid
 	generate byte token = 1 + strlen(surveyid) - strlen(subinstr(surveyid,"_","",.))
-	generate type = "RAW" if token == 5
-	replace type = "Harmonized" if token == 8
-	
-	capture drop filepath?
+
+	generate foldername = subinstr(subinstr(subinstr(filepath, filepath1 + "/" + filepath2 + "/" + surveyid + "/", "", .), "/" + filename, "", .), filename, "", .)
+	generate Ufoldername = strupper(foldername)
+	generate server = serveralias
+	rename ext extn
+
+	merge m:1 server Ufoldername token using `server_configs', keep(master match) keepusing(title requesttype ext) nogenerate
+
+	rename title type
+
+	replace requesttype = "" if strpos("|" + ext + "|", "|" + extn + "|") == 0 // file with unknown extention
+	drop filepath? ext Ufoldername
+	rename extn ext
+
+	generate collection = substr(surveyid, 1 - strpos(reverse(surveyid), "_"), .) if token == 8
+	replace collection = serveralias + type if token == 5
+	generate module = strupper(subinstr(subinstr(filename, surveyid + "_", "", .), "." + ext, "", .)) if token == 8 & strpos(filename, surveyid + "_") > 0
+
+	generate type2 = 0
+	replace type2 = 1 if token == 8
+	replace type2 = 2 if inlist(collection, "GMD", "GLD", "GPWG", "ASPIRE", "I2D2", "I2D2-Labor", "GLAD")  // add as many global collections as available
+	replace type2 = 3 if inlist(collection, "GMI", "HLO", "CLO")  // add as many thematic indicators as available
 
 	save "`returnfile'", replace
 end
@@ -177,7 +205,7 @@ program define _process_subscriptions
 	insheet using "`returnedfile'", clear names
 	if _N==0 {
         display as text in white "User has no subscription in the catalog for this country `code'."
-        exit 0 // is this an error?
+        exit 200
     }
 
 	//hot fix IND due to wrong year
@@ -186,6 +214,7 @@ program define _process_subscriptions
 	rename region serveralias
 	replace serveralias = upper(serveralias)
 
+	tostring reqexpirydate, replace // is this a bug????
 	replace reqexpirydate = substr(reqexpirydate, 1, 10)
 	replace reqexpirydate = "9999-12-30" if upper(ispublic)=="TRUE"
 	generate double expdate = date(reqexpirydate, "YMD")
@@ -193,9 +222,10 @@ program define _process_subscriptions
 	split surveyid, parse("_")
 	rename surveyid3 acronym
 	drop surveyid1 surveyid2 surveyid
-	capture replace foldername = subinstr(foldername, "/", "\",.)
 			
     generate subscribed = (expdate - date("$S_DATE", "DMY")) >= 0 if expdate != .
+	label define subscribed -1 "No" 0 "Expired" 1 "Yes"
+	label values subscribed subscribed
 
 	drop reqexpirydate
 	replace collection = upper(collection)
@@ -209,6 +239,29 @@ program define _process_subscriptions
     }
 	bysort serveralias country year acronym requesttype token foldername (expdate): keep if _n==_N
 	duplicates drop serveralias country year acronym requesttype token foldername, force
+
+    save "`returnedfile'", replace
+end
+
+program define _process_audit
+	args returnedfile
+
+	import delimited using "`returnedfile'", clear varnames(1)
+	if _N==0 {
+        display as text in white "User has no subscription in the catalog for this country `code'."
+        exit 2000
+    }
+	keep surveyid filename
+	tostring surveyid filename, replace
+
+	// downloaddate is currently not returned
+	generate downloaddate = "12/31/2023"
+	generate isdownload = cond(downloaddate != "", 1, 0)
+	label define isdownload 1 "YES" 0 "NO"
+	label values isdownload isdownload
+
+	duplicates drop surveyid filename, force
+
 
     save "`returnedfile'", replace
 end

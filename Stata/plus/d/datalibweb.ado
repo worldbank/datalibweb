@@ -30,7 +30,7 @@ program define datalibweb
         if "`version'" != "2" {
             display as error "token() option is only supported with version(2) at this moment"
         }
-        dlw_api, opt(8) `token' // any other parameter present would be ignored
+        dlw_apiclient register, `token' // any other parameter present would be ignored
         exit
     }
     `command', `options'
