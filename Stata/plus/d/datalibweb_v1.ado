@@ -1,5 +1,5 @@
 program define datalibweb_v1, rclass	
-	version 14, missing
+	version 10, missing
     local verstata : di "version " string(_caller()) ", missing:" 
 	syntax [anything] [if] [in] [,                                    ///
 		COUNtry(string) Years(string) CIRca(string)                   ///
@@ -1417,7 +1417,8 @@ program define _datalibcall, rclass
 				if "`=upper("$type")'"=="GPWG" | "`=upper("$type")'"=="GMD" | "`=upper("$type")'"=="SSAPOV" | "`=upper("$type")'"=="PCN" {	
 					cap drop datalevel
 					local cpilevel datalevel survname
-					qui if "`=upper("`country'")'"=="IDN" | "`=upper("`country'")'"=="CHN" | "`=upper("`country'")'"=="IND" gen datalevel = urban						
+					//Apr2024: force to use without urban/rural for IDN, old cpiverion needs to merge manually `=upper("`country'")'"=="IDN" 
+					qui if "`=upper("`country'")'"=="CHN" | "`=upper("`country'")'"=="IND" gen datalevel = urban						
 					else gen datalevel = 2						
 					//DEC2019: add survey acronym (survname) to the merge as CPIv04 now is unique at the level code year survname datalevel					
 					cap drop survname							
@@ -1442,8 +1443,10 @@ program define _datalibcall, rclass
 				}
 				if "`=upper("$type")'"=="EAPPOV" { //new June 6 18						
 					local cpilevel datalevel
-					if "`=upper("`country'")'"=="IDN" gen datalevel = urban
-					else gen datalevel = 2						
+					//Apr2024: force to use without urban/rural for IDN, old cpiverion needs to merge manually `=upper("`country'")'"=="IDN" 
+					gen datalevel = 2
+					*if "`=upper("`country'")'"=="IDN" gen datalevel = urban
+					*else gen datalevel = 2						
 				}
 				//merge CPI   
 				if "`=upper("$type")'"=="SEDLAC-03" | "`=upper("$type")'"=="SEDLAC-02" | "`=upper("$type")'"=="SEDLAC-01" {
@@ -1468,7 +1471,7 @@ program define _datalibcall, rclass
 					cap merge m:1 pais ano encuesta using `cpiuse', gen(_mcpi) keepus($cpivarw)	update replace	
 					if _rc~=0 noi dis as error "Can't merge with CPI data - please check with the regional team."
 				}
-				if "`=upper("$type")'"=="GLAD" { //GLAD March 17 2020
+				else if "`=upper("$type")'"=="GLAD" { //GLAD March 17 2020
 					
 					* Brings thresholds triplets defined in dta which should sit in DLW (our version of CPI.dta)
 					merge m:1 surveyid idgrade using `cpiuse', keep(master match) nogen

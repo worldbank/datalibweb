@@ -198,7 +198,7 @@ program define dlw_getfile, rclass
 						use "`persdir'datalibweb/data/dlw_getfile.dta", clear
 						append using `datalist'
 						char _dta[version] $S_DATE
-						bys path (filelastmodifeddate): gen ok = _n==_N
+						bys path (filelastmodifieddate): gen ok = _n==_N
 						keep if ok==1
 						drop ok usersubscribed errorcode errordetail isdownload filelastdownloadeddate ext ntoken relpath verm verm_l 
 						cap drop vera 

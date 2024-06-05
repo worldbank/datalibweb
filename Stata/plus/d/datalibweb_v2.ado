@@ -124,6 +124,11 @@ program define datalibweb_v2, rclass
 	// EAP second portal
 	if ("`=upper("`type'")'" == "EAPPOV-W")  local type EAPPOV
 	
+	//reset global return
+	foreach glb in type_ module_ verm_ vera_ surveyid_ filename_ filename_ idno_ {
+		global `glb'
+	}
+		
 	//Country fix to make sure past codes run
 	if "`=upper("`country'")'"=="KSV" local country XKX
 	
@@ -267,7 +272,7 @@ program define datalibweb_v2, rclass
 			`code'
 			local cpivin `loc_name_'
 			if "`cpivin'"=="" {
-				noi di as error `"The requeted cpivintage(`cpivintage') is not available. Please check and change it."' _new
+				noi di as error `"The requested cpivintage(`cpivintage') is not available. Please check and change it."' _new
 				global errcode 170
 				error 170
 			}
@@ -584,6 +589,14 @@ program define datalibweb_v2, rclass
 					foreach fld of global `request' {
 						noi dis in yellow _newline "{p 4 4 2}For folder: `fld'{p_end}"
 						cap noi datacache : _datalibcall_v2, country(`ctryx') year(`yr') type($type) token($token) vermast(`vermast') veralt(`veralt') folder(`fld') surveyid(`surveyid') para1(`para1') para2(`para2') para3(`para3') para4(`para4') $nocpi `fileserver' $nometa `base' `net' period(`period')
+						global type_ `r(type)'
+						global module_ `r(module)'
+						global verm_ `r(verm)'
+						global vera_ `r(vera)'
+						global surveyid_  `r(surveyid)'
+						global filename_ `r(filename)'
+						global filedate_ `r(filedate)'
+						global idno_ `r(idno)'
 					}
 				}
 			}				
@@ -701,9 +714,18 @@ program define datalibweb_v2, rclass
 						if `yr0'<1990 local wrong = 0
 					}
 					else if $errcode==0 {
+						global type_ `r(type)'
+						global module_ `r(module)'
+						global verm_ `r(verm)'
+						global vera_ `r(vera)'
+						global surveyid_  `r(surveyid)'
+						global filename_ `r(filename)'
+						global filedate_ `r(filedate)'
+						global idno_ `r(idno)'
+						
 						local filename
 						local wrong = 0
-						cap append using `alldata'
+						cap append using `alldata', force
 						qui save `alldata', replace emptyok
 					}
 				}  
@@ -738,11 +760,20 @@ program define datalibweb_v2, rclass
 						}
 					}
 					cap noi datacache : _datalibcall_v2, country(`ctryx') year(`yr') type($type) token($token) module(`module') vermast(`vermast') veralt(`veralt') filename(`filename') surveyid(`surveyid') para1(`para1') para2(`para2') para3(`para3') para4(`para4') ext($ext) $nocpi `fileserver' $nometa `base' `net' period(`period')
-					if $errcode==0 {
+					if $errcode==0 {					
+						global type_ `r(type)'
+						global module_ `r(module)'
+						global verm_ `r(verm)'
+						global vera_ `r(vera)'
+						global surveyid_  `r(surveyid)'
+						global filename_ `r(filename)'
+						global filedate_ `r(filedate)'
+						global idno_ `r(idno)'
+						
 						local filename
 						cap destring year, replace
-						cap append using `alldata'
-						qui save `alldata', replace empty
+						cap append using `alldata', force
+						qui save `alldata', replace empty						
 					}
 				}  
 			}
@@ -750,14 +781,14 @@ program define datalibweb_v2, rclass
 		qui use `alldata', clear
 		if "`=upper("$type")'"~="GLAD" cap ren countrycode code
 		qui save `alldata', replace empty
-		return local type `r(type)'
-		return local module `r(module)'
-		return local verm `r(verm)'
-		return local vera `r(vera)'
-		return local surveyid  `r(surveyid)'
-		return local filename `r(filename)'
-		return local filedate `r(filedate)'
-		return local idno `r(idno)'
+		return local type ${type_}
+		return local module ${module_}
+		return local verm ${verm_}
+		return local vera ${vera_}
+		return local surveyid  ${surveyid_}
+		return local filename ${filename_}
+		return local filedate ${filedate_}
+		return local idno ${idno_}
 		
 		//convert to PPP - only for harmonized database
 		//ppp(integer) INCppp(varname) PLppp(numlist)
