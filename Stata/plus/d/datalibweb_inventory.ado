@@ -124,7 +124,11 @@ program define _catalog
 	quietly {
 		tempfile subscriptions audit
 		dlw_apiclient subscriptions, country(`countrycode') outfile(`subscriptions')
-		dlw_apiclient audit, country(`countrycode') outfile(`audit')
+		capture dlw_apiclient audit, country(`countrycode') outfile(`audit')
+		if _rc == 2000 {
+			// we don't have any audit history so far
+			local noaudit 1
+		}
 
 		dlw_apiclient country_catalog, country(`countrycode')
 		quietly merge m:1 serveralias country year acronym requesttype token foldername using `subscriptions', keep(master match) keepusing(expdate subscribed)
@@ -145,8 +149,13 @@ program define _catalog
 		replace veralt = subinstr(lower(surveyid6), "v", "", .) if token == 8
 		drop if vermast == "wrk" | veralt == "wrk"
 
-		merge 1:1 surveyid filename using `audit', nogenerate
-		replace isdownload = 0 if isdownload == .
+		if "`noaudit'" == "" {
+			merge 1:1 surveyid filename using `audit', nogenerate
+			replace isdownload = 0 if isdownload == .
+		}
+		else {
+			generate byte isdownload = 0
+		}
 	}
 end
 
