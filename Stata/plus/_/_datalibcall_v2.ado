@@ -1,4 +1,4 @@
-program define _datalibcall_v2, rclass	
+program define _datalibcall_v2, rclass properties(cachable memory)
 	version 10, missing
     local verstata : di "version " string(_caller()) ", missing:" 
 	syntax [anything] [if] [in] [,                                    ///
@@ -17,8 +17,16 @@ program define _datalibcall_v2, rclass
 		IGNOREerror CONFidential Working                              ///
 		surveyid(string) ext(string)                                  ///
 		NOCPI NOMETA NET  fileserver base                             ///
+		signature ///
 		]
-	
+
+    if "`signature'" != "" {
+		// type and token contain same info so only use token here
+        return local signature "_datalibcall_v2|`country'|`year'|`token'|`module'|`vermast'|`veralt'|`folder'|`surveyid'|`para1'|`para2'|`para3'|`para4'|`nocpi'|`fileserver'|`nometa'|`base'|`net'|`period'"
+        exit
+    }
+
+
 	// Datalibweb error code
 	global errcode 0
 	* Get the version
@@ -448,98 +456,38 @@ program define _datalibcall_v2, rclass
 	// merge CPI
 	qui if "`nocpi'"=="" { // _rc check
 		tempfile datafinal cpiuse
-		cap save `datafinal', replace
-		if _rc==0 { //there is some data to save so it can be merged later			
-			tempfile tempcpi
-			local cpino = 0
-			if "`=lower("`fileserver'")'"=="fileserver" {
-				if "$cpi"~="" {
-					use "$cpi", clear
-					local cpino = 1
-				}
+		capture save `datafinal', replace
+		if _rc > 0 {
+			exit // there no data to merge	
+		}
+
+		local cpino = 0
+		if "`=lower("`fileserver'")'"=="fileserver" {
+			if "$cpi"~="" {
+				use "$cpi", clear
+				local cpino = 1
 			}
-			else {
-				if `"$cpiw"'~="" { //check vintage of CPI data 
-					local dl 0
-					local persdir : sysdir PERSONAL
-					if "$S_OS"=="Windows" local persdir : subinstr local persdir "/" "\", all										
-					
-					if "${${rootname}CPI_date}"~="" {
-						if (date("$S_DATE", "DMY")-date("${${rootname}CPI_date}", "DMY")) <= $updateday {
-							cap use "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data\Stata\\${cpifile}", clear	
-							if _rc==0 local cpino = 1
-							else local dl 1
-						}
-						else local dl 1						
-					}
-					else { 
-						cap confirm file "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data\Stata\\${cpifile}"
-						if _rc==0 {
-							cap use "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data\Stata\\${cpifile}", clear
-							if _rc==0 {
-								local dtadate : char _dta[version]			
-								if (date("$S_DATE", "DMY")-date("`dtadate'", "DMY")) > $updateday local dl 1
-								else {
-									local cpino = 1
-									global ${rootname}CPI_date `dtadate'
-								}
-							}
-							else local dl 1
-						}
-						else {
-							cap mkdir "`persdir'datalibweb\data\\${rootname}"
-							cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}"
-							cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI"
-							cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}"
-							cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data"
-							cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data\Stata"				
-							local dl 1
-						}
-					}
-					
-					if `dl'==1 {
-						dlw_api, option(0) outfile(`tempcpi') query("$cpiw")
-						if `dlibrc'==0 {
-							if "`dlibFileName'"~="ECAFileinfo.csv" {			
-								use `tempcpi', clear
-								char _dta[version] $S_DATE							
-								compress
-								cap mkdir "`persdir'datalibweb\data\\${rootname}"
-								cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}"
-								cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI"
-								cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}"
-								cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data"
-								cap mkdir "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data\Stata"	
-								saveold "`persdir'datalibweb\data\\${rootname}\\${cpic}\\${cpic}_${cpiy}_CPI\\${r${rootcpi}cpivin}\\Data\Stata\\${cpifile}", replace	
-								local cpino = 1
-								global ${rootname}CPI_date $S_DATE
-							}
-							else {
-								noi dis as error "Failed to load the CPI data with the defined structure $cpiw"
-								noi dis as error "The CPI data should be publicly available, please inform the collection admins."
-							}
-						}
-						else {
-							noi dis as error "Failed to load the CPI data with the defined structure $cpiw"
-							dlw_message, error(`dlibrc')
-						}
-					}
-				}
-				else local cpino = 0 //cpiw is empty and user requested CPI
-			}
-			//Check CPI data is available or not
-			if `cpino'==0 use `datafinal', clear	
-			if `cpino'==1 {
+		}
+		else {
+			if `"$cpiw"'~="" { //check vintage of CPI data 
+
+				dlw_apiclient get_file, server($rootcpi) country($cpic) year($cpiy) filename($cpifile) survey($cpif)				
 				save `cpiuse', replace
-				
-				use `datafinal', clear	
-				cap destring year, replace
-				cap gen str code = "`=upper("`country'")'"   //need to be removed later
-				cap gen year = `year'                        //need to be removed later			
-				qui if strpos("$surveyid)","EU-SILC")>0 replace year = year - 1				//EUSILC year
-				//datalevel  
-				local cpilevel				
-				if "`=upper("$type")'"=="GPWG" | "`=upper("$type")'"=="GMD" | "`=upper("$type")'"=="SSAPOV" | "`=upper("$type")'"=="PCN" {	
+			}
+			else local cpino = 0 //cpiw is empty and user requested CPI
+		}
+
+		//Check CPI data is available or not
+		if `cpino'==0 use `datafinal', clear	
+		if `cpino'==1 {
+			use `datafinal', clear	
+			cap destring year, replace
+			cap gen str code = "`=upper("`country'")'"   //need to be removed later
+			cap gen year = `year'                        //need to be removed later			
+			qui if strpos("$surveyid)","EU-SILC")>0 replace year = year - 1				//EUSILC year
+			//datalevel  
+			local cpilevel				
+			if "`=upper("$type")'"=="GPWG" | "`=upper("$type")'"=="GMD" | "`=upper("$type")'"=="SSAPOV" | "`=upper("$type")'"=="PCN" {	
 					cap drop datalevel
 					local cpilevel datalevel survname
 					//Apr2024: force to use without urban/rural for IDN, old cpiverion needs to merge manually `=upper("`country'")'"=="IDN" 					
@@ -558,15 +506,15 @@ program define _datalibcall_v2, rclass
 						}
 						else cap gen survname = "$surveyid"							
 					}
-				}
-				if "`=upper("$type")'"=="SARMD" { //new Mar 15 17						
+			}
+			if "`=upper("$type")'"=="SARMD" { //new Mar 15 17						
 					local cpilevel datalevel
 					if "`=upper("`country'")'"=="IND" gen datalevel = urban
 					else gen datalevel = 2
 					*gen urb = urban
 					*local cpilevel urban						
-				}
-				if "`=upper("$type")'"=="EAPPOV" { //new June 6 18						
+			}
+			if "`=upper("$type")'"=="EAPPOV" { //new June 6 18						
 					local cpilevel datalevel
 					//Apr2024: force to use without urban/rural for IDN, old cpiverion needs to merge manually `=upper("`country'")'"=="IDN" 
 					gen datalevel = 2						
@@ -596,7 +544,7 @@ program define _datalibcall_v2, rclass
 					cap merge m:1 pais ano encuesta using `cpiuse', gen(_mcpi) keepus($cpivarw)	update replace	
 					if _rc~=0 noi dis as error "Can't merge with CPI data - please check with the regional team."
 				}
-				else if "`=upper("$type")'"=="GLAD" { //GLAD March 17 2020
+				if "`=upper("$type")'"=="GLAD" { //GLAD March 17 2020
 					
 					* Brings thresholds triplets defined in dta which should sit in DLW (our version of CPI.dta)
 					merge m:1 surveyid idgrade using `cpiuse', keep(master match) nogen
@@ -678,8 +626,8 @@ program define _datalibcall_v2, rclass
 					else          char _dta[onthefly_traitvars] "`thresholdvars'"
 					
 					
-				}
-				else if "`=upper("$type")'"=="LABLAC-01" {
+			}
+			else if "`=upper("$type")'"=="LABLAC-01" {
 					cap drop pais
 					cap drop ano
 					cap drop encuesta
@@ -709,16 +657,15 @@ program define _datalibcall_v2, rclass
 					} //$surveyid check _ CPI	
 					cap merge m:1 pais ano encuesta trimestre `cpilevel' using `cpiuse', gen(_mcpi) keepus($cpivarw) update replace
 					if _rc~=0 noi dis as error "Can't merge with CPI data - please check with the regional team."
-				}
-				else {
-					qui merge m:1 code year `cpilevel' using `cpiuse', gen(_mcpi) keepus($cpivarw) update replace
-				}
-				qui drop if _mcpi==2		
-				qui drop _mcpi
-				cap drop datalevel 
-				cap drop ppp_note
-				qui if strpos("$surveyid","EU-SILC")>0 replace year = year + 1				//EUSILC year
 			}
-		} //_rc save
+			else {
+				qui merge m:1 code year `cpilevel' using `cpiuse', gen(_mcpi) keepus($cpivarw) update replace
+			}
+			qui drop if _mcpi==2		
+			qui drop _mcpi
+			cap drop datalevel 
+			cap drop ppp_note
+			qui if strpos("$surveyid","EU-SILC")>0 replace year = year + 1				//EUSILC year
+		}
 	}
 end

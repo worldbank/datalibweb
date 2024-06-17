@@ -87,45 +87,15 @@ program define datalibweb_v2, rclass
 		disp in red "Info option not available"
 		error 198
 	}
-	//Do API later on the subscriptions
-	************************NEW***************************************
-	* Selection of country, region and type when nor provided by user
+
+	*******************************************************************
+	* Selection of country not provided by user
 	*******************************************************************		
-	if ( "`vintage'" == "" &  "`country'" == "" & "`region'" == ""  & "`type'" == "" & "`repository'" == "") {  /* NEW */				
-		disp in y _n "{ul: Select the region/group of your country/countries of analysis:}" _n
-		noi di as text "{hline 13}{c TT}{hline 36}"
-		noi disp in g _col(2) "Region/group" _col(14) "{c |}"
-		noi disp in g _col(2) "Code" _col(14) "{c |}" _col(25) "Region/group name"
-		noi di as text "{hline 13}{c +}{hline 36}"		
-		foreach reg in EAP ECA LAC MNA SAR SSA NAC Others {
-			local inst "stata datalibweb_inventory, region(`reg') `info': `reg'" // instruction 				
-			* Regions names
-			if ("`reg'" == "EAP") local regname "East Asia and Pacific"
-			if ("`reg'" == "ECA") local regname "Europe and Central Asia"
-			if ("`reg'" == "LAC") local regname "Latin America and the Caribbean"
-			if ("`reg'" == "MNA") local regname "Middle East and North Africa"
-			if ("`reg'" == "SAR") local regname "South Asia"
-			if ("`reg'" == "SSA") local regname "Sub-Saharan Africa"
-			if ("`reg'" == "NAC") local regname "North America"
-			if ("`reg'" == "Others") local regname "Other groups"
-			* Display
-			noi disp _col(4) `"{`inst'}"' in g _col(14) "{c |}" in y _col(`=47-length("`regname'")') "`regname'" 
-		}	// end of display regions loop
-		noi di as text "{hline 13}{c BT}{hline 36}"
+	if ( "`vintage'" == "" &  "`country'" == "" & "`repository'" == "") {
+		datalibweb_inventory, region(`region') type(`type') `info'
 		exit 
 	}
 	
-	** If user specified region
-	if ( "`vintage'" == "" &  "`country'" == "" & "`region'" != "" & "`repository'" == "") {  /* NEW */
-		datalibweb_inventory, region(`region') `info'
-		exit 
-	}
-	** If user specified type
-	if ( "`vintage'" == "" &  "`country'" == "" & "`type'" != "" & "`repository'" == "") {  /* NEW */
-		datalibweb_inventory, type(`type') `info'
-		exit 
-	}
-
 	***********************************************************************	
 	global ext
 	if "`filename'"=="" {
@@ -618,7 +588,7 @@ program define datalibweb_v2, rclass
 				foreach yr of numlist `years' {
 					foreach fld of global `request' {
 						noi dis in yellow _newline "{p 4 4 2}For folder: `fld'{p_end}"
-						cap noi _datalibcall_v2, country(`ctryx') year(`yr') type($type) token($token) vermast(`vermast') veralt(`veralt') folder(`fld') surveyid(`surveyid') para1(`para1') para2(`para2') para3(`para3') para4(`para4') $nocpi `fileserver' $nometa `base' `net' period(`period')
+						cap noi datacache : _datalibcall_v2, country(`ctryx') year(`yr') type($type) token($token) vermast(`vermast') veralt(`veralt') folder(`fld') surveyid(`surveyid') para1(`para1') para2(`para2') para3(`para3') para4(`para4') $nocpi `fileserver' $nometa `base' `net' period(`period')
 						global type_ `r(type)'
 						global module_ `r(module)'
 						global verm_ `r(verm)'
@@ -737,7 +707,7 @@ program define datalibweb_v2, rclass
 							if "`filename'"~="" noi dis "Use memory ($type): `filename' - in data catalog"
 						}
 					}
-					cap noi _datalibcall_v2, country(`ctryx') year(`yr0') type($type) token($token) module(`module') vermast(`vermast') veralt(`veralt') filename(`filename') surveyid(`surveyid') para1(`para1') para2(`para2') para3(`para3') para4(`para4') ext($ext) $nocpi `fileserver' $nometa `base' `net' period(`period')
+					cap noi datacache : _datalibcall_v2, country(`ctryx') year(`yr0') type($type) token($token) module(`module') vermast(`vermast') veralt(`veralt') filename(`filename') surveyid(`surveyid') para1(`para1') para2(`para2') para3(`para3') para4(`para4') ext($ext) $nocpi `fileserver' $nometa `base' `net' period(`period')
 
 					if $errcode~=0 {
 						local yr0 = `yr0' -1
@@ -789,7 +759,7 @@ program define datalibweb_v2, rclass
 							if "`filename'"~="" noi dis "Use memory ($type): `filename' - in data catalog"
 						}
 					}
-					cap noi _datalibcall_v2, country(`ctryx') year(`yr') type($type) token($token) module(`module') vermast(`vermast') veralt(`veralt') filename(`filename') surveyid(`surveyid') para1(`para1') para2(`para2') para3(`para3') para4(`para4') ext($ext) $nocpi `fileserver' $nometa `base' `net' period(`period')
+					cap noi datacache : _datalibcall_v2, country(`ctryx') year(`yr') type($type) token($token) module(`module') vermast(`vermast') veralt(`veralt') filename(`filename') surveyid(`surveyid') para1(`para1') para2(`para2') para3(`para3') para4(`para4') ext($ext) $nocpi `fileserver' $nometa `base' `net' period(`period')
 					if $errcode==0 {					
 						global type_ `r(type)'
 						global module_ `r(module)'
