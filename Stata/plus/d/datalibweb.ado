@@ -4,9 +4,9 @@ program define datalibweb
     syntax [, version(string) token(passthru) *]
 	
 	if "$DATALIBWEB_VERSION"=="" {
-		 // use version 1 by default
+		 // use version 2 by default
 		if "`version'" == "" {
-			local version "1"
+			local version "2"
 		}
 		global DATALIBWEB_VERSION `version'
 	}
@@ -15,10 +15,10 @@ program define datalibweb
 		else local version $DATALIBWEB_VERSION
 	}
 	   	
-    if "`version'" == "1" | "`version'" == "" {
+    if "`version'" == "1" {
         local command "datalibweb_v1"
     }
-    else if "`version'" == "2" {
+    else if "`version'" == "2" | "`version'" == "" {
         local command "datalibweb_v2"        
     }
     else {
