@@ -189,15 +189,16 @@ program define filesearch, rclass
 				//get the latest only
 				cap drop if upper(verm)=="WRK"
 				cap drop if upper(vera)=="WRK"
-				
-				qui levelsof verm, local(mlist)
+				gen vermup = upper(verm)
+				gen veraup = upper(vera)
+				qui levelsof vermup, local(mlist)
 				listsort `"`mlist'"', lexicographic
-				keep if verm=="`=word(`"`s(list)'"',-1)'"
-				cap confirm variable vera
+				keep if vermup=="`=word(`"`s(list)'"',-1)'"
+				cap confirm variable veraup
 				if _rc==0 {
-					qui levelsof vera, local(alist)
+					qui levelsof veraup, local(alist)
 					listsort `"`alist'"', lexicographic
-					keep if vera=="`=word(`"`s(list)'"',-1)'"
+					keep if veraup=="`=word(`"`s(list)'"',-1)'"
 				}
 			}		
 		}
