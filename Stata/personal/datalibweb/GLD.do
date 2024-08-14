@@ -10,7 +10,7 @@ global root
 global rootname GLD
 global subfolders 
 global data `" "Data\Harmonized" "' //one folder
-global doc `" "Doc\Questionnaire" "Doc\technical" "' //can be more than 1 folder
+global doc `" "Doc\Questionnaires" "Doc\technical" "' //can be more than 1 folder
 global prog `" "Programs" "'  //can be more than 1 folder
 global token 8
 global updateday 1
