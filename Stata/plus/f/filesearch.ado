@@ -189,8 +189,8 @@ program define filesearch, rclass
 				//get the latest only
 				cap drop if upper(verm)=="WRK"
 				cap drop if upper(vera)=="WRK"
-				gen vermup = upper(verm)
-				gen veraup = upper(vera)
+				cap gen vermup = upper(verm)
+				cap gen veraup = upper(vera)
 				qui levelsof vermup, local(mlist)
 				listsort `"`mlist'"', lexicographic
 				keep if vermup=="`=word(`"`s(list)'"',-1)'"
