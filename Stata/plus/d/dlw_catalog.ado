@@ -59,7 +59,7 @@ program define dlw_catalog, rclass
 						if "`server'"=="ASPIRE" {	
 							su ndir, de
 							if r(mean)~=3 {
-								dis as error "Mixed data system, please check with the admin collection/email datalibbweb@worldbank.org."
+								dis as error "Mixed data system, please check with the admin collection/email datalibweb@worldbank.org."
 								error 1
 							}
 							else {
@@ -72,7 +72,7 @@ program define dlw_catalog, rclass
 						}
 						
 						//Server without data folder
-						if "`server'"=="GMD" | "`server'"=="ECA" | "`server'"=="EAP" | "`server'"=="I2D2" | "`server'"=="LABLAC" | "`server'"=="MNA" | "`server'"=="SAR" | "`server'"=="SEDLAC" | "`server'"=="SSA" | "`server'"=="ECA_Eurostat" | "`server'"=="EDU" {	
+						if "`server'"=="GMD" | "`server'"=="ECA" | "`server'"=="EAP" | "`server'"=="I2D2" | "`server'"=="LABLAC" | "`server'"=="MNA" | "`server'"=="SAR" | "`server'"=="SEDLAC" | "`server'"=="SSA" | "`server'"=="ECA_Eurostat" | "`server'"=="EDU" | "`server'"=="GLD" {	
 							if "`server'"=="GMD" { //temp fix Jan292018
 								//GMD for now is 3 dir layer - in the future should be 5 dir layer system
 								//temporary fix to move 3-dirs to 5-dirs system so both raw and harmonized can be together
