@@ -483,7 +483,7 @@ qui {
 			local dl 1
 		}
 		if `dl'==1 {
-			qui dlw_usercatalog, code(`countrycode')
+			dlw_usercatalog, code(`countrycode')
 			cap use "`persdir'datalibweb\data\Catalog_`countrycode'.dta", clear	
 			global yesno 1
 		}

@@ -30,7 +30,7 @@ program define dlw_usercatalog, rclass
 		}
 	}
 	
-	qui if `dl'==1 {
+	if `dl'==1 {
 		//server config
 		global ftmpconfig = 0
 		tempfile tmpconfig
@@ -40,7 +40,7 @@ program define dlw_usercatalog, rclass
 				cap insheet using "`tmpconfig'", clear names
 				if _rc==0 {
 					if _N==1 noi dis as text in white "No data in the data config. Please check with the system admin."
-					else {
+					qui else {
 						global ftmpconfig = 1
 						ren ext extn
 						ren server serveralias
@@ -75,7 +75,7 @@ program define dlw_usercatalog, rclass
 				cap insheet using "`tmpcatalog'", clear	names
 				if _rc==0 {
 					if _N==1 noi dis as text in white "No data in the catalog for this country `code'."
-					else {
+					qui else {
 						global ftmpcatalog = 1
 						*ren survey acronym //added May 14 2019 
 						cap replace filepath = subinstr(filepath, "/", "\",.)
@@ -106,7 +106,7 @@ program define dlw_usercatalog, rclass
 			dlw_message, error(`dlibrc')
 		}
 
-		if ($ftmpconfig==1 & $ftmpcatalog==1) {
+		qui if ($ftmpconfig==1 & $ftmpcatalog==1) {
 			tempfile subtemp
 			use `sub2', clear
 			levelsof requesttype, local(lvltype)
@@ -148,13 +148,13 @@ program define dlw_usercatalog, rclass
 		
 		tempfile audit
 		dlw_api, option(6) outfile(`audit') query("`code'") reqtype("Download") 
-		qui if `dlibrc'==0 {    
+		if `dlibrc'==0 {    
 			if ("`dlibType'"=="csv") {
 				cap insheet using "`audit'", clear	names					
 				if _rc==0 {
 					cap drop userpin requesttype accessedfolder organization department timestamp modifiedby createdby created acronym appid applicationid ipaddress collection country year para1 para2 para3 para4 name type token foldername level ext command
 					if _N==0 noi dis as text in red "Note: User has no subscription in the catalog for this country `code'."
-					else {												
+					qui else {												
 						cap confirm string variable server
 						if _rc~=0 {
 							drop server
@@ -195,7 +195,7 @@ program define dlw_usercatalog, rclass
 				cap insheet using "`subscription'", clear names
 				if _rc==0 {
 					if _N==0 noi dis as text in white "User has no subscription in the catalog for this country `code'."
-					else {
+					qui else {
 						//hot fix IND due to wrong year
 						if "`code'"=="IND" {
 							cap drop if year=="2017-2021"
@@ -257,104 +257,106 @@ program define dlw_usercatalog, rclass
 		}
 
 		//combine catalog + subscription + audit
-		use `tmpcatalog', clear
-		if $fsubscription==1 {	
-			merge m:1 serveralias country year acronym requesttype token foldername using `subscription', keepus(expdate subscribed)			
-			drop if _m==2
-			drop _m			
-		}
+		qui {
+			use `tmpcatalog', clear
+			if $fsubscription==1 {	
+				merge m:1 serveralias country year acronym requesttype token foldername using `subscription', keepus(expdate subscribed)			
+				drop if _m==2
+				drop _m			
+			}
 
-		if $faudit==1 {
-			merge m:1 serveralias surveyid filename using `audit', keepus(downloaddate)
-			ta _m
-			drop if _m==2
+			if $faudit==1 {
+				merge m:1 serveralias surveyid filename using `audit', keepus(downloaddate)
+				ta _m
+				drop if _m==2
+				drop _m
+			}
+			
+			cap drop all path1 requesttype title
+			cap drop extn? folderlevel? foldername? filepath?
+			cap confirm variable subscribed
+			if _rc==0 {
+				replace subscribed = -1 if subscribed==.
+				if "$DATALIBWEB_VERSION"=="1" replace subscribed = -1 if expdate==.
+			}
+			else      gen subscribed = -1
+			
+			cap confirm variable expdate 
+			if _rc~=0 gen expdate = .
+			cap confirm variable downloaddate
+			if _rc~=0 gen str downloaddate = ""
+			gen isdownload = cond(downloaddate != "", 1, 0)
+			
+			drop if finaltype==""
+			//currently define 5 token as raw, 8 token as harmonized
+			split surveyid, p("_")
+			tempfile sur3 sur4
+			save `sur3', replace
+			keep surveyid* type
+			duplicates drop _all, force
+			cap drop if upper(surveyid6)=="WRK" | upper(surveyid6)=="VTEMP"		
+			replace surveyid6 = lower(surveyid6)
+			replace surveyid4 = lower(surveyid4)							
+			bysort type surveyid2 surveyid3 surveyid8 (surveyid4 surveyid6): gen latest = _n==_N
+			keep surveyid latest
+			save `sur4', replace
+			use `sur3', clear
+			merge m:1 surveyid using `sur4'
 			drop _m
+			replace latest = 0 if latest==.
+			gen collection = surveyid8 if token==8
+			gen type2 = 0
+			replace type2 = 1 if token==8
+			replace type2 = 2 if inlist(collection, "GMD", "GLD", "GPWG", "ASPIRE", "I2D2", "I2D2-Labor", "GLAD")  // add as many global collections as available
+			replace type2 = 3 if inlist(collection, "GMI", "HLO", "CLO")  // add as many thematic indicators as available
+			//drop OLD stuff
+			drop if collection=="GPWG"
+			
+			clonevar vermast = surveyid4  //always there
+			gen str veralt = ""
+			replace veralt = surveyid6 if token==8
+			drop surveyid?
+			replace vermast = subinstr(vermast, "v","",.)
+			replace vermast = subinstr(vermast, "V","",.)
+			replace veralt = subinstr(veralt, "v","",.)
+			replace veralt = subinstr(veralt, "V","",.)
+			gen module = regexs(3) if regexm(filename, "^(.*)_[Aa]_([a-zA-Z0-9\-]+)_([a-zA-Z0-9\-]+)\.[a-z]+$")
+			replace module = upper(module)
+			replace module = "NULL" if token==8 & module=="" & upper(ext)=="DTA"
+			la var module "Available modules"
+			gen str type3 = serveralias + "RAW" if type=="RAW"
+			replace type3 = collection if type=="Harmonized"
+			gen guikey1 = type
+			replace guikey1 = type + " (" + collection + ")" if type=="Harmonized"
+			gen str guikey2 = country + "_" + string(year) + "_" + acronym
+			gen str guikey3 = surveyid + " (" + serveralias + ")"
+			clonevar guikey4 = foldername
+			gen str guicmd  = ""
+			replace guicmd = "datalibweb, coun(" + country + ") y(" + string(year) + ") t(" + type3 + ")" + " sur(" + surveyid + ") filen(" + filename + ")"
+			drop filepath type3 surveyid		
+			//drop WRK
+			drop if upper(veralt)=="WRK"		
+			compress
+			char _dta[version] $S_DATE				
+			//outsheet _all using "`persdir'datalibweb\data\Catalog_`code'.csv", replace c		
+			cap drop if length(guicmd)>244
+			la def subscribed -1 "No" 0 "Expired" 1 "Yes"
+			//la def subscribed 0 "No" 1 "Yes" 2 "Expired" 
+			la val subscribed subscribed
+			label define type2 0 "Raw data" 1 "Regional harmonized data" 2 "Global harmonized data" 3 "Thematic indicators"
+			la val type2 type2
+			label define isdownload 1 "YES" 0 "NO"
+			label values isdownload isdownload
+			gen byte filesize =.
+			gen str filemoddate = ""
+			gen str guisubexp = serveralias + "," + acronym + "," + string(year) + "," + country + "," + collection if collection~=""
+			replace guisubexp = serveralias + "," + acronym + "," + string(year) + "," + country + "," + "RAW" if collection==""
+			//server, accronym, year, country, collection
+			order guikey1 guikey2 guikey3 guikey4 guicmd guisubexp filename subscribed latest isdownload  downloaddate filesize filemoddate
+			compress
+			if "`savepath'"~="" saveold "`savepath'\\Catalog_`code'", replace
+			saveold "`persdir'datalibweb\data\Catalog_`code'", replace		
+			return local catalogfile "`persdir'datalibweb\data\Catalog_`code'"
 		}
-		
-		cap drop all path1 requesttype title
-		cap drop extn? folderlevel? foldername? filepath?
-		cap confirm variable subscribed
-		if _rc==0 {
-			replace subscribed = -1 if subscribed==.
-			if "$DATALIBWEB_VERSION"=="1" replace subscribed = -1 if expdate==.
-		}
-		else      gen subscribed = -1
-		
-		cap confirm variable expdate 
-		if _rc~=0 gen expdate = .
-		cap confirm variable downloaddate
-		if _rc~=0 gen str downloaddate = ""
-		gen isdownload = cond(downloaddate != "", 1, 0)
-		
-		drop if finaltype==""
-		//currently define 5 token as raw, 8 token as harmonized
-		split surveyid, p("_")
-		tempfile sur3 sur4
-		save `sur3', replace
-		keep surveyid* type
-		duplicates drop _all, force
-		cap drop if upper(surveyid6)=="WRK" | upper(surveyid6)=="VTEMP"		
-		replace surveyid6 = lower(surveyid6)
-		replace surveyid4 = lower(surveyid4)							
-		bysort type surveyid2 surveyid3 surveyid8 (surveyid4 surveyid6): gen latest = _n==_N
-		keep surveyid latest
-		save `sur4', replace
-		use `sur3', clear
-		merge m:1 surveyid using `sur4'
-		drop _m
-		replace latest = 0 if latest==.
-		gen collection = surveyid8 if token==8
-		gen type2 = 0
-		replace type2 = 1 if token==8
-		replace type2 = 2 if inlist(collection, "GMD", "GLD", "GPWG", "ASPIRE", "I2D2", "I2D2-Labor", "GLAD")  // add as many global collections as available
-		replace type2 = 3 if inlist(collection, "GMI", "HLO", "CLO")  // add as many thematic indicators as available
-		//drop OLD stuff
-		drop if collection=="GPWG"
-		
-		clonevar vermast = surveyid4  //always there
-		gen str veralt = ""
-		replace veralt = surveyid6 if token==8
-		drop surveyid?
-		replace vermast = subinstr(vermast, "v","",.)
-		replace vermast = subinstr(vermast, "V","",.)
-		replace veralt = subinstr(veralt, "v","",.)
-		replace veralt = subinstr(veralt, "V","",.)
-		gen module = regexs(3) if regexm(filename, "^(.*)_[Aa]_([a-zA-Z0-9\-]+)_([a-zA-Z0-9\-]+)\.[a-z]+$")
-		replace module = upper(module)
-		replace module = "NULL" if token==8 & module=="" & upper(ext)=="DTA"
-		la var module "Available modules"
-		gen str type3 = serveralias + "RAW" if type=="RAW"
-		replace type3 = collection if type=="Harmonized"
-		gen guikey1 = type
-		replace guikey1 = type + " (" + collection + ")" if type=="Harmonized"
-		gen str guikey2 = country + "_" + string(year) + "_" + acronym
-		gen str guikey3 = surveyid + " (" + serveralias + ")"
-		clonevar guikey4 = foldername
-		gen str guicmd  = ""
-		replace guicmd = "datalibweb, coun(" + country + ") y(" + string(year) + ") t(" + type3 + ")" + " sur(" + surveyid + ") filen(" + filename + ")"
-		drop filepath type3 surveyid		
-		//drop WRK
-		drop if upper(veralt)=="WRK"		
-		compress
-		char _dta[version] $S_DATE				
-		//outsheet _all using "`persdir'datalibweb\data\Catalog_`code'.csv", replace c		
-		cap drop if length(guicmd)>244
-		la def subscribed -1 "No" 0 "Expired" 1 "Yes"
-		//la def subscribed 0 "No" 1 "Yes" 2 "Expired" 
-		la val subscribed subscribed
-		label define type2 0 "Raw data" 1 "Regional harmonized data" 2 "Global harmonized data" 3 "Thematic indicators"
-		la val type2 type2
-		label define isdownload 1 "YES" 0 "NO"
-		label values isdownload isdownload
-		gen byte filesize =.
-		gen str filemoddate = ""
-		gen str guisubexp = serveralias + "," + acronym + "," + string(year) + "," + country + "," + collection if collection~=""
-		replace guisubexp = serveralias + "," + acronym + "," + string(year) + "," + country + "," + "RAW" if collection==""
-		//server, accronym, year, country, collection
-		order guikey1 guikey2 guikey3 guikey4 guicmd guisubexp filename subscribed latest isdownload  downloaddate filesize filemoddate
-		compress
-		if "`savepath'"~="" saveold "`savepath'\\Catalog_`code'", replace
-		saveold "`persdir'datalibweb\data\Catalog_`code'", replace		
-		return local catalogfile "`persdir'datalibweb\data\Catalog_`code'"
 	} //end dl=1
 end
