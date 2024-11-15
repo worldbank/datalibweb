@@ -78,7 +78,7 @@ User must register Datalibweb token every 30 days. The token is available in the
 {synopt:{opt y:ears(numlist)}}years for which the data is requested (one or many years: i.e. 2005 or 2005/2008 or 2005 2008).{p_end}
 
 {synopt:{opt t:ype(string)}}type of ONE collection requested. Currently the only COLLECTIONS available are: {it:eappov}, {it:ecapov}, {it:ecaraw}, {it:eu-lfs}, {it:udb-c} or {it:eusilc}, {it:udb-l} (panel eusilc), {it:mnapov}, {it:mnaraw}, {it:sarmd}, {it:ssapov}, {it:gmd}, {it:sarraw}, {it:eapraw}, {it:ssaraw}, {it:sedlac}, {it:lablac}, {it:conlac} and many more. {p_end} 
-				 Click {browse "http://eca/povdata/_57YTY987/ECATSD_EUSILC_UserGuidelines_141008.pdf":here} for more information on the {it:eusilc} collection. 
+				 Click {browse "https://ec.europa.eu/eurostat/web/microdata/european-union-statistics-on-income-and-living-conditions":here} for more information on the {it:eusilc} collection. 
 
 {marker options}{...}
 {synoptset 27 tabbed}{...}
