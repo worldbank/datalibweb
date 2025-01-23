@@ -17,6 +17,12 @@ program define dlw_primus, rclass
 		qui do "`persdir'datalibweb/`=upper("`type'")'.do"
 	}
 	
+	local user = upper(c(username))
+	local user = subinstr("`user'","WB","",.)
+	local user = subinstr("`user'","C","",.)
+	local user = subinstr("`user'","S","",.)
+	local user = subinstr("`user'","D","",.)
+	
 	local opt 9
 	
 	//get the list or specific files from pending transactions in PRIMUS
@@ -28,7 +34,7 @@ program define dlw_primus, rclass
 		if "``cstr''"=="" local s_`cstr'
 		else local s_`cstr' "&`cstr'=``cstr''"
 	}
-	local dlibapi "Server=$rootname&Country=`country'&Year=`year'&Collection=$type&`s_collection'`s_folder'`s_token'`s_filename'`s_para1'`s_para2'`s_para3'`s_para4'`s_ext'"			
+	local dlibapi "Upi=`user'&Server=$rootname&Country=`country'&Year=`year'&Collection=$type&TransactionId=`tranxid'&`s_collection'`s_folder'`s_token'`s_filename'`s_para1'`s_para2'`s_para3'`s_para4'`s_ext'"			
 	*noi dis `"dlw_api, option(9) outfile(`primusout') query("`dlibapi'")"'
 	dlw_api, option(9) outfile(`primusout') query("`dlibapi'")
 	if `dlibrc'==0 {
@@ -37,7 +43,7 @@ program define dlw_primus, rclass
 			noi dis "File list is loaded"
 		}
 		else { //different filenames
-			if "`=lower(`dlibType')'"=="dta" { // only one file matched/subscribed - load the file  									
+			if "`=lower("`dlibType'")'"=="dta" { // only one file matched/subscribed - load the file  									
 				cap use `primusout', clear	 //load the data
 				if _rc==0 {
 					noi dis "Data file is loaded"
@@ -48,7 +54,7 @@ program define dlw_primus, rclass
 					error 1
 				}
 			} // dta type
-			else if "`=lower(`dlibType')'"=="do" { // only one file matched/subscribed - load the file  													
+			else if "`=lower("`dlibType'")'"=="do" { // only one file matched/subscribed - load the file  													
 				cap doedit "`tmppath'\`dlibFileName'"
 				if _rc==0 {
 					noi dis as text in yellow `"{p 4 4 2}The dofile (`dlibFileName') is loaded.{p_end}"'	
