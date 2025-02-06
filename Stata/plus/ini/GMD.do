@@ -9,7 +9,7 @@ global hhmlist
 global indmlist `""GPWG", "L", "ALL""'
 global root 
 global rootname GMD
-global subfolders 
+global subfolders Data\Harmonized
 global data `" "Data\Harmonized" "'
 global doc `" "Doc\Questionnaire" "Doc\Technical" "'
 global prog `" "Programs" "'

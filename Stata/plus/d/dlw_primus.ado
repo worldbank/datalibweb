@@ -22,7 +22,7 @@ program define dlw_primus, rclass
 	local user = subinstr("`user'","C","",.)
 	local user = subinstr("`user'","S","",.)
 	local user = subinstr("`user'","D","",.)
-	
+	local user = `=9-length("`user'")'*"0" + "`user'"
 	local opt 9
 	
 	//get the list or specific files from pending transactions in PRIMUS
