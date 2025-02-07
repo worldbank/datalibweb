@@ -540,6 +540,9 @@ program define _datalibcall_v2, rclass
 				//datalevel  
 				local cpilevel				
 				if "`=upper("$type")'"=="GPWG" | "`=upper("$type")'"=="GMD" | "`=upper("$type")'"=="SSAPOV" | "`=upper("$type")'"=="PCN" {	
+					foreach vout in _all_ cpi2017 icp2017 icpbase ppp {
+						cap drop `vout'
+					}
 					cap drop datalevel
 					local cpilevel datalevel survname
 					//Apr2024: force to use without urban/rural for IDN, old cpiverion needs to merge manually `=upper("`country'")'"=="IDN" 					
