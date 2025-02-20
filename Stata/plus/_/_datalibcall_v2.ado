@@ -540,7 +540,7 @@ program define _datalibcall_v2, rclass
 				//datalevel  
 				local cpilevel				
 				if "`=upper("$type")'"=="GPWG" | "`=upper("$type")'"=="GMD" | "`=upper("$type")'"=="SSAPOV" | "`=upper("$type")'"=="PCN" {	
-					foreach vout in _all_ cpi2017 icp2017 icpbase ppp {
+					foreach vout in _all_ cpi2017 icp2017 cpi2021 icp2021 icpbase ppp {
 						cap drop `vout'
 					}
 					cap drop datalevel
