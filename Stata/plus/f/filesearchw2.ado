@@ -37,7 +37,8 @@ program define filesearchw2, rclass
 	dlw_api, option(0) outfile(`temp1') query("`dlibapi'")
 	if `dlibrc'==0 {
 		if "`dlibFileName'"=="ECAFileinfo.csv" { // results in list of files		
-			qui insheet using "`temp1'", clear				
+			qui insheet using "`temp1'", clear		
+			/*
 			if _N==1 { // Check errorcode in the list			
 				cap confirm numeric variable filename
 				if _rc==0 {
@@ -47,6 +48,13 @@ program define filesearchw2, rclass
 					clear
 					error 1
 				}
+			}
+			*/
+			if _N==0 { // Check errorcode in the list	
+				noi dis in yellow _n "{p 4 4 2}There are no file with defined parameters. Please redefine the parameters and check the directory in the website http://datalibweb.{p_end}"
+				global errcode 198					
+				clear
+				error 198					
 			}
 			qui { //qui
 				cap drop filepath
