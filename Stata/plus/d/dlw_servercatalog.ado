@@ -179,6 +179,7 @@ program define dlw_servercatalog, rclass
 						cap drop v7 v8
 						cap drop if year=="NULL"
 						cap destring year, replace
+						cap replace filepath = subinstr(filepath, "/", "\",.) 
 						gen ndir = strlen(filepath) - strlen(subinstr(filepath,"\","",.))
 						gen pos0 = strpos(filepath, ".dta")
 						gen pos1 = strpos(filepath, ".DTA")
@@ -187,7 +188,8 @@ program define dlw_servercatalog, rclass
 						drop if pos==0
 						drop pos0 pos1 pos 
 						split filepath, p("\")
-						drop if filepath1=="Support"
+						replace filepath1 = upper(filepath1)
+						drop if filepath1=="SUPPORT"						
 						ren filepath3 surveyid
 						gen pos = strpos(surveyid, "_")
 						drop if pos==0
@@ -213,7 +215,7 @@ program define dlw_servercatalog, rclass
 						}
 						
 						//Server without data folder
-						if "`server'"=="ECA" | "`server'"=="EAP" | "`server'"=="I2D2" | "`server'"=="LABLAC" | "`server'"=="MNA" | "`server'"=="SAR" | "`server'"=="SEDLAC" | "`server'"=="SSA" | "`server'"=="ECA_EUROSTAT" {	
+						if "`server'"=="ECA" | "`server'"=="EAP" | "`server'"=="I2D2" | "`server'"=="LABLAC" | "`server'"=="MNA" | "`server'"=="SAR" | "`server'"=="SEDLAC" | "`server'"=="SSA" | "`server'"=="ECA_EUROSTAT" | "`server'"=="GLD" {	
 							keep if upper(filepath4)=="DATA"							
 							drop if strpos(upper(filepath5), ".DTA") > 0
 							keep if upper(filepath5)=="HARMONIZED"								
@@ -305,7 +307,7 @@ program define dlw_servercatalog, rclass
 						//save all inventory						
 						use `data8', clear
 						char _dta[version] $S_DATE		
-						gen byte filesize =.
+						cap gen filesize =.
 						gen str filemoddate = ""
 						gen str guisubexp = serveralias + "," + acronym + "," + string(year) + "," + country + "," + guikey1 if guikey1~=""
 						replace guisubexp = serveralias + "," + acronym + "," + string(year) + "," + country + "," + "RAW" if guikey1==""
