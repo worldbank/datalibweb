@@ -347,7 +347,7 @@ program define dlw_usercatalog, rclass
 			la val type2 type2
 			label define isdownload 1 "YES" 0 "NO"
 			label values isdownload isdownload
-			gen byte filesize =.
+			cap gen filesize =.
 			gen str filemoddate = ""
 			gen str guisubexp = serveralias + "," + acronym + "," + string(year) + "," + country + "," + collection if collection~=""
 			replace guisubexp = serveralias + "," + acronym + "," + string(year) + "," + country + "," + "RAW" if collection==""

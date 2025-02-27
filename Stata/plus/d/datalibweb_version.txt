@@ -1,4 +1,7 @@
 	WHAT'S NEW
+	DLW2: 1.2 <27Feb2025>
+		1. Various minor updates on the API and usage.
+		
 	DLW2: 1.1 <04Apr2024>
 		1. Update DLW code/helpfile to DLW2 with new API endpoints and features
 	
