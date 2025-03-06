@@ -41,7 +41,7 @@ program define dlw_srvcatalogonly, rclass
 					*gen pos_data = strpos(filepathU, "DATA")
 					
 					//Server with data folder
-					if "`server'"=="ASPIRE" | "`server'"=="GPWG" | "`server'"=="GMD" {
+					if "`server'"=="ASPIRE" | "`server'"=="GPWG" {
 						su ndir, de
 						if r(mean)~=3 {
 							dis as error "Mixed data system, please check."
@@ -55,7 +55,7 @@ program define dlw_srvcatalogonly, rclass
 					}
 					
 					//Server without data folder
-					if "`server'"=="ECA" | "`server'"=="EAP" | "`server'"=="I2D2" | "`server'"=="LABLAC" | "`server'"=="MNA" | "`server'"=="SAR" | "`server'"=="SEDLAC" | "`server'"=="SSA" | "`server'"=="ECA_EUROSTAT" | "`server'"=="GLD" {	
+					if "`server'"=="ECA" | "`server'"=="EAP" | "`server'"=="I2D2" | "`server'"=="LABLAC" | "`server'"=="MNA" | "`server'"=="SAR" | "`server'"=="SEDLAC" | "`server'"=="SSA" | "`server'"=="ECA_EUROSTAT" | "`server'"=="GLD" | "`server'"=="GMD" {	
 						keep if upper(filepath4)=="DATA"							
 						drop if strpos(upper(filepath5), ".DTA") > 0
 						keep if upper(filepath5)=="HARMONIZED"								
