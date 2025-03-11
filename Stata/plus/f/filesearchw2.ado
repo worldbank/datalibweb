@@ -130,6 +130,8 @@ program define filesearchw2, rclass
 						//get the latest only
 						cap drop if upper(verm)=="WRK"
 						cap drop if upper(vera)=="WRK"
+						cap replace verm = upper(verm)
+						cap replace vera = upper(vera)
 						qui levelsof verm, local(mlist)
 						listsort `"`mlist'"', lexicographic						
 						keep if verm=="`=word(`"`s(list)'"',-1)'"
@@ -228,13 +230,18 @@ program define filesearchw2, rclass
 							cap confirm variable vera, ex
 							if _rc==0 local vera `=vera[1]'						
 							local surveyid `ids'
+							local idspara1
+							if "`ids'"~="" {
+								local para1 `ids'
+								local idspara1 para1
+							}
 							local filename `=file[1]'
 							local filedate `=filelastmodifieddate[1]'
 							local idno `r(id)'
 							// call the single file, often no permission
 							tempfile temp2
 							local filename `=file[1]'
-							foreach cstr in collection folder token filename /*para1 para2 para3 para4 ext*/ {
+							foreach cstr in collection folder token filename `idspara1' /*para1 para2 para3 para4 ext*/ {
 								if "``cstr''"=="" local s_`cstr'
 								else local s_`cstr' "&`cstr'=``cstr''"
 							}
