@@ -130,6 +130,8 @@ program define filesearchw2, rclass
 						//get the latest only
 						cap drop if upper(verm)=="WRK"
 						cap drop if upper(vera)=="WRK"
+						cap replace verm = upper(verm)
+						cap replace vera = upper(vera)
 						qui levelsof verm, local(mlist)
 						listsort `"`mlist'"', lexicographic						
 						keep if verm=="`=word(`"`s(list)'"',-1)'"
@@ -228,13 +230,18 @@ program define filesearchw2, rclass
 							cap confirm variable vera, ex
 							if _rc==0 local vera `=vera[1]'						
 							local surveyid `ids'
+							local idspara1
+							if "`ids'"~="" {
+								local para1 `ids'
+								local idspara1 para1
+							}
 							local filename `=file[1]'
 							local filedate `=filelastmodifieddate[1]'
 							local idno `r(id)'
 							// call the single file, often no permission
 							tempfile temp2
 							local filename `=file[1]'
-							foreach cstr in collection folder token filename /*para1 para2 para3 para4 ext*/ {
+							foreach cstr in collection folder token filename `idspara1' /*para1 para2 para3 para4 ext*/ {
 								if "``cstr''"=="" local s_`cstr'
 								else local s_`cstr' "&`cstr'=``cstr''"
 							}
@@ -251,7 +258,7 @@ program define filesearchw2, rclass
 								}
 								else { //different filename, then load it
 									local tmppath = substr("`temp2'",1,length("`temp2'")-strpos(reverse("`temp2'"),"\")+1)
-									if "`dlibType'"=="dta" {							
+									if "`=lower("`dlibType'")'"=="dta" {							
 										cap use "`temp2'", clear	
 										if _rc==0 {
 											return local type `collection'
@@ -269,7 +276,7 @@ program define filesearchw2, rclass
 											error 1
 										}
 									} 	
-									else if "`dlibType'"=="do" { // only one file matched/subscribed - load the file  													
+									else if "`=lower("`dlibType'")'"=="do" { // only one file matched/subscribed - load the file  													
 										cap doedit "`tmppath'\`dlibFileName'"
 										if _rc==0 {
 											noi dis as text in yellow `"{p 4 4 2}The dofile (`dlibFileName') is loaded.{p_end}"'	
@@ -360,7 +367,7 @@ program define filesearchw2, rclass
 			if "`nometa'"==""   _metadisplay, surveyid(`=trim("`surveyid'")')			
 			
 			local tmppath = substr("`temp1'",1,length("`temp1'")-strpos(reverse("`temp1'"),"\")+1)				
-			if "`dlibType'"=="dta" { // only one file matched/subscribed - load the file  									
+			if "`=lower("`dlibType'")'"=="dta" { // only one file matched/subscribed - load the file  									
 				cap use `temp1', clear	 //load the data
 				if _rc==0 {
 					return local type `collection'
@@ -377,7 +384,7 @@ program define filesearchw2, rclass
 					error 1
 				}
 			} // dta type
-			else if "`dlibType'"=="do" { // only one file matched/subscribed - load the file  													
+			else if "`=lower("`dlibType'")'"=="do" { // only one file matched/subscribed - load the file  													
 				cap doedit "`tmppath'\`dlibFileName'"
 				if _rc==0 {
 					noi dis as text in yellow `"{p 4 4 2}The dofile (`dlibFileName') is loaded.{p_end}"'	
