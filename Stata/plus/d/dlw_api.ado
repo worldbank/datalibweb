@@ -74,7 +74,8 @@ program define _dlw_api_v2, rclass
 				c_local dlibType "`dlibType'"				
 			}
 			else {
-				noi dis as error "Datalibweb token is invalid or expired. Please visit the datalibweb website to renew the token."
+				noi dis as error "Datalibweb token is invalid or expired." _n ///
+				`"Please visit the {browse "http://datalibweb/":datalibweb website} to renew the token."'
 				noi dis as text "Use this: dlw_api, option(8) token(your token here)"
 				global errcode `=_rc'				
 				error 1
