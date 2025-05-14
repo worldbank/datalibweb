@@ -535,6 +535,7 @@ program define _datalibcall_v2, rclass
 				use `datafinal', clear	
 				*cap destring year, replace
 				cap gen str code = "`=upper("`country'")'"   //need to be removed later
+				cap replace code = upper(code)
 				cap drop year
 				cap gen year = `year'                        //need to be removed later			
 				qui if strpos("$surveyid)","EU-SILC")>0 replace year = year - 1				//EUSILC year

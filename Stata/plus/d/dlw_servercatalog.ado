@@ -136,8 +136,7 @@ program define dlw_servercatalog, rclass
 							drop reqexpirydate
 							replace collection = upper(collection)
 							//For collection specific (~=ALL), keep only token~=5
-							drop if collection~="ALL" & token==5
-							*drop if foldername==""
+							drop if collection~="ALL" & token==5							
 							cap confirm string variable foldername
 							if _rc~=0 {
 								drop foldername
@@ -244,7 +243,7 @@ program define dlw_servercatalog, rclass
 						save `sur4', replace
 						use `sur3', clear							
 						merge m:1 surveyid using `sur4'
-						drop _m
+						drop _merge
 						replace latest = 0 if latest==.
 						duplicates drop serveralias country year survey filename, force
 						
@@ -277,8 +276,8 @@ program define dlw_servercatalog, rclass
 									save `data9', replace
 									use `data8', clear
 									merge m:1 country year acronym using `data9', keepus(expdate subscribed) update replace
-									drop if _m==2
-									drop _m
+									drop if _merge==2
+									drop _merge
 									compress
 									save `data8', replace
 								}								
@@ -295,8 +294,8 @@ program define dlw_servercatalog, rclass
 									save `data9', replace
 									use `data8', clear									
 									merge m:1 serveralias country year acronym filename using `data9', keepus(downloaddate isdownload) update replace									
-									drop if _m==2
-									drop _m
+									drop if _merge==2
+									drop _merge
 									compress
 									save `data8', replace
 								}								
