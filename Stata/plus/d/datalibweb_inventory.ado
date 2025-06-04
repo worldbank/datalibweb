@@ -21,7 +21,7 @@ syntax [anything(name=lookup)] , [ ///
 	version(string)]
 	version 11
 
-qui {
+*qui {
 	global yesno 0
 	if "$updateday"=="" global updateday 1
 	*-----------------------------------
@@ -39,7 +39,7 @@ qui {
 	*-----------------------------------
 	dlw_countryname		// see program below
 	tempfile cnames
-	save `cnames', replace
+	qui save `cnames', replace
 
 	*---------------------------------------
 	* 2. Procedure for region or countries
@@ -47,20 +47,18 @@ qui {
 	* 2.1 In case country code or country name are selected
 	if ("`code'" != "" & "`region'" == "") keep if countrycode == "`code'"
 	if ("`name'" != "" & "`region'" == "") keep if countryname == "`name'"
-	count 
+	qui count 
 	if r(N) == 1 {
 		return local countrycode = countrycode[1]
 		return local countryname = countryname[1]
 		return local region = region[1]
 		return local N = r(N)
 	}
-	
-	*noi disp _col(2) `"{stata dlw_usercatalog, code(`code') update : Click here to refresh this country catalog if needed}"'
-	
+		
 	* 2.2 In case region is selected
 	else {
 		* 2.2.1 To find country based on Region
-		if ("`region'" != "" & "`code'" == "") {
+		qui if ("`region'" != "" & "`code'" == "") {
 			keep if region == "`region'"
 			varlocal countrycode countryname, replacespace
 			local codes = r(countrycode)
@@ -88,7 +86,7 @@ qui {
 		/* STEP 3:  To find type based on Country*/
 		*********************************************
 		
-		if ("`region'" != "" & "`code'" != "" &  "`type'" == "") {	
+		qui if ("`region'" != "" & "`code'" != "" &  "`type'" == "") {	
 			 _catalog `code' `region' $yesno		 
 			local rline 37
 			local lline 15 
@@ -97,7 +95,7 @@ qui {
 			//RAW collection			
 			noi disp _col(4) in g "{it:Raw collection:}"
 			noi disp _col(4) in g "{hline `lline'}{c TT}{hline `rline'}" 
-			levelsof datanature if (finaltype == "Data" & type2 == 0), local(colraws)
+			qui levelsof datanature if (finaltype == "Data" & type2 == 0), local(colraws)
 			foreach colraw of local colraws {
 				if ("`colraw'" == "ORIGINAL") continue 
 				local codeline "datalibweb_inventory, region(`region') code(`code') type(`colraw') raw "
@@ -110,7 +108,7 @@ qui {
 			if r(N)>0 {
 				noi disp _n _col(4) in g "{it:Regional harmonized collection:}" 
 				noi disp _col(4) in g "{hline `lline'}{c TT}{hline `rline'}" 
-				levelsof collection if type2 == 1, local(collections)
+				qui levelsof collection if type2 == 1, local(collections)
 				foreach collection of local collections {
 					local codeline "datalibweb_inventory, region(`region') code(`code') type(`collection') vintage regional"
 					local codemodule "datalibweb_inventory, region(`region') code(`code') type(`collection') module regional"
@@ -127,7 +125,7 @@ qui {
 			if r(N)>0 {
 				noi disp _n _col(4) in g "{it:Global harmonized collection:}" 
 				noi disp _col(4) in g "{hline `lline'}{c TT}{hline `rline'}" 
-				levelsof collection if type2 == 2, local(collections)
+				qui levelsof collection if type2 == 2, local(collections)
 				foreach collection of local collections {
 					local codeline "datalibweb_inventory, region(`region') code(`code') type(`collection') vintage global"
 					local codemodule "datalibweb_inventory, region(`region') code(`code') type(`collection') module global"
@@ -165,7 +163,7 @@ qui {
 		************************************ */
 		
 		****** 2.2.4 To find Country based on type. 
-		if ("`region'" == "" & "`code'" == "" &  "`type'" != "") {
+		qui if ("`region'" == "" & "`code'" == "" &  "`type'" != "") {
 			_catalog `code' `region' $yesno
 			keep if (collection == "`type'")
 			collapse (firstnm) type, by(country)
@@ -195,8 +193,7 @@ qui {
 		}
 			
 		****** 2.2.4 To find year based on type and country
-		if ("`raw'" == "raw") {
-			* use "C:\ado\plus\_\_inventory.dta", clear
+		qui if ("`raw'" == "raw") {			
 			_catalog `code' `region' $yesno
 			keep if datanature == "`type'"
 			* local type "ECARAW"
@@ -221,12 +218,12 @@ qui {
 			noi disp _col(`=`col1'-1') in g "{hline `=`col5'+4'}"
 			* End Heading
 	
-			levelsof acronym, local(surveys)
+			qui levelsof acronym, local(surveys)
 			local nsurvey: word count `surveys' 	
 			local s = 0
 			foreach survey of local surveys {
 				local ++s
-				levelsof year if acronym == "`survey'", local(years) 
+				qui levelsof year if acronym == "`survey'", local(years) 
 				foreach year of local years {
 					sum n if year == `year' & acronym == "`survey'", meanonly
 					local line = r(mean)
@@ -255,7 +252,7 @@ qui {
 			clear
 		} // end of display raw data availability
 		
-		if ("`regional'" == "regional" | "`global'" == "global") {
+		qui if ("`regional'" == "regional" | "`global'" == "global") {
 			if ("`vermast'" == "" & "`veralt'" == "" & "`vintage'" == "vintage") {
 				_catalog `code' `region' $yesno
 				keep if collection == "`type'"
@@ -272,7 +269,7 @@ qui {
 				local col4 = `col3'+12
 				local col5 = `col4'+10
 				
-				levelsof acronym, local(surveys)
+				qui levelsof acronym, local(surveys)
 				local nsurvey: word count `surveys' 
 				
 				local s = 0
@@ -287,10 +284,10 @@ qui {
 					noi disp _col(`=`col1'-1') in g "{hline `=`col5'+4'}"
 					* End Heading
 					
-					levelsof year if acronym == "`survey'", local(years) 
+					qui levelsof year if acronym == "`survey'", local(years) 
 					foreach year of local years {
 						noi disp in y _col(`=`col1'-3') "{ul:`year'}"  _n 
-						levelsof n if (year == `year' & acronym == "`survey'"), local(lines)
+						qui levelsof n if (year == `year' & acronym == "`survey'"), local(lines)
 						foreach line of local lines {
 							local vm: disp vermast[`line']
 							local va: disp veralt[`line'] 
@@ -330,13 +327,12 @@ qui {
 				//replace year = year + "(" +sub + ")"
 				keep serveralias year module vermast veralt acronym subscribed
 				gen vintage = vermast + "-" + veralt
-				levelsof acronym, local(surveys)
+				qui levelsof acronym, local(surveys)
 				compress
 				tempfile serfile
 				save `serfile', replace
-				*save "c:\Temp\test.dta", replace
-				
-				levelsof serveralias, local(serverlist)
+								
+				qui levelsof serveralias, local(serverlist)
 				foreach ser of local serverlist {
 					use `serfile', clear
 					keep if serveralias=="`ser'"
@@ -378,12 +374,12 @@ qui {
 				noi disp _col(`=`col1'-1') in g "{hline `=`col5'+4'}"
 				* End Heading
 		
-				levelsof acronym, local(surveys)
+				qui levelsof acronym, local(surveys)
 				local nsurvey: word count `surveys' 	
 				local s = 0
 				foreach survey of local surveys {
 					local ++s
-					levelsof year if acronym == "`survey'", local(years) 
+					qui levelsof year if acronym == "`survey'", local(years) 
 					foreach year of local years {
 						sum n if year == `year' & acronym == "`survey'", meanonly
 						local line = r(mean)
@@ -427,7 +423,7 @@ qui {
 				noi disp in g _col(4) "{hline 37}"
 				noi disp in g _col(5) "Module"  _col(18) "Subscribed"  _col(31) "Downloaded"
 				noi disp in g _col(4) "{hline 37}"
-				levelsof module, local(modules)
+				qui levelsof module, local(modules)
 				foreach module of local modules {
 					sum n if module == "`module'"
 					local line = r(mean)
@@ -438,8 +434,7 @@ qui {
 				}
 				noi disp in g _col(4) "{hline 37}"
 				clear
-			} // end of presenting modules for particular vintage
-			
+			} // end of presenting modules for particular vintage			
 		} // end of regional 
 			
 		* 2.3 Return locals
@@ -449,7 +444,7 @@ qui {
 		return local N = r(N)
 		return local type = "`type'"		
 	}	// end of else 
-}		// end of qui
+*}		// end of qui
  
 end
 
@@ -461,7 +456,7 @@ end
 cap program drop _catalog
 program define _catalog
 
-qui {  
+*qui {  
 	args countrycode region yesno
 	if `yesno'==0 {
 		local dl 0
@@ -493,15 +488,15 @@ qui {
 		global yesno 1
 	}
 	bys country year acronym collection (type): gen count=_N
-	levelsof finaltype, local(ftype)
-	foreach ty of local ftype {
+	qui levelsof finaltype, local(ftype)
+	qui foreach ty of local ftype {
 		tempvar `ty'
 		gen ``ty'' = count>0 if finaltype=="`ty'"
 		bys country year acronym collection (type): egen is_`ty' = sum(``ty'')
 	}
 	
-	keep if upper(ext)=="DTA"
-	gen datanature = serveralias + "RAW" if finaltype == "Data" & token==5
+	qui keep if upper(ext)=="DTA"
+	qui gen datanature = serveralias + "RAW" if finaltype == "Data" & token==5
 	//gen datanature = "`region'RAW" if finaltype == "Data" & token==5
 	//replace datanature = serveralias + "RAW" if finaltype == "Data" & token==5 & (serveralias=="SEDLAC"|serveralias=="LABLAC")
 	/*		
@@ -534,6 +529,6 @@ qui {
 	label define isdownload 1 "YES" 0 "NO"
 	label values isdownload isdownload
 	*/
-}
+*}
 end
 exit 
