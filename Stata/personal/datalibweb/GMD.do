@@ -11,7 +11,7 @@ global root
 global rootname GMD
 global subfolders Data\Harmonized
 global data `" "Data\Harmonized" "'
-global doc `" "Doc\Questionnaire" "Doc\Technical" "'
+global doc `" "Doc\Questionnaire" "Doc\Technical" "Doc\Shapefile""'
 global prog `" "Programs" "'
 global token 8
 global updateday 1
