@@ -110,7 +110,7 @@ program define _dlw_api_v2, rclass
 		else {
 			dlw_message, error(`=_rc')
 			global errcode `=_rc'			
-			error 1
+			error $errcode
 		}
 	} //other API options
 end

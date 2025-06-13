@@ -83,7 +83,7 @@ program define dlw_srvcatalogonly, rclass
 					save `sur4', replace
 					use `sur3', clear							
 					merge m:1 surveyid using `sur4'
-					drop _m
+					drop _merge
 					replace latest = 0 if latest==.
 					duplicates drop serveralias country year survey filename, force
 					

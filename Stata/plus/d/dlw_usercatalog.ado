@@ -117,8 +117,8 @@ program define dlw_usercatalog, rclass
 				
 				use `tmpcatalog', clear
 				merge m:1 serveralias token using `subtemp', update replace
-				drop if _m==2
-				drop _m
+				drop if _merge==2
+				drop _merge
 				su all, mean
 				forv i=1(1)`r(max)' { //loop through folder
 					//foldername is different than blank
@@ -260,16 +260,15 @@ program define dlw_usercatalog, rclass
 		qui {
 			use `tmpcatalog', clear
 			if $fsubscription==1 {	
-				merge m:1 serveralias country year acronym requesttype token foldername using `subscription', keepus(expdate subscribed)			
-				drop if _m==2
-				drop _m			
+				merge m:1 serveralias country year acronym requesttype token foldername using `subscription', keepus(expdate subscribed)
+				drop if _merge==2
+				drop _merge			
 			}
 
 			if $faudit==1 {
-				merge m:1 serveralias surveyid filename using `audit', keepus(downloaddate)
-				ta _m
-				drop if _m==2
-				drop _m
+				merge m:1 serveralias surveyid filename using `audit', keepus(downloaddate)				
+				drop if _merge==2
+				drop _merge
 			}
 			
 			cap drop all path1 requesttype title
@@ -302,7 +301,7 @@ program define dlw_usercatalog, rclass
 			save `sur4', replace
 			use `sur3', clear
 			merge m:1 surveyid using `sur4'
-			drop _m
+			drop _merge
 			replace latest = 0 if latest==.
 			gen collection = surveyid8 if token==8
 			gen type2 = 0
