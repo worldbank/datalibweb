@@ -23,7 +23,7 @@ global cpic SUPPORT
 global cpiy 2005
 global cpif Data\Stata
 global rootcpi ECA
-*global cpiw "Server=$rootcpi&Country=$cpic&Year=$cpiy&filename=$cpifile&folder=$cpif"
+global cpiw 
 global cpivarw icp* cpi*
 global distxt ECA TSD/EU-LFS
 global email jmontes@worldbank.org; pcorralrodas@worldbank.org; mnguyen3@worldbank.org
