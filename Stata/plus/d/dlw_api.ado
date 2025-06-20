@@ -74,17 +74,20 @@ program define _dlw_api_v2, rclass
 				c_local dlibType "`dlibType'"				
 			}
 			else {
-				noi dis as error "Datalibweb token is invalid or expired." _n ///
-				`"Please visit the {browse "http://datalibweb/":datalibweb website} to renew the token."'
-				noi dis as text "Use this: dlw_api, option(8) token(your token here)"
+				noi dis as error "Datalibweb token is invalid or expired. Please visit the datalibweb website to renew the token."
+				noi dis `"{browse "https://datalibweb2.worldbank.org/home":https://datalibweb2.worldbank.org/home}"'
+				view browse https://datalibweb2.worldbank.org/home				
+				noi dis as text "Under your name in the website, click on the renew token. Copy it and paste on the command below."
+				noi dis as text "Use this: dlw, token(your copied token)"
 				global errcode `=_rc'				
-				error 1
-				*exit `= _rc'
+				error 1				
 			}
 		} //token provided
 		else {
 			noi dis as error "Datalibweb token is needed for the API option 8. Please provide the token in the option token()."
-			noi dis as text "Use this: dlw_api, option(8) token(your token here)"
+			noi dis `"{browse "https://datalibweb2.worldbank.org/home":https://datalibweb2.worldbank.org/home}"'
+			view browse https://datalibweb2.worldbank.org/home		
+			noi dis as text "Use this: dlw, token(your copied token)"
 			global errcode 198
 			error 198
 		}		
