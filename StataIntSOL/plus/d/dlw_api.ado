@@ -123,7 +123,7 @@ program define _dlw_api_v3, rclass
     version 16.0
     syntax, OPTion(integer) [OUTfile(string) Query(string) Reqtype(string) Token(string)]
 	local user = c(username)	
-    capture program define _datalibweb_v3, plugin using("/jupyterhub_plugins/datalibweb.plugin")
+    capture program define _datalibweb_v3, plugin using("/jupyterhub_plugins/StataPlugins/datalibweb.plugin")
 	*capture program define _datalibweb_v3, plugin using("/userdata/`user'/ado/plus/d/datalibweb.plugin")
     if _rc > 0 & _rc != 110 {
         display as error "Unable to load the plugin from its location, please check your folder /ado/plus/d/datalibweb.plugin or no other plugin application is running."

@@ -245,7 +245,8 @@ program define dlw_usercatalog, rclass
 						bys serveralias requesttype token: gen seq = _n
 						bys serveralias requesttype token: gen all = _N
 						*reshape wide foldername level extn, i( serveralias requesttype token all) j(seq)
-						reshape wide foldername folderlevel extn, i( serveralias requesttype token all) j(seq)
+						reshape wide foldername folderlevel extn onlysol, i( serveralias requesttype token all) j(seq)
+						*reshape wide foldername folderlevel extn, i( serveralias requesttype token all) j(seq)
 						save `sub2', replace	
 					} //_N
 				} //rc
