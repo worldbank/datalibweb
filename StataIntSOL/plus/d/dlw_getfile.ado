@@ -87,13 +87,13 @@ program define dlw_getfile, rclass
 					ren filesharepath4 surveyid
 				}
 				else {
-					ren filesharepath4 survey
-					ren filesharepath5 surveyid
+					ren filesharepath3 survey
+					ren filesharepath4 surveyid
 				}				
 				ren filesharepath path
 				gen ext = substr(file,length(file)-strpos(reverse(file),".")+2,strpos(reverse(file),"."))
-				replace filesize = subinstr(filesize, " bytes","",.)
-				destring filesize, replace
+				*replace filesize = subinstr(filesize, " bytes","",.)
+				*destring filesize, replace
 				replace filesize = round(filesize/1e6,.001) 
 				//Clean and Save the filesearch data
 				order survey surveyid path file		
