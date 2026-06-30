@@ -2,7 +2,7 @@
 //GMDRAW.do
 
 global root 
-global rootname GMD-Public
+global rootname GMD
 global subfolders Data\Stata
 global data `" "Data\Stata" "'
 global doc `" "Doc\Questionnaire" "Doc\Technical" "'

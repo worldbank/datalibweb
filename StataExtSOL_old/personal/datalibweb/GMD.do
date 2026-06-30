@@ -8,7 +8,7 @@ global idmod
 global hhmlist	`""SPAT", "LOC", "H3""'
 global indmlist `""GPWG", "L", "ALL""'
 global root 
-global rootname GMD-Public
+global rootname GMD
 global subfolders Data\Harmonized
 global data `" "Data\Harmonized" "'
 global doc `" "Doc\Questionnaire" "Doc\Technical" "Doc\Shapefile""'
@@ -23,7 +23,7 @@ global cpifile Final_CPI_PPP_to_be_used.dta
 global cpic SUPPORT
 global cpiy 2005
 global cpif Data\Stata
-global rootcpi GMD-Public
+global rootcpi GMD
 global cpiw "Server=$rootcpi&Country=$cpic&Year=$cpiy&filename=$cpifile&folder=$cpif"
 global cpivarw icp* cpi* comp*
 global distxt GLOBAL TSD/GMD
