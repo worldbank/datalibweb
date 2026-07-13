@@ -723,6 +723,7 @@ program define _datalibcall_v3, rclass
 				cap drop datalevel 
 				cap drop ppp_note
 				qui if strpos("$surveyid","EU-SILC")>0 replace year = year + 1				//EUSILC year
+				noi dis as text in yellow `"{p 4 4 2}The data is loaded in your notebook.{p_end}"'			
 			}
 		} //_rc save
 	}

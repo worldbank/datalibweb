@@ -306,7 +306,7 @@ program define dlw_usercatalog, rclass
 			gen collection = surveyid8 if token==8
 			gen type2 = 0
 			replace type2 = 1 if token==8
-			replace type2 = 2 if inlist(collection, "GMD", "GLD", "GPWG", "ASPIRE", "I2D2", "I2D2-Labor", "GLAD")  // add as many global collections as available
+			replace type2 = 2 if inlist(collection, "GMD", "GLD", "GPWG", "ASPIRE", "I2D2", "I2D2-Labor", "GLAD", "FDP")  // add as many global collections as available
 			replace type2 = 3 if inlist(collection, "GMI", "HLO", "CLO")  // add as many thematic indicators as available
 			//drop OLD stuff
 			drop if collection=="GPWG"

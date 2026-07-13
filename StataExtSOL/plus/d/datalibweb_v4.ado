@@ -429,7 +429,7 @@ program define datalibweb_v4, rclass
 		} //_rc save
 	} //nocpi
 	else {
-		noi dis as text in yellow `"{p 4 4 2}The dofile (`filename') is loaded in your notebook.{p_end}"'			
+		noi dis as text in yellow `"{p 4 4 2}The file (`filename') is loaded in your notebook.{p_end}"'			
 	}
 	
 end

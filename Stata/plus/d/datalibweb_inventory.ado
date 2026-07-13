@@ -86,7 +86,7 @@ syntax [anything(name=lookup)] , [ ///
 		/* STEP 3:  To find type based on Country*/
 		*********************************************
 		
-		qui if ("`region'" != "" & "`code'" != "" &  "`type'" == "") {	
+		if ("`region'" != "" & "`code'" != "" &  "`type'" == "") {	
 			 _catalog `code' `region' $yesno		 
 			local rline 37
 			local lline 15 

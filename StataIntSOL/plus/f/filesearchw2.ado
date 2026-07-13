@@ -271,6 +271,7 @@ program define filesearchw2, rclass
 											return local filename `dlibFileName'
 											return local filedate `filedate'
 											return local idno `r(id)'
+											noi dis as text in yellow `"{p 4 4 2}The file (`dlibFileName') is loaded in your notebook.{p_end}"'	
 										}
 										else {
 											noi dis as text in red "{p 4 4 2}Can't open the file (`dlibFileName'). Data file was saved with new Stata versions.{p_end}"	
@@ -288,58 +289,20 @@ program define filesearchw2, rclass
 											noi dis as text in red "{p 4 4 2}This dofile (`dlibFileName') cannot be saved at this location ${usertmp}.{p_end}"	
 											global errcode = 999
 											error 1
-										}
-										
-										/*
-										cap doedit "`tmppath'/`dlibFileName'"
-										if _rc==0 {
-											noi dis as text in yellow `"{p 4 4 2}The dofile (`dlibFileName') is loaded.{p_end}"'	
-											return local type `collection'
-											return local module `mod'
-											return local verm `verm'
-											return local vera `vera'
-											return local surveyid `surveyid'
-											return local filename `dlibFileName'
-											return local filedate `filedate'
-											return local idno `r(id)'
-										}
-										else {
-											noi dis as text in red "{p 4 4 2}This dofile (`dlibFileName') is not a properly formatter dofile.{p_end}"	
-											global errcode = 999
-											error 1
-										}
-										*/
+										}																	
 									}
 									else { //different types
 										cap copy "`temp2'" "${usertmp}/`dlibFileName'", replace
 										if _rc==0 {
-											noi dis as text in yellow `"{p 4 4 2}The dofile (`dlibFileName') is saved at ${usertmp}.{p_end}"'						
+											noi dis as text in yellow `"{p 4 4 2}The file (`dlibFileName') is saved at ${usertmp}.{p_end}"'						
 											noi dis as text in yellow `"{p 4 4 2}Use appropriate code/softwares to open or double click when it is a text-based file.{p_end}"'						
 										}
 										else {
-											noi dis as text in red "{p 4 4 2}This dofile (`dlibFileName') cannot be saved at this location ${usertmp}.{p_end}"	
+											noi dis as text in red "{p 4 4 2}This file (`dlibFileName') cannot be saved at this location ${usertmp}.{p_end}"	
 											global errcode = 999
 											error 1
 										}
-										/*
-										cap shell `tmppath'/`dlibFileName'
-										if _rc==0 {
-											noi dis as text in yellow `"{p 4 4 2}The file "`dlibFileName'" is loaded.{p_end}"'	
-											return local type `collection'
-											return local module `mod'
-											return local verm `verm'
-											return local vera `vera'
-											return local surveyid `surveyid'
-											return local filename `dlibFileName'
-											return local filedate `filedate'
-											return local idno `r(id)'
-										}
-										else { //cant open
-											noi dis as text in red "{p 4 4 2}Can't open the file (`dlibFileName'). This file extension is not supported yet by your operating systems or the file is damaged.{p_end}"	
-											global errcode = 999
-											error 1
-										}
-										*/
+										
 									} //different types
 								} //end of different filename
 							} //dlibrc==0						
@@ -421,55 +384,19 @@ program define filesearchw2, rclass
 					noi dis as text in red "{p 4 4 2}This dofile (`dlibFileName') cannot be saved at this location ${usertmp}.{p_end}"	
 					global errcode = 999
 					error 1
-				}
-				/*
-				cap doedit "`tmppath'/`dlibFileName'"
-				if _rc==0 {
-					noi dis as text in yellow `"{p 4 4 2}The dofile (`dlibFileName') is loaded.{p_end}"'	
-					return local type `collection'
-					return local module `mod'
-					return local verm `verm'
-					return local vera `vera'
-					return local surveyid `surveyid'
-					return local filename `dlibFileName'
-					return local idno `r(id)'
-				}
-				else {
-					noi dis as text in red "{p 4 4 2}This dofile (`dlibFileName') is not a properly formatter dofile.{p_end}"	
-					global errcode = 999
-					error 1
-				}
-				*/
+				}				
 			}
 			else { //different types
 				cap copy "`temp1'" "${usertmp}/`dlibFileName'", replace
 				if _rc==0 {
-					noi dis as text in yellow `"{p 4 4 2}The dofile (`dlibFileName') is saved at ${usertmp}.{p_end}"'						
+					noi dis as text in yellow `"{p 4 4 2}The file (`dlibFileName') is saved at ${usertmp}.{p_end}"'						
 					noi dis as text in yellow `"{p 4 4 2}Use appropriate code/softwares to open or double click when it is a text-based file.{p_end}"'						
 				}
 				else {
-					noi dis as text in red "{p 4 4 2}This dofile (`dlibFileName') cannot be saved at this location ${usertmp}.{p_end}"	
+					noi dis as text in red "{p 4 4 2}This file (`dlibFileName') cannot be saved at this location ${usertmp}.{p_end}"	
 					global errcode = 999
 					error 1
-				}
-				/*
-				cap shell `tmppath'/`dlibFileName'
-				if _rc==0 {
-					noi dis as text in yellow `"{p 4 4 2}The file (`dlibFileName') is loaded in the corresponding application.{p_end}"'	
-					return local type `collection'
-					return local module `mod'
-					return local verm `verm'
-					return local vera `vera'
-					return local surveyid `surveyid'
-					return local filename `dlibFileName'
-					return local idno `r(id)'
-				}
-				else { //cant 
-					noi dis as text in red "{p 4 4 2}Can't open the file (`dlibFileName'). This file extension is not supported yet by your operating systems or the file is damaged.{p_end}"	
-					global errcode = 999
-					error 1
-				}
-				*/
+				}	
 			}
 		} //end single file
 	} //end of _rc plugin
