@@ -86,7 +86,7 @@ syntax [anything(name=lookup)] , [ ///
 		/* STEP 3:  To find type based on Country*/
 		*********************************************
 		
-		qui if ("`region'" != "" & "`code'" != "" &  "`type'" == "") {	
+		if ("`region'" != "" & "`code'" != "" &  "`type'" == "") {	
 			 _catalog `code' `region' $yesno		 
 			local rline 37
 			local lline 15 
@@ -320,7 +320,7 @@ syntax [anything(name=lookup)] , [ ///
 				
 				keep if collection == "`type'"	
 				drop if lower(veralt)=="wrk"
-				bys serveralias acronym year module (verm vera): gen a = _n==_N 
+				bys serveralias acronym year module (vermast veralt): gen a = _n==_N 
 				keep if a == 1
 				//tostring year, replace
 				//decode subscribed, gen(sub)
