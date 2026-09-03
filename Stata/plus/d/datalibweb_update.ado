@@ -51,12 +51,16 @@ program define datalibweb_update, rclass
 		noi dis as error "Unrecognized system - please check with admins"
 		error 1
 	}	
+	local dirsep "/"
+	if "$S_OS"=="Windows" local dirsep "\"
+	local dlib2solfile "dlib2sol_`mtype'.dll"
+	if "$S_OS"=="MacOSX" local dlib2solfile "dlib2sol_64.plugin"
 /*=======================================================================
                         1: check for update
 =======================================================================*/	
 	tempfile tfile0
 	tempname tf0
-	cap copy "`plusdir'd\datalibweb_currentversion.txt" `tfile0'
+	cap copy "`plusdir'd`dirsep'datalibweb_currentversion.txt" `tfile0'
 	if _rc==0 {
 		file open `tf0' using `tfile0', read
 		file read `tf0' line					// first line
@@ -65,7 +69,7 @@ program define datalibweb_update, rclass
 		
 		tempfile tfile
 		tempname tf
-		copy "`dirfrom'datalibweb\d\datalibweb_currentversion.txt" `tfile'
+		copy "`dirfrom'datalibweb/d/datalibweb_currentversion.txt" `tfile'
 
 		file open `tf' using `tfile', read
 		file read `tf' line					// first line
@@ -90,11 +94,11 @@ program define datalibweb_update, rclass
 			clear all
 			cap prog drop _datalibweb
 			cap prog drop dlwgui
-			copy "`dirfrom'datalibweb/d/dlib2_`mtype'.dll" "`plusdir'd\dlib2_`mtype'.dll", replace         //  DDL					
-			copy "`dirfrom'datalibweb/d/dlib2g_`mtype'.dll" "`plusdir'd\dlib2g_`mtype'.dll", replace         //  DDL					
-			copy "`dirfrom'datalibweb/d/dlib2sol_`mtype'.dll" "`plusdir'd\dlib2sol_`mtype'.dll", replace         //  DDL					
-			copy "`dirfrom'datalibweb/d/datalibweb_version.txt" "`plusdir'd\datalibweb_version.txt", replace   //  SMCL
-			copy "`dirfrom'datalibweb/d/datalibweb_currentversion.txt" "`plusdir'd\datalibweb_currentversion.txt", replace   //  SMCL			
+			copy "`dirfrom'datalibweb/d/dlib2_`mtype'.dll" "`plusdir'd`dirsep'dlib2_`mtype'.dll", replace         //  DDL					
+			copy "`dirfrom'datalibweb/d/dlib2g_`mtype'.dll" "`plusdir'd`dirsep'dlib2g_`mtype'.dll", replace         //  DDL					
+			copy "`dirfrom'datalibweb/d/`dlib2solfile'" "`plusdir'd`dirsep'`dlib2solfile'", replace         //  DDL					
+			copy "`dirfrom'datalibweb/d/datalibweb_version.txt" "`plusdir'd`dirsep'datalibweb_version.txt", replace   //  SMCL
+			copy "`dirfrom'datalibweb/d/datalibweb_currentversion.txt" "`plusdir'd`dirsep'datalibweb_currentversion.txt", replace   //  SMCL			
 			** Zipped files
 			tempfile zpfile
 			local cdir `c(pwd)'			
@@ -112,7 +116,7 @@ program define datalibweb_update, rclass
 			*noi disp in y _n "Click {stata discard:here} to finish {cmd: datalibweb}" _request(_discard)		      
 			*if ("`discard'" == "discard") {
 				discard
-				noi type "`plusdir'd\datalibweb_version.txt"
+				noi type "`plusdir'd`dirsep'datalibweb_version.txt"
 			*}
 			discard
 			local exit exit
@@ -121,7 +125,7 @@ program define datalibweb_update, rclass
 		return local exit "`exit'"
 	}
 	else {
-		copy "`dirfrom'datalibweb/d/datalibweb_currentversion.txt" "`plusdir'd\datalibweb_currentversion.txt", replace  
+		copy "`dirfrom'datalibweb/d/datalibweb_currentversion.txt" "`plusdir'd`dirsep'datalibweb_currentversion.txt", replace  
 	}
 end
 exit
