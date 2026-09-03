@@ -30,6 +30,10 @@ program define dlw_adoupdate
 		noi dis as error "Unrecognized system - please check with admins"
 		error 1
 	}
+	local dirsep "/"
+	if "$S_OS"=="Windows" local dirsep "\"
+	local dlib2solfile "dlib2sol_`mtype'.dll"
+	if "$S_OS"=="MacOSX" local dlib2solfile "dlib2sol_64.plugin"
 	
 	net from "`dirfrom'"
 	net set ado "`plusdir'"
@@ -41,11 +45,11 @@ program define dlw_adoupdate
 	clear all
 	cap prog drop _datalibweb
 	cap prog drop dlwgui
-	copy "`dirfrom'datalibweb/d/dlib2_`mtype'.dll" "`plusdir'd\dlib2_`mtype'.dll", replace         //  DDL					
-	copy "`dirfrom'datalibweb/d/dlib2g_`mtype'.dll" "`plusdir'd\dlib2g_`mtype'.dll", replace         //  DDL		
-	copy "`dirfrom'datalibweb/d/dlib2sol_`mtype'.dll" "`plusdir'd\dlib2sol_`mtype'.dll", replace         //  DDL		
-	copy "`dirfrom'datalibweb/d/datalibweb_version.txt" "`plusdir'd\datalibweb_version.txt", replace   //  txt
-	copy "`dirfrom'datalibweb/d/datalibweb_currentversion.txt" "`plusdir'd\datalibweb_currentversion.txt", replace   //  txt			
+	copy "`dirfrom'datalibweb/d/dlib2_`mtype'.dll" "`plusdir'd`dirsep'dlib2_`mtype'.dll", replace         //  DDL					
+	copy "`dirfrom'datalibweb/d/dlib2g_`mtype'.dll" "`plusdir'd`dirsep'dlib2g_`mtype'.dll", replace         //  DDL		
+	copy "`dirfrom'datalibweb/d/`dlib2solfile'" "`plusdir'd`dirsep'`dlib2solfile'", replace         //  DDL		
+	copy "`dirfrom'datalibweb/d/datalibweb_version.txt" "`plusdir'd`dirsep'datalibweb_version.txt", replace   //  txt
+	copy "`dirfrom'datalibweb/d/datalibweb_currentversion.txt" "`plusdir'd`dirsep'datalibweb_currentversion.txt", replace   //  txt			
 			
 	** Zipped files
 	tempfile zpfile
@@ -57,7 +61,7 @@ program define dlw_adoupdate
 	else noi dis in y _n "Failed to update Setting dofiles"	
 	qui cd "`cdir'"
 	noi disp in y _n "{cmd:datalibweb} has been updated. " _n 
-	noi type "`plusdir'd\datalibweb_version.txt"
+	noi type "`plusdir'd`dirsep'datalibweb_version.txt"
 	discard
 	exit
 end
